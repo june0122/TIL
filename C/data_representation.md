@@ -75,6 +75,7 @@ int num3 = 012;   // 0으로 시작하면 8진수로 인식
 12     return 0;
 13 }
 ```
+
 <p align="center">
 <img src="https://user-images.githubusercontent.com/39554623/53708393-90540800-3e76-11e9-88b4-e0578b67f600.PNG">
 <p>
