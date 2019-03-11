@@ -199,7 +199,7 @@ int main(void)
 
 > `switch` vs `if..else if..else`
 
-- 분기의 경우 수가 많아지면 가급적 swutch문으로 구현
+- 분기의 경우 수가 많아지면 가급적 switch문으로 구현
 
 - switch문으로 구현할 수 있는 조건의 구성에는 한계가 있다. 따라서 switch문으로 표현하기 애매한 상황에서는 if..else if..else를 사용해야 한다.
 
