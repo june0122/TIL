@@ -58,6 +58,10 @@
   $ gcc -c filename.c      // 링킹을 해주지 않는다. -> 오브젝트 파일 (.o) 생성
     ```
 
+   - [※ gcc compile process](##-[1]-GCC-Compile-Process)
+
+<br>
+
 - 컴파일이 제대로 끝났다면 확장자가 `.o` 인 `filename.o` 파일이 만들어 질것이다.
   
 - 다음은 생성된 오브젝트 파일을 이용하여 라이브러리를 만들도록 한다. 이 때 사용하는 명령어는 `ar` (archives) 로 라이브러리 작성에 사용된다.
@@ -102,15 +106,20 @@
 - 라이브러리가 변경되어도 다시 컴파일 할 필요가 없다.
 
 
+-  [※ -fpic, -shared option](##-[2]--fpic,--shared-option)
+
 ```
 $ gcc add.o -shared -fpic -o libadd.so
 ```
+
+
 
 ```
 $ LD_LIBRARY_PATH=. ./a.out
 ```
 
 실행 중에 동적라이브러리를 로드할 수 있다.
+
 
 <br>
 
@@ -176,8 +185,308 @@ SYNOPSIS
 
 <br>
 
-### 참고
+## [1] GCC Compile Process
+
+<br>
+
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/54405237-493d0100-4719-11e9-99ef-0f22f9e43a65.gif'>
+</p>
+
+<br>
+
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/54411195-dc823080-4731-11e9-8670-9f60fea91051.png'>
+</p>
+
+<br>
+
+> `gcc -v filename.c` : gcc 컴파일 과정을 모두 볼 수 있다.
+
+```
+june0122@ubuntu:~/thethelab.io/0314_2$ gcc -v 10.c
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/7/lto-wrapper
+OFFLOAD_TARGET_NAMES=nvptx-none
+OFFLOAD_TARGET_DEFAULT=1
+Target: x86_64-linux-gnu
+Configured with: ../src/configure -v --with-pkgversion='Ubuntu 7.3.0-27ubuntu1~18.04' --with-bugurl=file:///us                                                r/share/doc/gcc-7/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++ --prefix=/usr --with                                                -gcc-major-version-only --program-suffix=-7 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker                                                -build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-n                                                ls --with-sysroot=/ --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-l                                                ibstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-libmpx --enable-plugin --enable-d                                                efault-pie --with-system-zlib --with-target-system-zlib --enable-objc-gc=auto --enable-multiarch --disable-wer                                                ror --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic                                                 --enable-offload-targets=nvptx-none --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu                                                 --host=x86_64-linux-gnu --target=x86_64-linux-gnu
+Thread model: posix
+gcc version 7.3.0 (Ubuntu 7.3.0-27ubuntu1~18.04)
+COLLECT_GCC_OPTIONS='-v' '-mtune=generic' '-march=x86-64'
+ /usr/lib/gcc/x86_64-linux-gnu/7/cc1 -quiet -v -imultiarch x86_64-linux-gnu 10.c -quiet -dumpbase 10.c -mtune=                                                generic -march=x86-64 -auxbase 10 -version -fstack-protector-strong -Wformat -Wformat-security -o /tmp/ccmMqWX                                                c.s
+GNU C11 (Ubuntu 7.3.0-27ubuntu1~18.04) version 7.3.0 (x86_64-linux-gnu)
+        compiled by GNU C version 7.3.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version                                                 isl-0.19-GMP
+
+GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126139
+ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/7/../../../../x86_64-linux-gnu/include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/gcc/x86_64-linux-gnu/7/include
+ /usr/local/include
+ /usr/lib/gcc/x86_64-linux-gnu/7/include-fixed
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+End of search list.
+GNU C11 (Ubuntu 7.3.0-27ubuntu1~18.04) version 7.3.0 (x86_64-linux-gnu)
+        compiled by GNU C version 7.3.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version                                                 isl-0.19-GMP
+
+GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126139
+Compiler executable checksum: c8081a99abb72bbfd9129549110a350c
+COLLECT_GCC_OPTIONS='-v' '-mtune=generic' '-march=x86-64'
+ as -v --64 -o /tmp/cc1u9aCd.o /tmp/ccmMqWXc.s
+GNU assembler version 2.30 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.30
+COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/7/:/usr/lib/gcc/x86_64-linux-gnu/7/:/usr/lib/gcc/x86_64-linux-gnu/                                                :/usr/lib/gcc/x86_64-linux-gnu/7/:/usr/lib/gcc/x86_64-linux-gnu/
+LIBRARY_PATH=/usr/lib/gcc/x86_64-linux-gnu/7/:/usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/:/usr/                                                lib/gcc/x86_64-linux-gnu/7/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/us                                                r/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/7/../../../:/lib/:/usr/lib/
+COLLECT_GCC_OPTIONS='-v' '-mtune=generic' '-march=x86-64'
+ /usr/lib/gcc/x86_64-linux-gnu/7/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so -plugin-opt                                                =/usr/lib/gcc/x86_64-linux-gnu/7/lto-wrapper -plugin-opt=-fresolution=/tmp/ccIYLGhe.res -plugin-opt=-pass-thro                                                ugh=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plu                                                gin-opt=-pass-through=-lgcc_s --sysroot=/ --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed                                                 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro /usr/lib/gcc/x86_64-linux-gnu/7/../../../x86                                                _64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-lin                                                ux-gnu/7/crtbeginS.o -L/usr/lib/gcc/x86_64-linux-gnu/7 -L/usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux                                                -gnu -L/usr/lib/gcc/x86_64-linux-gnu/7/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64                                                -linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/7/../../.. /tmp/cc1u9aCd.o -lgcc --push-state --a                                                s-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/x86_64-linux-                                                gnu/7/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/7/../../../x86_64-linux-gnu/crtn.o
+COLLECT_GCC_OPTIONS='-v' '-mtune=generic' '-march=x86-64'
+
+```
+
+<br>
+
+## [2] -fpic, -shared option
+
+> `man gcc` 명령어를 통한 man-page에서 `-fpic` , `-shared` 항목 검색
+
+- `-fpic` : PIC를 생성한다. shared library 같은 경우 메모리의 어느 위치에 로딩이 되는지가 컴파일 타임에 결정되지 않기 때문에 절대주소 대신 상대주소(offset)를 사용하도록 컴파일하는 옵션.
+
+  즉, **다른 바이너리에서 이 라이브러리의 함수를 호출할 때 PLT와 GOT를 사용하도록 하는 옵션**이라 생각하면 된다.
+
+    - [PLT와 GOT의 개념](##-[3]-PLT와-GOT의-개념)
+
+  `library의 mapping 주소` + `offset` = `해당 symbol의 주소`
+
+  `mapping 주소`는 `ldd` 로, `offset`은 `nm`으로 확인 가능하다.
+
+<br>
+
+- `-shared` : 가능한 한 공유 라이브러리와 링크하고 공유 라이브러리가 없는 경우에는 정적 라이브러리와 링크
+
+  
+  - `PIC (position-independent code, 위치 독립 코드)`: 메모리의 어딘가에 위치한 기계어 코드의 몸체로서 절대 주소와 관계 없이 적절히 실행된다. PIC는 주로 공유 라이브러리에 사용돼서, 같은 라이브러리 코드도 (사용되는 메모리 공간에 겹쳐써지지 않으면서) 각 프로그램의 주소 공간에 로드될 수 있게 된다.
+
+```
+-fpic
+           Generate position-independent code (PIC) suitable for use in a
+           shared library, if supported for the target machine.  Such code
+           accesses all constant addresses through a global offset table
+           (GOT).  The dynamic loader resolves the GOT entries when the
+           program starts (the dynamic loader is not part of GCC; it is part
+           of the operating system).  If the GOT size for the linked
+           executable exceeds a machine-specific maximum size, you get an
+           error message from the linker indicating that -fpic does not
+           work; in that case, recompile with -fPIC instead.  (These
+           maximums are 8k on the SPARC, 28k on AArch64 and 32k on the m68k
+           and RS/6000.  The x86 has no such limit.)
+
+           Position-independent code requires special support, and therefore
+           works only on certain machines.  For the x86, GCC supports PIC
+           for System V but not for the Sun 386i.  Code generated for the
+           IBM RS/6000 is always position-independent.
+
+           When this flag is set, the macros "__pic__" and "__PIC__" are
+           defined to 1.
+
+       -fPIC
+           If supported for the target machine, emit position-independent
+           code, suitable for dynamic linking and avoiding any limit on the
+           size of the global offset table.  This option makes a difference
+           on AArch64, m68k, PowerPC and SPARC.
+
+           Position-independent code requires special support, and therefore
+           works only on certain machines.
+
+           When this flag is set, the macros "__pic__" and "__PIC__" are
+           defined to 2.
+
+Options for Linking
+       These options come into play when the compiler links object files
+       into an executable output file.  They are meaningless if the compiler
+       is not doing a link step.
+
+       object-file-name
+           A file name that does not end in a special recognized suffix is
+           considered to name an object file or library.  (Object files are
+           distinguished from libraries by the linker according to the file
+           contents.)  If linking is done, these object files are used as
+           input to the linker.
+
+       -c
+       -S
+       -E  If any of these options is used, then the linker is not run, and
+           object file names should not be used as arguments.
+
+           . . . .
+
+       -llibrary
+       -l library
+           Search the library named library when linking.  (The second
+           alternative with the library as a separate argument is only for
+           POSIX compliance and is not recommended.)
+
+           It makes a difference where in the command you write this option;
+           the linker searches and processes libraries and object files in
+           the order they are specified.  Thus, foo.o -lz bar.o searches
+           library z after file foo.o but before bar.o.  If bar.o refers to
+           functions in z, those functions may not be loaded.
+
+           The linker searches a standard list of directories for the
+           library, which is actually a file named liblibrary.a.  The linker
+           then uses this file as if it had been specified precisely by
+           name.
+
+           The directories searched include several standard system
+           directories plus any that you specify with -L.
+
+           Normally the files found this way are library files---archive
+           files whose members are object files.  The linker handles an
+           archive file by scanning through it for members which define
+           symbols that have so far been referenced but not defined.  But if
+           the file that is found is an ordinary object file, it is linked
+           in the usual fashion.  The only difference between using an -l
+           option and specifying a file name is that -l surrounds library
+           with lib and .a and searches several directories.
+
+       -static
+           On systems that support dynamic linking, this overrides -pie and
+           prevents linking with the shared libraries.  On other systems,
+           this option has no effect.
+
+       -shared
+           Produce a shared object which can then be linked with other
+           objects to form an executable.  Not all systems support this
+           option.  For predictable results, you must also specify the same
+           set of options used for compilation (-fpic, -fPIC, or model
+           suboptions) when you specify this linker option.[1]
+
+           . . . .
+```
+
+<br>
+
+- [gcc 옵션 요약](##-[4]-gcc-옵션-요약)
+
+<br>
+
+## [3] PLT와 GOT의 개념
+
+- **PLT (Procedure Linkage Table)** : 외부 프로시저를 연결해주는 테이블. PLT를 통해 다른 라이브러리에 있는 프로시저를 호출해 사용할 수 있다.
+
+- **GOT (Global Offset Table)** : PLT가 참조하는 테이블. 프로시저들의 주소가 들어있다.
+
+  - `프로시저(procedure)`: 사전적 의미로 어떤 행동을 수행하기 위한 일련의 작업순서 또는 특정 작업을 수행하기 위한 작은 단위의 프로그램의 일부를 뜻한다. 다른 말로는 함수(function)나 메소드(method)라 한다. (경우에 따라 값을 반환하면 함수, 값을 반환하지 않으면 프로시저로 구분하기도 한다. 하지만 PLT, GOT 개념에서는 '프로시저 = 함수' 이다.)
+
+<br>
+
+> PLT와 GOT에 대해 일반적으로 알려진 내용
+
+```
+함수를 호출하면(PLT를 호출하면) GOT로 점프하는데 GOT에는 함수의 실제 주소가 쓰여있다.
+
+첫 번째 호출이라면 GOT는 함수의 주소를 가지고 있지 않고 ‘어떤 과정’을 거쳐 주소를 알아낸다.
+
+두 번째 호출 부터는 첫 번째 호출 때 알아낸 주소로 바로 점프한다.
+```
+
+<br>
+
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/54417458-9b941700-4745-11e9-910b-4cfae301ab7c.png'>
+</p>
+
+<br>
+
+> 조금 더 의문을 가져보자
+
+   - 왜 함수의 주소로 바로 점프하지 않고 PLT와 GOT를 사용하는 것일까?
+
+   - GOT가 함수의 주소를 알아내는 '어떤 과정'은 무엇일까? 
+
+<br>
+
+## [4] gcc 옵션 요약
+
+- -o 옵션: gcc에서 만들 실행 파일명을 정하는 것. 안지정하면 a.out
+
+  - %gcc -o filter filter_driver.c define_stack.c global_var.c
+
+- -c 옵션 : 컴파일하지만 링크하지는 않는 다는 것을 의미 
+
+  - %gcc -c filter_driver.c
+
+
+- -D 옵션 : 소스코드의 #define 문과 같다. 심볼에 대한 값을 지정
+
+  - % gcc -c -DDOC_FILE=\"info\" -DUSE_POLL filter_driver.c
+
+  - 첫 번째 -D 옵션은 DOC_FILE 을 info 라는 문자열로 대치한다는 것
+
+  - 두 번째 -D 옵션은 USE_POLL 심볼을 정의한다.
+
+
+- -U 옵션 : 외부에서 #undef ex_ -UDEBUG
+
+- -I 옵션 : 헤더파일이 위치한 디렉토리 지정
+
+  - % gcc -c -I../headers filter_driver.c
+
+- -l 옵션 : 라이브러리를 지정. 파일명과 함께 붙여 쓴다.
+
+  - % gcc -o plot main.o plot_line.o -lm
+
+  - -lm 옵션은 수학 라이브러리를 포함한다는 것을 지정
+
+- -L 옵션 : 라이브러리 폴더를 찾아서 지정
+
+  - % gcc -o plot -L/src/local/lib main.o plot_line.o -lm
+
+- -E 옵션 : `전처리` , 프로그램을 컴파일 하는 대신 전처리된 코드를 표준 출력으로 내보냄
+
+- -S 옵션 :  `컴파일` , 어셈블리 언어로 나온 결과를 저장 .c 대신 .s 가 붙는 파일을 만들어 낸다.
+
+- -c 옵션 : `어셈블` , .o 로 끝나는 오브젝트 파일 생성
+
+<br>
+
+> C 언어 옵션
+
+- -v 옵션 : (verbose) 컴파일러의 버전과 각 단계에서 실행하는 자세한 사항을 출력 (어떤 옵션으로 컴파일 하였는지)
+
+- -w 옵션 : 모든 경고 메시지가 나오지 않도록
+
+- -W 옵션 : 합법적이지만 다소 모호한 코딩에 대하여 부가적인 경고 메시지를 출력
+
+- -Wall 옵션 : 모호한 코딩에 대하여 훨씬 더 자세한 경고 메시지를 출력
+
+ <br>
+
+> 라이브러리 지정 옵션
+
+- -static 옵션 : 공유 라이브러리가 아닌 정적 라이브러리와 링크
+
+- -shared 옵션 : 가능한 한 공유 라이브러리와 링크하고 공유 라이브러리가 없는 경우에는 정적 라이브러리와 링크
+
+<br>
+
+> 디버깅, 프로파일링 옵션
+
+- -p 옵션 : 프로그램을 prof 로 프로파일링 할 수 있도록 링크. mon.out 파일 생성됨. 프로그램 실행 통계 수치를 담고 있다.
+
+<br>
+
+---
+
+
+## 참고
+
+https://bpsecblog.wordpress.com/2016/03/07/about_got_plt_1/
 
 https://goodgid.github.io/Static-VS-Dynamic-Libray/
 
 http://egloos.zum.com/jmbae940/v/4295316
+
+http://egloos.zum.com/program/v/1373351
