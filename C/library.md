@@ -58,7 +58,7 @@
   $ gcc -c filename.c      // 링킹을 해주지 않는다. -> 오브젝트 파일 (.o) 생성
     ```
 
-   - [※ gcc compile process](##-[1]-GCC-Compile-Process)
+   - ※ gcc compile process<sup id="a1">[1](#f1)</sup>
 
 <br>
 
@@ -106,7 +106,7 @@
 - 라이브러리가 변경되어도 다시 컴파일 할 필요가 없다.
 
 
--  [※ -fpic, -shared option](##-[2]--fpic,--shared-option)
+-  ※ -fpic, -shared option<sup id="a2">[2](#f2)</sup>
 
 ```
 $ gcc add.o -shared -fpic -o libadd.so
@@ -185,7 +185,8 @@ SYNOPSIS
 
 <br>
 
-## [1] GCC Compile Process
+## <b id="f1"><sup>1</sup></b> GCC Compile Process [↩](#a1)<br>
+
 
 <br>
 
@@ -248,7 +249,7 @@ COLLECT_GCC_OPTIONS='-v' '-mtune=generic' '-march=x86-64'
 
 <br>
 
-## [2] -fpic, -shared option
+## <b id="f2"><sup>2</sup></b> -fpic, -shared option [↩](#a2)<br>
 
 > `man gcc` 명령어를 통한 man-page에서 `-fpic` , `-shared` 항목 검색
 
@@ -256,7 +257,7 @@ COLLECT_GCC_OPTIONS='-v' '-mtune=generic' '-march=x86-64'
 
   즉, **다른 바이너리에서 이 라이브러리의 함수를 호출할 때 PLT와 GOT를 사용하도록 하는 옵션**이라 생각하면 된다.
 
-    - [PLT와 GOT의 개념](##-[3]-PLT와-GOT의-개념)
+    - PLT와 GOT의 개념<sup id="a3">[3](#f3)</sup>
 
   `library의 mapping 주소` + `offset` = `해당 symbol의 주소`
 
@@ -368,11 +369,11 @@ Options for Linking
 
 <br>
 
-- [gcc 옵션 요약](##-[4]-gcc-옵션-요약)
+- gcc 옵션 요약<sup id="a4">[4](#f4)</sup>
 
 <br>
 
-## [3] PLT와 GOT의 개념
+## <b id="f3"><sup>3</sup></b> PLT와 GOT의 개념 [↩](#a3)<br>
 
 - **PLT (Procedure Linkage Table)** : 외부 프로시저를 연결해주는 테이블. PLT를 통해 다른 라이브러리에 있는 프로시저를 호출해 사용할 수 있다.
 
@@ -408,7 +409,7 @@ Options for Linking
 
 <br>
 
-## [4] gcc 옵션 요약
+## <b id="f4"><sup>4</sup></b> gcc 옵션 요약 [↩](#a4)<br>
 
 - -o 옵션: gcc에서 만들 실행 파일명을 정하는 것. 안지정하면 a.out
 
