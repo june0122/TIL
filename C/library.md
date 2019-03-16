@@ -58,7 +58,7 @@
   $ gcc -c filename.c      // 링킹을 해주지 않는다. -> 오브젝트 파일 (.o) 생성
     ```
 
-   - ※ gcc compile process<sup id="a1">[1](#f1)</sup>
+   - ※ gcc compile process <sup id="a1">[1](#f1)</sup>
 
 <br>
 
@@ -106,7 +106,7 @@
 - 라이브러리가 변경되어도 다시 컴파일 할 필요가 없다.
 
 
--  ※ -fpic, -shared option<sup id="a2">[2](#f2)</sup>
+-  ※ -fpic, -shared option <sup id="a2">[2](#f2)</sup>
 
 ```
 $ gcc add.o -shared -fpic -o libadd.so
@@ -257,7 +257,7 @@ COLLECT_GCC_OPTIONS='-v' '-mtune=generic' '-march=x86-64'
 
   즉, **다른 바이너리에서 이 라이브러리의 함수를 호출할 때 PLT와 GOT를 사용하도록 하는 옵션**이라 생각하면 된다.
 
-    - PLT와 GOT의 개념<sup id="a3">[3](#f3)</sup>
+    - PLT와 GOT의 개념 <sup id="a3">[3](#f3)</sup>
 
   `library의 mapping 주소` + `offset` = `해당 symbol의 주소`
 
@@ -369,7 +369,7 @@ Options for Linking
 
 <br>
 
-- gcc 옵션 요약<sup id="a4">[4](#f4)</sup>
+- gcc 옵션 요약 <sup id="a4">[4](#f4)</sup>
 
 <br>
 
