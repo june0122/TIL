@@ -95,6 +95,10 @@
 
 ### 동적 라이브러리(Dynamic Library)
 
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/54492116-19ebe700-4907-11e9-8321-cc660f4c7c3d.png'>
+</p>
+
 - 실행 중에 필요한 라이브러리를 동적으로 메모리에 로드해서 사용한다.
  
   - 실행 파일 안에 함수의 구현이 존재하지 않음.
