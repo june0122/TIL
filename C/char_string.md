@@ -47,7 +47,7 @@ int fputc(int c, FILE * stream);
 
 <br>
 
-> 문자 입력 함수 : `getchar` , `fget`
+> 문자 입력 함수 : `getchar` , `fgetc`
 
 ```c
 #include <stdio.h>
