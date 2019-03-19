@@ -226,7 +226,7 @@ So Simple String
 char * gets(char * s);
 char * fgets(char * s, int n, FILE * stream);
 
-// 파일의 끝에 도달하거나 함수호출 실패 시 NULL 포인터 변환
+// 파일의 끝에 도달하거나 함수호출 실패 시 NULL 포인터 반환
 ```
 
 | `gets` 함수의 호출
