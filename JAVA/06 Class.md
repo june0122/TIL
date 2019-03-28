@@ -988,7 +988,7 @@ public class GasExample {
             myGas.run();
         }
 
-        if (myGas.isLeftGas()) {
+        if (myGas.isLeftGas()) {  // 조건을 'gasState'로 변경 가능
             System.out.println("gas를 주입할 필요가 없습니다.");
         } else {
             System.out.println("gas를 주입하세요.");
@@ -1014,3 +1014,1155 @@ gas를 주입하세요.
 
 ### 메소드 호출
 
+- `클래스의 내부`의 다른 메소드에서 호출할 경우에는 단순한 메소드 이름으로 호출하면 된다.
+
+- 하지만 `클래스 외부`에서 호출할 경우에는 우선 클래스로부터 객체를 생성한 뒤, 참조 변수를 이용해서 메소드를 호출해야 한다.
+
+<br>
+
+### 메소드 오버로딩
+
+- 클래스 내에 같은 이름의 메소드를 여러 개 선언하는 것을 **메소드 오버로딩** 이라고 한다.
+
+- **메소드 오버로딩의 조건** : 매개 변수의 `타입`, `개수`, `순서` 중 하나가 달라야 한다.
+
+- 메소드 오버로딩이 필요한 이유 : 매개값을 다양하게 받아 처리할 수 있도록 하기 위해서
+
+```
+class 클래스 {
+    리턴 타입  메소드이름  ( 타입 변수, ... ) { ... }
+        ↑         ↑            ↑
+
+       무관      동일      매개 변수의 타입, 개수, 순서가 달라야 함
+
+        ↓         ↓            ↓
+    리턴 타입  메소드이름  ( 타입 변수, ... ) { ... }
+}
+```
+
+<br>
+
+> 다음 코드들은 어떻게 될까? 컴파일 오류가 날까?
+
+```java
+// plus(int x, int y) 메소드
+// plus(double x, double y) 메소드 가 있을 때
+
+int x = 10;
+double y = 20.3;
+plus(x, y);
+```
+
+- 첫 번째 매개 변수가 int 타입이고, 두 번째 매개 변수가 double 타입인 plus() 메소드가 없기 때문에 컴파일 오류가 날 것 같지만, `plus(double x, double y) 메소드`가 실행된다.
+
+- 자바 가상 기계는 일차적으로 매개 변수 타입을 보지만, 매개 변수의 타입이 일치하지 않을 경우, **자동 타입 변환이 가능한지를 검사**한다.
+
+    - 첫 번째 매개 변수인 int 타입은 double 타입으로 변환이 가능하므로 plus(double x, double y) 메소드가 선택된다.
+
+<br>
+
+- **메소드 오버로딩할 때 주의할 점** : 매개 변수의 타입과 개수, 순서가 똑같을 경우 `매개 변수의 이름만 바꾸는 것` 은 메소드 오버로딩이라고 볼 수 없다. 또한 `리턴 타입만 다르고 매개 변수가 동일`하다면 이것은 **오버로딩이 아니다.**
+
+    - 리턴 타입은 JVM이 메소드를 선택할 때 아무런 도움을 주지 못하기 때문이다. 만약 아래와 같이 선언했다면 오버로딩이 아니기 때문에 컴파일 오류가 발생한다.
+
+```java
+int divide(int x, int y) { ... }
+double divide(int boonja, int boonmo) { ... }
+```
+
+<br>
+
+> 메소드 오버로딩의 대표적 예 : `System.out.println() 메소드`
+
+- println() 메소드는 호출할 때 주어진 매개값의 타입에 따라서 오버로딩된 println() 메소드를 호출한다.
+
+```java
+void println() { .. }
+void println(boolean x) { .. }
+void println(char x) { .. }
+void println(char[] x) { .. }
+void println(double x) { .. }
+void println(float x) { .. }
+void println(int x) { .. }
+void println(long x) { .. }
+void println(Object x) { .. }
+void println(String x) { .. }
+```
+
+<br>
+
+> Calculator 클래스에 areaRectangle() 메소드를 오버로딩해서 매개값이 한 개면 정사각형의 넓이를, 두 개이면 직사각형의 넓이를 계산하여 리턴
+
+```java
+public class RectCalc {
+    // 정사각형의 넓이
+    double areaRectangle(double width) {
+        return width * width;
+    }
+
+    // 직사각형의 넓이
+    double areaRectangle(double width, double height) {
+        return width * height;
+    }
+}
+```
+
+```java
+public class RectCalcExample {
+    public static void main(String[] args) {
+        RectCalc myRectCalc = new RectCalc();
+
+        // 정사각형 넓이 구하기
+        double result1 = myRectCalc.areaRectangle(10);
+
+        // 직사각형 넓이 구하기
+        double result2 = myRectCalc.areaRectangle(10, 20);
+
+        // 결과 출력
+        System.out.println("정사각형 넓이=" + result1);
+        System.out.println("직사각형 넓이=" + result2);
+    }
+}
+```
+
+<br>
+
+## 인스턴스 멤버와 this
+
+- `인스턴스 멤버` : 객체(인스턴스)를 생성한 후 사용할 수 있는 필드와 메소드
+
+    - 이들을 각각 `인스턴스 필드`, `인스턴스 메소드` 라고 부른다.
+
+- this는 주로 생성자와 메소드의 매개 변수 이름이 필드와 동일한 경우, **인스턴스 멤버인 필드임을 "명시"하고자 할 때 사용**된다.
+
+> InstanceCar.java
+
+```java
+public class InstanceCar {
+    // 필드
+    String model;
+    int speed;
+
+    // 생성자
+    InstanceCar(String model) {
+        this.model = model;
+    }
+
+    void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    void run() {
+        for (int i = 10; i <= 50; i += 10) {
+            this.setSpeed(i);  // this 를 붙이지 않아도 동작한다. (명시용)
+            System.out.println(this.model + "가 달립니다. (시속:" + this.speed + "km/h)");  // this 를 붙이지 않아도 동작한다. (명시용)
+        }
+    }
+}
+```
+
+> InstanceCarExample.java
+
+```java
+public class InstanceCarExample {
+    public static void main(String[] args) {
+        InstanceCar myCar = new InstanceCar("포르쉐");
+        InstanceCar yourCar = new InstanceCar("벤츠");
+
+        myCar.run();
+        yourCar.run();
+    }
+}
+```
+
+```
+포르쉐가 달립니다. (시속:10km/h)
+포르쉐가 달립니다. (시속:20km/h)
+포르쉐가 달립니다. (시속:30km/h)
+포르쉐가 달립니다. (시속:40km/h)
+포르쉐가 달립니다. (시속:50km/h)
+벤츠가 달립니다. (시속:10km/h)
+벤츠가 달립니다. (시속:20km/h)
+벤츠가 달립니다. (시속:30km/h)
+벤츠가 달립니다. (시속:40km/h)
+벤츠가 달립니다. (시속:50km/h)
+```
+
+<br>
+
+## 정적 멤버와 static
+
+- 정적(static)은 `고정된`이란 의미를 가지고 있다.
+
+- **정적 멤버**는 클래스에 고정된 멤버로서 객체를 생성하지 않고 사용할 수 있는 필드와 메소드를 말한다.
+
+    - 이들을 각각 `정적 필드` , `정적 메소드` 라고 한다.
+
+- 정적 멤버는 객체(인스턴스)에 소속된 멤버가 아니라 클래스에 소속된 멤버이기 때문에 `클래스 멤버` 라고도 한다.
+
+<br>
+
+### 정적 멤버 선언
+
+- 필드와 메소드 선언 시 `static` 키워드를 추가적으로 붙이면 된다.
+
+```java
+public class 클래스 {
+    // 정적 필드
+    static 타입 필드 [= 초기값];
+
+    // 정적 메소드
+    static 리턴 타입 메소드( 매개변수선언, ... ) { ... }
+}
+```
+
+- 정적 필드와 정적 메소드는 클래스에 고정된 멤버이므로 클래스 로더가 클래스(바이트 코드)를 로딩해서 메소드 메모리 영역에 적재할 때 클래스별로 관리된다.
+
+  - 따라서 클래스 로딩이 끝나면 바로 사용할 수 있다.
+
+#### 필드 선언 시 static, instance 판단 기준
+
+- **필드 선언 시** `인스턴스 필드`로 선언할 것인가, 아니면 `정적 필드`로 선언할 것인가의 **판단 기준**은 `객체마다 가지고 있어야 할 데이터`라면 `인스턴스 필드`로 선언하고, `객체마다 가지고 있을 필요성이 없는 공용적인 데이터`라면 `정적 필드`로 선언하는 것이 좋다.
+  
+  - 예로, Calculator 클래스에서 원의 넓이나 둘레를 구할 때 필요한 파이는 Calculator 객체마다 가지고 있을 필요가 없는 변하지 않는 공용적인 데이터이므로 정적 필드로 선언하는 것이 좋다.
+
+  - 그러나 객체별로 색깔이 다르다면 색깔은 인스턴스 필드로 선언해야 한다.
+
+```java
+public class Calculator {
+    String color;                   // 계산기별로 색이 다를 수 있다.
+    static double pi = 3.14159;     // 계산기에서 사용되는 파이 값은 동일하다.
+}
+```
+
+<br>
+
+#### 메소드 선언 시 static, instance 판단 기준
+
+- 인스턴스 필드를 이용해서 실행해야 한다면 인스턴스 메소드
+
+- 인스턴스 필드를 이용하지 않는다면 정적 메소드로 선언한다.
+
+    - 예를 들어 Calculator 클래스의 덧셈, 뺄셈 기능은 인스턴스 필드를 이용하기보다는 외부에서 주어진 매개값들을 가지고 수행하므로 정적 메소드로 선언하는 것이 좋다.
+
+    - 그러나 인스턴스 필드인 색깔을 변경하는 메소드는 인스턴스 메소드로 선언해야 한다.
+
+```java
+public Calculator {
+    String color;                                        // 인스턴스 필드
+    void setColor(String color) { this.color = color; }  // 인스턴스 메소드
+    static int plus(int x, int y) { return x + y; }      // 정적 메소드
+    static int minus(int x, int y) { return x - y; }     // 정적 메소드
+}
+```
+
+<br>
+
+### 정적 멤버 사용
+
+- 클래스가 메모리로 로딩되면 정적 멤버를 바로 사용할 수 있는데, 클래스 이름과 함께 도트 `.` 연산자로 접근한다.
+
+```java
+클래스.필드;
+클래스.메소드( 매개값, ... );
+```
+
+- 예로 Calculator 클래스가 다음과 같이 작성되었다면,
+
+```java
+public class Calculator {
+    static double pi = 3.14159;
+    static int plus(int x, int y) { ... }
+    static int minus(int x, int y) { ... }
+}
+```
+
+- 정적 필드 pi와 정적 메소드 plus(), minus() 는 다음과 같이 사용할 수 있다.
+
+```java
+double result1 = 10 * 10 * Calculator.pi;
+int result2 = Calculator.plus(10, 5);
+int result3 = Calculator.minus(10, 5);
+```
+
+- 정적 필드와 정적 메소드는 원칙적으로는 클래스 이름으로 접근해야 하지만 다음과 같이 객체 참조 변수로도 접근이 가능하다.
+
+```java
+Calculator myCalc = new Calculator();
+double result1 = 10 * 10 * myCalcu.pi;
+int result2 = myCalcu.plus(10, 5);
+int result2 = myCalcu.minus(10, 5);
+```
+
+- 하지만 정적 요소는 클래스 이름으로 접근하는 것이 좋다. 이클립스에서는 정적 멤버를 클래스 이름으로 접근하지 않고 객체 참조 변수로 접근했을 경우, 경고 표시( )가 나타난다.
+
+<br>
+
+> 정적 멤버 사용 예제
+
+```java
+public class StaticCalculator {
+    static double pi = 3.14159;
+
+    static int plus(int x, int y) {
+        return x + y;
+    }
+
+    static int minus(int x, int y) {
+        return x - y;
+    }
+}
+```
+
+```java
+// 객체가 생성되지 않는다.
+
+public class StaticCalculatorExample {
+    public static void main(String[] args) {
+        double result1 = 10 * 10 * StaticCalculator.pi;
+        int result2 = StaticCalculator.plus(10, 5);
+        int result3 = StaticCalculator.minus(10, 5);
+
+        System.out.println("result1 : " + result1);
+        System.out.println("result2 : " + result2);
+        System.out.println("result3 : " + result3);
+    }
+}
+```
+
+<br>
+
+### 정적 초기화 블록
+
+- 정적 필드는 다음과 같이 필드 선언과 동시에 초기값을 주는 것이 보통이다.
+
+```java
+static double pi = 3.14159;
+```
+
+- 그러나 계산이 필요한 초기화 작업이 있을 수 있다.
+
+- 인스턴스 필드는 생성자에서 초기화하지만, 정적 필드는 객체 생성 없이도 사용해야 하므로 생성자에게 초기화 작업을 할 수 없다.
+
+    - 생성자는 객체 생성 시에만 실행되기 때문이다.
+
+- 이런 정적 필드의 복잡한 초기화 작업을 위해 **정적 블록(static block)**을 제공한다.
+
+```java
+static {
+    ...
+}
+```
+
+- 정적 블록은 클래스가 메모리로 로딩될 때 자동 실행되며, 클래스 내부에 여러 개가 선언되어도 상관없다. 클래스가 메모리로 로딩될 때 선언된 순서대로 실행된다.
+
+```java
+public class Television {
+    static String company = "Samsung";
+    static String model = "LCD";
+    static String info;
+
+    static {
+        info = company + "-" + model;
+    }
+}
+```
+
+```java
+public class TelevisonExample {
+    public static void main(String[] args) {
+        System.out.println(Television.info);
+    }
+}
+```
+
+```
+Samsung-LCD
+```
+
+<br>
+
+### 정적 메소드와 블록 선언 시 주의할 점
+
+- 정적 메소드와 정적 블록을 선언할 때 주의할 점은 객체가 없어도 실행된다는 특징때문에, 이들 내부에 인스턴스 필드나 인스턴스 메소드를 사용할 수 없다.
+
+    - 또한 객체 자신의 참조인 this 키워드도 사용이 불가능하다.
+
+- main 메소드도 동일한 규칙이 적용된다.
+
+    - main() 메소드도 정적(static) 메소드이므로 객체 생성 없이 신스턴스 필드와 인스턴스 메소드를 main() 메소드에서 바로 사용할 수 없다.
+
+<br>
+
+### 싱글톤(Singleton)
+
+- 전체 프로그램에서 **단 하나의 객체만 만들도록 보장**해야 하는 경우가 있다. 단 하나만 생성된다고 해서 이 객체를 싱글톤(Singleton)이라 한다.
+
+- 싱글톤을 만들려면 **클래스 외부에서** new 연산자로 생성자를 호출할 수 없도록 막아야 한다. 생성자를 호출한만큼 객체가 생성되기 때문이다.
+
+- `생성자를 외부에서 호출할 수 없도록` 하려면 **생성자 앞에 private 접근 제한자를 붙여주면 된다.**
+
+- 참고로 클래스 내부에서는 new 연산자로 생성자 호출이 가능하다.
+
+- 정적 필드도 private 접근 제한자를 붙여 외부에서 필드값을 변경하지 못하도록 막는다.
+  
+  - 대신 외부에서 호출할 수 있는 정적 메소드인 getInstance()를 선언하고 정적 필드에서 참조하고 있는 자신의 객체를 리턴해준다.
+
+
+```java
+public class 클래스 {
+    // 정적 필드
+    private static 클래스 singleton = new 클래스();
+
+    // 생성자
+    private 클래스() {}
+
+    // 정적 메소드
+    static 클래스 getInstance() {
+        return singleton;
+    }
+}
+```
+
+- 외부에서 객체를 얻는 유일한 방법은 getInstance() 메소드를 호출하는 방법이다.
+  
+  - getInstance() 메소드는 단 하나의 객체만 리턴하기에 아래 코드에서 변수1과 변수2는 동일한 객체를 참조한다.
+
+
+```java
+클래스 변수1 = 클래스.getInstance();
+클래스 변수2 = 클래스.getInstance();
+```
+
+<br>
+
+> ### `EFFECTIVE JAVA, 아이템 3` : private 생성자나 열거 타입으로 '싱글턴'임을 보증하라
+
+
+ 
+
+
+
+---
+
+<br>
+
+> 싱글톤 패턴의 문제점
+
+- 싱글톤 인스턴스가 너무 많은 일을 하거나 많은 데이터를 공유시킬 경우, 다른 클래스의 인스턴스들 간에 결합도가 높아져 "개방-폐쇄 원칙(OCP)" 을 위배하게 된다. ( = 객체 지향 설계 원칙에 어긋난다.)
+
+- 멀티쓰레드 환경에서 동기화 처리를 안하면 두 개가 생성되는 경우가 발생할 수 있다.
+
+<br>
+
+> 싱글톤 예제
+
+```java
+public class Singleton {
+    private static Singleton singleton = new Singleton();
+
+    private Singleton() {}
+
+    static Singleton getInstance() {
+        return singleton;
+    }
+}
+```
+
+```java
+public class SingletonExample {
+    public static void main(String[] args) {
+        /*
+        Singleton obj1 = new Sigleton();  // 컴파일 에러
+        Singleton obj2 = new Sigleton();  // 컴파일 에러
+         */
+
+        Singleton obj1 = Singleton.getInstance();
+        Singleton obj2 = Singleton.getInstance();
+
+        if (obj1 == obj2) {
+            System.out.println("같은 Singleton 객체 입니다.");
+        } else {
+            System.out.println("다른 Singleton 객체 입니다.");
+        }
+    }
+}
+```
+
+```
+같은 Singleton 객체 입니다.
+```
+
+<br>
+
+## final 필드와 상수
+
+### final 필드
+
+- `final 필드`는 초기값이 저장되면 이것이 최종적인 값이 되어서 프로그램 실행 도중에 수정할 수 없다는 것이다.
+
+```java
+final 타입 필드 [= 초기값];
+```
+
+- **final 필드의 초기값을 줄 수 있는 방법**은 **딱 두 가지** 밖에 없다.
+
+    1. 필드 선언 시에 주는 방법
+    
+    2. 생성자에서 주는 방법
+
+        - 객체 생성 시에 외부 데이터로 초기화해야 한다면 생성자에서 초기값을 지정해야 한다.
+        
+        - 생성자는 final 필드의 최종 초기화를 마쳐야 하는데, 초기화하지 않은 채로 final 필드를 남겨두면 컴파일 에러가 난다.
+
+<br>
+
+```java
+public class Person {
+    final String nation = "Korea";
+    final String ssn;
+    String name;
+
+    public Person(String ssn, String name) {
+        this.ssn = ssn;
+        this.name = name;
+    }
+}
+```
+
+```java
+public class PersonExample {
+    public static void main(String[] args) {
+        Person p1 = new Person("900111-1111111", "계백");
+
+        System.out.println(p1.nation);
+        System.out.println(p1.ssn);
+        System.out.println(p1.name);
+
+        // p1.naton = "usa";  // final 필드는 값 수정 불가
+        // p1.ssn = "801211-1211111"; // final 필드는 값 수정 불가
+        p1.name = "을지문덕";
+        System.out.println(p1.name);
+    }
+}
+```
+
+```
+Korea
+900111-1111111
+계백
+을지문덕
+```
+
+<br>
+
+### 상수(static final)
+
+- 불변의 값을 저장하는 필드 : 상수(constant)
+
+- **final 필드도 한 번 초기화되면 수정할 수 없는 필드이지만, 상수라고 부르진 않는다!**
+
+    - 왜냐하면 **불변의 값**은 **객체마다 저장할 필요가 없는 공용성**을 띄고 있으며, 여러 가지 값으로 초기화될 수 없기 때문이다.
+
+    - final 필드는 객체마다 저장되고, 생성자의 매개값을 통해서 여러 가지 값을 가질 수 있기 때문에 상수가 될 수 없다.
+
+- static final 필드는 객체마다 저장되지 않고, 클래스에만 포함된다. 그리고 한 번 초기값이 저장되면 변경할 수 없다.
+
+```java
+static final 타입 상수 [= 초기값];
+```
+
+- 초기값이 단순 값이라면 선언 시에 주는 것이 일반적이지만, 복잡한 초기화일 경우 **정적 블록에서도 할 수 있다.**
+
+```java
+static final 타입 상수;
+static {
+    상수 = 초기값;
+}
+```
+
+- 상수 이름은 모두 대문자로 작성하는 것이 관례
+
+- 만약 서로 다른 단어가 혼합된 이름이라면 언더바 `_` 로 단어를 연결
+
+```java
+static final double PI - 3.14159;
+static final double EARTH_SURFACE_AREA;
+```
+
+<br>
+
+## 패키지
+
+- 패키지는 클래스를 유일하게 만들어주는 식별자 역할을 한다.
+
+- 클래스 이름이 동일하더라도 패키지가 다르면 다른 클래스로 인식한다.
+
+```java
+상위패키지.하위패키지.클래스
+```
+
+- `패키지가 중요한 이유`는 **클래스만 따로 복사해서 다른 곳으로 이동하면 클래스는 사용할 수 없기 때문**이다.
+
+### 패키지 선언
+
+- 패키지는 클래스를 컴파일하는 과정에서 자동적으로 생성되는 폴더이다.
+
+- 컴파일러는 클래스에 포함되어 있는 패키지 선언을 보고, 파일 시스템의 폴더도 자동 생성시킨다.
+
+> 패키지 선언 방법
+
+```java
+package 상위패키지.하위패키지;
+public class ClassName { ... }
+```
+
+- 패키지 이름은 개발자가 임의대로 지어주면 되지만, 여기에도 지켜야 할 몇 가지 규칙이 있다.
+
+    - 숫자로 시작해서는 안되고 `_` , `$` 를 제외한 특수 문자를 사용해서는 안된다.
+
+    - java로 시작하는 패키지는 자반 표준 API에서만 사용하므로 사용해서는 안 된다.
+
+    - **모두 소문자**로 작성하는 것이 관례이다.
+
+    - 여러 개발 회사가 함께 참여하는 대규모 프로젝트나, 다른 회사의 패키지를 이용해서 개발할 경우, 회사들 간에 패키지가 중복되지 않도록 흔히 회사의 도메인 이름을 역순으로 패키지 이름을 지어준다.
+
+      - 포괄적인 이름이 상위 패키지가 되도록 하기 위해서이다.
+
+```java
+com.samsung.projectname
+com.hyundai.projectname
+com.nexon.projectname
+org.apache.projectname
+```
+
+<br>
+
+### import문
+
+- 같은 패키지에 속하는 클래스들은 아무런 조건 없이 다른 클래스를 사용할 수 있지만, **다른 패키지에 속하는 클래스를 사용하려면 '두 가지 방법' 중 하나를 선택**해야 한다.
+
+> 패키지와 클래스 모두 기술
+
+```java
+package com.mycompany;
+
+public class Car {
+    com.hankook.Tire tire = new com.hankook.Tire();
+}
+```
+
+> import 문
+
+```java
+package com.mycompany;
+
+import com.hankook.Tire;
+// 또는 import.com.hankook.*;
+
+public class Car {
+    Tire tire = new Tire();
+}
+
+```
+
+<br>
+
+## 접근 제한자(Access Modifier)
+
+> `접근 허용도` : public > protected > default > private
+
+|지시자|클래스 내부|동일 패키지|상속받은 클래스|이외의 영역(남남)|
+|------|:------:|:------:|:------:|:------:|
+|private|●|×|×|×|
+|default|●|●|×|×|
+|protected|●|●|●|×|
+|public|●|●|●|●|
+
+<br>
+
+### 클래스의 접근 제한 : `public`, `default` 
+
+- 클래스를 선언할 때 고려해야 할 사항
+  
+  - 같은 패키지 내에서만 사용할 것인가.
+
+  - 다른 패키지에서도 사용할 수 있도록 할 것인가.
+
+- 클래스에 적용할 수 있는 접근 제한은 `public` 과 `defalut` 단 두 가지.
+
+```
+// default 접근 제한 : 다른 패키지 사용 불가
+class 클래스 { ... }
+
+// public 접근 제한 : 다른 패키지 사용 가능
+public 클래스 { ... }
+```
+
+#### public 접근 제한
+
+- 클래스를 다른 개발자가 사용할 수 있도록 라이브러리 클래스로 개발되어야 한다면, 반드시 public 접근 제한을 같도록 해야 한다.
+
+- 인터넷으로 배포되는 라이브러리 클래스들도 모두 public 접근 제한을 가지고 있다.
+
+
+<br>
+
+### 생성자의 접근 제한 : `public`, `protected`, `defalut`, `private`
+
+- 생성자를 어디에서나 호출할 수 있는 건 아니다.
+
+- 생성자가 어떤 접근 제한을 갖는냐에 따라 호출 가능 여부가 결정된다.
+
+```java
+public class ClassName {
+    public ClassName(...) { ... }
+
+    protected ClassName(...) { ... }
+
+    ClassName(...) { ... }  // 다른 패키지에서는 생성자 호출 불가
+
+    private ClassName(...) { ... }  // 오직 클래스 내부에서만 생성자 호출, 객체 생성
+}
+```
+
+- 클래스에 생성자를 선언하지 않으면 컴파일러에 의해 자동적으로 기본 생성자가 추가된다.
+
+    - 자동으로 생성되는 기본 생성자의 접근 제한은 클래스의 접근 제한과 동일하다.
+
+    - 클래스가 default 접근 제한을 가지면 생성자도 default, 클래스가 public 접근 제한을 가지면 기본 생성자도 public 접근 제한을 가진다.
+
+- **싱글톤 패턴** : 생성자를 `private` 접근 제한으로 선언하고, 자신의 유일한 객체를 리턴하는 `getInstance() 정적 메소드`를 선언한다.
+
+<br>
+
+### 필드와 메소드의 접근 제한 : `public`, `protected`, `defalut`, `private`
+
+- 필드와 메소드를 선언할 때 고려해야 할 사항
+
+    - 클래스 내부에서만 사용할 것인지.
+
+    - 패키지 내에서만 사용할 것인지.
+
+    - 다른 패키지에서도 사용할 수 있돌고 할 것인지.
+
+
+
+<br>
+
+## Getter와 Setter 메소드
+
+- 일반적으로 객체 지향 프로그래밍에서 객체의 데이터는 **객체 외부에서 직접적으로 접근하는 것을 막는다.**
+
+    - 객체의 데이터를 외부에서 마음대로 읽고 변경할 경우 **객체의 무결성(결점이 없는 성질)이 깨어질 수 있기 때문**이다.
+
+- 이러한 문제점을 해결하기 위해 객체 지향 프로그래밍에서는 메소드를 통해서 데이터를 변경하는 방법을 선호한다.
+
+    - **데이터는 외부에서 접근할 수 없도록 막고 메소드는 공개해서 외부에서 메소드를 통해 데이터에 접근하도록 유도**한다. 메소드는 매개값을 검증해서 유효한 값만 데이터로 저장할 수 있기 때문이다. 이러한 역할을 하는 메소드가 `Setter`이다.
+
+> Setter 메소드
+
+```java
+void setSpeed(double speed) {
+    if (speed < 0) {
+        this.speed = 0;
+        return;     // void 타입 메소드 return; 시, 프로그램 종료
+    } else {
+        this.speed = speed;
+    }
+}
+```
+
+- 외부에서 객체의 데이터를 읽을 때도 메소드를 사용하는 것이 좋다.
+
+- 객체 외부에서 개겣의 필드값을 사용하기에 부적절한 경우도 있다. 이런 경우에는 **메소드로 필드값을 가공한 후 외부로 전달**하면 된다. 이런 메소드가 바로 `Getter`이다.
+
+
+> Getter 메소드
+
+```java
+// 필드값인 마일을 km 단위로 환산 후 외부로 리턴
+double getSpeed() {
+    double km = speed * 1.6;
+    return km; 
+}
+```
+
+<br>
+
+- ***클래스를 선언할 때*** 가능하다면 `필드를 private로 선언`해서 **외부로부터 보호**하고, `필드에 대한 Setter와 Getter 메소드를 작성`해서 **필드값을 안전하게 변경/사용**하는 것이 좋다.
+
+> Setter와 Getter 메소드를 선언하는 방법
+
+```java
+private 타입 fieldName;  // 필드 접근 제한자 : private
+
+// Getter 값 얻어오기
+public 리턴 타입 getFieldName() {
+    return fieldName;
+}
+
+// Setter 값 설정하기
+public void setFieldName(타입 fieldName) {
+    this.fieldName = fieldName;
+}
+```
+
+- 필드 타입이 **boolean** 일 경우에는 Getter는 `get`으로 시작하지 않고 `is`로 시작하는 것이 관례이다.
+
+<br>
+
+> Getter, Setter 메소드 선언
+
+```java
+public class Car {
+    // 필드
+    private int speed;
+    private boolean stop;
+
+    // 생성자
+
+    // 메소드
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        if (speed < 0) {
+            this.speed = 0;
+            return;
+        } else {
+            this.speed = speed;
+        }
+    }
+
+
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
+        this.speed = 0;
+    }
+}
+```
+
+> Gette, Setter 메소드 사용
+
+```java
+public class CarExample {
+    public static void main(String[] args) {
+        Car myCar = new Car();
+
+        // 잘못된 속도 변경(비정상적인 속도값 변경) → Setter(setSpeed()) 에서 매개값 검사 후 0으로 변경
+        myCar.setSpeed(-50);
+
+        System.out.println("현재 속도: " + myCar.getSpeed());
+
+        // 올바른 속도 변경
+        myCar.setSpeed(60);
+
+        // 멈춤
+        if (!myCar.isStop()) {
+            myCar.setStop(true);
+        }
+
+        System.out.println("현재 속도: " + myCar.getSpeed());
+    }
+}
+```
+
+<br>
+
+## 어노테이션(Annotation)
+
+- 사전적 의미론 `주석`
+
+- 어노테이션(Annotation)은 메타데이터(metadata)라고 볼 수 있다.
+
+    - `메타데이터` : 애플리케이션이 처리해야 할 데이터가 아니라, 컴파일 과정과 실행 과정에서 코드를 어떻게 컴파일하고 처리할 것인지를 알려주는 정보
+
+```java
+@AnnotationName
+```
+
+- 어노테이션의 세 가지 사용 용도
+
+    1. 컴파일러에게 코드 문법 에러를 체크하도록 정보를 제공
+    
+    2. 소프트웨어 개발 툴이 빌드나 배치 시 코드를 자동으로 생성할 수 있도록 정보를 제공
+    
+    3. 실행 시 (런타임 시) 특정 기능을 실행하도록 정보를 제공
+
+<br>
+
+### 어노테이션 타입 정의와 적용
+
+> 어노테이션의 정의
+
+```java
+public @interface AnnotationName {
+}
+```
+
+> 어노테이션의 사용
+
+```java
+@AnnotationName
+```
+
+> 어노테이션의 엘리먼트(element) 멤버
+
+- 어노테이션은 엘리먼트를 멤버로 가질 수 있다.
+
+- 각 엘리먼트는 타입과 이름으로 구성되며, 디폴트 값을 가질 수 있다.
+
+```java
+public @interface AnnotationName {
+    타입 elementName() [default 값];  // 엘리먼트 선언
+    ...
+}
+```
+
+- 엘리먼트의 타입으로는 int나 double과 같은 기본 데이터 타입이나 String, 열거 타입, Class 타입, 그리고 이들의 배열 타입을 사용할 수 있다.
+
+- 엘리먼트의 이름 뒤에는 메소드를 작성하는 것처럼 `( )`를 붙여야 한다.
+
+<br>
+
+> String 타입의 엘리먼트와 int 타입의 엘리먼트 선언 예시
+
+```java
+public @interface AnnotationName {
+    String elementName1();
+    int elementName2() default 5;
+}
+```
+
+> 위에서 정의한 어노테이션을 코드에 적용할 때
+
+```java
+@AnnotationName(elementName1 = "값", elementName2 = 3);
+
+또는
+
+@AnnotationName(elementName1 = "값");
+```
+
+- elementName1은 디폴트 값이 없기 때문에 반드시 값을 기술해야 하고, elementName2는 **디폴트 값이 있기 때문에 생략이 가능**하다.
+
+> 어노테이션은 기본 엘리먼트인 value를 가질 수 있다.
+
+```java
+public @interface AnnotationName {
+    String value();  // 기본 엘리먼트 선언
+    int elementName() default 5;
+}
+```
+
+- value 엘리먼트를 가진 어노테이션을 코드에서 적용할 때에는 다음과 같이 값만 기술할 수 있다.
+
+```java
+@AnnotationName("값"):
+```
+
+- 만약 value 엘리먼트와 다른 엘리먼트의 값을 동시에 주고 싶다면 다음과 같이 정상적인 방법으로 지정하면 된다.
+
+```java
+@AnnotationName(value = "값", elementName = 3);
+```
+
+<br>
+
+### 어노테이션 적용 대상
+
+- 어노테이션을 적용할 수 있는 대상은 `java.lang.annotation.ElementType 열거 상수`로 다음과 같이 정의되어 있다.
+
+<br>
+
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/55142141-43b2d280-517f-11e9-91f7-2b13090e2942.png'>
+</p>
+
+<br>
+
+- 어노테이션이 적용될 대상을 지정할 때에는 **@Target 어노테이션**을 사용한다.
+  
+- @Target의 기본 엘리먼트인 value는 ElementType 배열을 값으로 가진다.
+
+    - 이것은 어노테이션이 적용될 대상을 여러 개로 지정하기 위해서이다.
+
+> 다음과 같이 어노테이션을 정의할 경우
+
+```java
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
+public @interface AnnotationName {
+}
+```
+
+> 다음과 같이 클래스, 필드, 메소드만 어노테이션을 적용할 수 있고 생성자는 적용할 수 없다.
+
+```java
+@AnnotationName
+public class ClassName {
+    @AnnotationName
+    private String fieldName;
+
+    // @AnnotationName  (x) → @Target에 CONSTRUCT가 없어 생성자는 적용 못함
+    public ClassName() {}
+
+    @AnnotationName
+    public void methodName() {}
+}
+```
+
+<br>
+
+### 어노테이션 유지 정책
+
+- 어노테이션 정의 시 한 가지 더 추가해야 할 내용은 사용 용도에 따라 @AnnotationName을 **어느 범위까지 유지할 것인지 지정**해야 한다.
+
+    - 쉽게 말해, 소스상에서만 유지할 것인지, 컴파일된 클래스까지 유지할 건지, 런타임 시에도 유지할 건지를 지정해야 한다.
+
+- 어노테이션 유지 정책은 `java.lang.annotation.RetentionPolicy 열거 상수`로 다음과 같이 정의되어 있다.  (`Retention : 보유`)
+
+<br>
+
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/55142139-43b2d280-517f-11e9-94c9-4f7ba769d418.png'>
+</p>
+
+<br>
+
+- **리플렉션(Reflection)** : 런타임 시에 클래스의 메타 정보를 얻는 기능
+
+    - 예를 들어 클래스가 어떤 필드, 생성자, 메소드, 어노테이션을 가지고 있거나 적용이 되었는지 알아내는 것이 리플렉션이다.
+
+    - 리플렉션을 이용해서 런타임 시에 어노테이션 정보를 얻으려면 어노테이션 유지 정책을 `RUNTIME`으로 설정해야 한다.
+
+- 어노테이션 유지 정책을 지정할 때는 **@Retention** 어노테이션을 사용한다.
+
+- @Retention의 기본 엘리먼트인 value는 RetentionPolicy 타입이므로 위 세 가지 상수 중 하나를 지정하면 된다.
+
+```java
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AnnotationName {
+}
+```
+
+<br>
+
+### 런타임 시 어노테이션 정보 사용하기
+
+- 런타임 시에 어노테이션이 적용되었는지 확인하고 엘리먼트 값을 이용해서 특정 작업을 수행하는 방법에 대해 알아보자.
+
+- **어노테이션 자체는 아무런 동작을 가지지 않는 단지 표식일 뿐**이지만, **리플렉션을 이용**해서 어노테이션의 적용 여부와 엘리먼트 값을 읽고 적절히 처리할 수 있다.
+
+    - 클래스에 적용된 어노테이션 정보를 얻으려면 java.lang.Class를 이용하면 되지만 `필드, 생성자, 메소드` 에 적용된 어노테이션 정보를 얻으려면 Class의 다음 메소드를 통해서 java.lang.reflect 패키지의 **Field, Constructor, Method 타입의 배열**을 얻어야 한다.
+
+<br>
+
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/55142137-431a3c00-517f-11e9-8f19-40a92c9c1468.png'>
+</p>
+
+<br>
+
+- 그런 다음 Class, Field, Constructor, Method가 가지고 있는 다음 메소드를 호출해서 적용된 어노테이션 정보를 얻을 수 있다.
+
+
+<br>
+
+#### 어노테이션과 리플렉션을 이용한 예제
+
+> 각 메소드의 실행 내용을 구분선으로 분리하여 콘솔에 출력하는 PrintAnnotation
+
+```java
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PrintAnnotation {
+    String value() default "-";
+
+    int number() default 15;
+}
+```
+
+> printAnnotation을 적용한 Service 클래스
+
+```java
+public class Service {
+    @PrintAnnotation
+    public void method1() {
+        System.out.println("실행 내용1");
+    }
+
+    @PrintAnnotation("*")
+    public void method2() {
+        System.out.println("실행 내용2");
+    }
+
+    @PrintAnnotation(value = "#", number = 20)
+    public void method3() {
+        System.out.println("실행 내용3");
+    }
+}
+```
+
+> 리플렉션을 이용해서 Service 클래스에 적용된 어노테이션 정보를 읽고 엘리먼트 값에 따라 출력할 문자와 출력 횟수를 콘솔에 출력한 후, 해당 메소드를 호출
+
+- method.invoke(new Service()) 는 Service 객체를 생성하고 생성된 Service 객체의 메소드를 호출하는 코드이다.
+
+```java
+import java.lang.reflect.Method;
+
+public class PrintAnnotationExample {
+    public static void main(String[] args) {
+        // Service 클래스로부터 메소드 정보를 얻음
+        Method[] declaredMethods = Service.class.getDeclaredMethods();  // Service 클래스에 선언된 메소드 얻기(리플렉션)
+
+        // Method 객체를 하나씩 처리
+        for (Method method : declaredMethods) {
+            // PrintAnnotation이 적용되었는지 확인
+            if (method.isAnnotationPresent(PrintAnnotation.class)) {
+                //printAnnotation 객체 얻기
+                PrintAnnotation printAnnotation = method.getAnnotation(PrintAnnotation.class);
+
+                // 메소드 이름 출력
+                System.out.println("[" + method.getName() + "] ");
+                // 구분선 출력
+                for (int i = 0; i < printAnnotation.number(); i++) {
+                    System.out.print(printAnnotation.value());
+                }
+                System.out.println();
+
+                try {
+                    // 메소드 호출
+                    method.invoke(new Service());
+                } catch (Exception e) { }
+                System.out.println();
+            }
+        }
+    }
+}
+```
+
+```
+[method2] 
+***************
+실행 내용2
+
+[method1] 
+---------------
+실행 내용1
+
+[method3] 
+####################
+실행 내용3
+```
