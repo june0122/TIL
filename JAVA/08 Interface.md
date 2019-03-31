@@ -797,7 +797,148 @@ public class CarExample {
 
 ### 매개 변수의 다형성
 
+- 자동 타입 변환은 필드의 값을 대입할 때에도 발생하지만, 주로 메소드를 호출할 때 많이 발생한다.
 
+- 매개변수를 인터페이스 타입으로 선언하고 호출할 때에는 구현 객체를 대입한다.
+
+> 인터페이스 타입 Vehicle
+
+```java
+public interface Vehicle {
+    public void run();
+}
+```
+
+> drive() 메소드가 정의된 Driver 클래스
+
+```java
+public class Driver {
+    public void drive(Vehicle vehicle) {
+        vehicle.run();
+    }
+}
+
+- 만약 Bus가 구현 클래스라면 다음과 같이 Driver의 drive() 메소드를 호출할 때 Bus 객체를 생성해서 매개값으로 줄 수 있다.
+
+```java
+Driver driver = new Driver();
+
+Bus bus = new Bus();
+
+driver.drive( bus );  // 자동 타입 변환 발생 : Vehicle vehicle = bus;
+```
+
+- drive() 메소드는 Vehicle 타입을 매개 변수로 선언했지만, Vehicle을 구현한 Bus 객체가 매개값으로 사용되면 자동 타입 변환이 발생한다.
+
+- `매개 변수의 다형성` : 매개 변수의 타입이 인터페이스일 경우, 어떠한 구현 객체도 매개값으로 사용할 수 있고, 어떤 구현 객체가 제공되는냐에 따라 메소드의 실행 결과는 다양해질 수 있다.
 
 <br>
+
+### 강제 타입 변환(Casting)
+
+``` 
+                        강제 타입 변환
+                   ┌──────────────────────┐ 
+                   ↓                      │ 
+        구현클래스 변수 = (구현클래스) 인터페이스변수;
+
+```
+
+> Vehicle, 인터페이스
+
+```java
+public interface Vehicle {
+    public void run();
+}
+```
+
+> Bus, 구현 클래스
+
+```java
+public class Bus implements Vehicle {
+    @Override
+    public void run() {
+        System.out.println("버스가 달립니다.");
+    }
+
+    public void checkFare() {
+        System.out.println("승차요금을 체크합니다.");
+    }
+}
+```
+
+> VehicleExample, 강제 타입 변환
+
+```java
+public class VehicleExample {
+    public static void main(String[] args) {
+        Vehicle vehicle = new Bus();
+
+        vehicle.run();
+        // vehicle.checkFare();  // Vehicle 인터페이스에는 chekFare()가 없음
+
+
+        Bus bus = (Bus) vehicle;  // 강제 타입 변환
+
+        bus.run();
+        bus.checkFare();  // Bus 클래스에는 checkFare() 존재
+    }
+}
+```
+
+<br>
+
+### 객체 타입 확인(instanceof)
+
+```java
+public class Driver {
+    public void drive(Vehicle vehicle]) {
+        if (vehicle instanceof Bus) {  // Vehicle 매개 변수가 참조하는 객체가 Bus인지 조사
+            Bus bus = (Bus) vehicle;
+            bus.checkFare();  // 버스 타입으로 강제 타입 변환을 하는 이유
+        }
+        vehicle.run();
+    }
+}
+```
+
+<br>
+
+### 인터페이스 상속
+
+- 인터페이스도 다른 인터페이스를 상속할 수 있으며, 클래스와 달리 다중 상속을 허용한다.
+
+```java
+pulblic interface 하위인터페이스 extends 상위인터페이스1, 상위인터페이스2
+```
+
+- **하위 인터페이스를 구현하는 클래스**는 하위 인터페이스의 메소드뿐만 아니라 상위 인터페이스의 **모든 "추상 메소드"에 대한 실체 메소드를 가지고 있어야 한다.**
+
+```
+하위인터페이스 변수 = new 구현클래스();
+상위인터페이스1 변수 = new 구현클래스();
+상위인터페이스2 변수 = new 구현클래스();
+```
+
+<br>
+
+## 디폴트 메소드와 인터페이스 확장
+
+### 디폴트 메소드의 필요성
+
+- 기존 인터페이스를 확장해서 새로운 기능을 추가하기 위해서이다.
+
+- 기존 인터페이스의 이름과 추상 메소드의 변경 없이 디폴트 메소드만 추가할  수 있기 때문에 이전에 개발한 구현 클래스를 그대로 사용할 수 있으면서 새롭게 개발하는 클래스는 디폴트 메소드를 활용할 수 있다.
+
+<br>
+
+### 디폴트 메소드가 있는 인터페이스 상속
+
+- 부모 인터페이스에 디폴트 메소드가 정의되어 있을 경우, 자식 인터페이스에서 디폴트 메소드를 활용하는 방법은 다음 세 가지가 있다.
+
+    1. 디폴트 메소드를 `단순히 상속`만 받는다.
+
+    2. 디폴트 메소드를 `재정의(Override)`해서 실행 내용을 변경한다.
+
+    3. 디폴트 메소드를 `추상 메소드로 재선언`한다.
 
