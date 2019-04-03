@@ -1,741 +1,804 @@
-# Chapter 23. 쓰레드(Thread)와 동기화
+# 챕터 12. 멀티 스레드 (Multi Tread)
 
-### *23-1. 쓰레드의 이해와 생성*
+## 멀티 스레드 개념
 
-프로세스(Process) : 현재 **실행 중**에 있는 모든 프로그램. 컴퓨터에서 연속적으로 실행되고 있는 컴퓨터 프로그램
+### 프로세스와 스레드
 
-쓰레드(Thread) : 어떠한 프로그램 내에서, 특히 프로세스 내에서 실행되는 흐름의 단위
-
-'프로세스는 쓰레드를 담는 그릇이다.'
-
-> 프로세스의 메모리 공간, 프로세스를 구성하는 메모리 공간의 모습
-
-![Structure of Process](https://t1.daumcdn.net/cfile/tistory/2453685056EEACBE22)
-
-[프로세스의 개념](http://bowbowbow.tistory.com/16) 
-
-<br><br>
-![Structure of Thread](https://2.bp.blogspot.com/-3AB4sE53Dfw/VMVNdWa_V0I/AAAAAAAAACo/UAGFO7f6_UA/s1600/euva3a00.p54z.gif)
-
-> 위 그림은 프로세스와 쓰레드의 메모리 구조의 차이점을 보여준다. 왼쪽의 프로세스는 이미 봤기 때문에 설명하지 않고, 오른쪽의 thread에 주목하자. 앞서 말한 것처럼 쓰레드는 프로세스 안에 존재하는 실행흐름이다. 메모리 구조 역시 그러하다. 하지만 특이한 점은 쓰레드는 프로세스의 heap, static, code 영역 등을 공유한다는 사실이다. 각각의 프로세스가 독립적인 stack, heap, code, data 영역을 가진 반면에, 한 프로세스에 속한 쓰레드는 stack 영역을 제외한 메모리 영역은 공유한다. 
-
-쓰레드가 별도의 실행 흐름을 갖기 때문에 스택(stack)을 별도로 관리할 수 밖에 없다. (쓰레드가 생성이 되면 스택이 별도로 생성된다.)
-
-메소드(data) 영역과 힙(heap)은 모든 쓰레드가 접근·활용·공유가 가능하다. 
-
-<br><br>
-***■ 쓰레드의 생성***
-
-> Thread 클래스를 상속 → Thread용 클래스를 디자인한다 → 쓰레드의 main 메소드가 되는 run 메소드를 정의한다.
-
-Thread 클래스 : 쓰레드를 생성하기 위해서 쓰레드가 할 일을 정의해놓은 클래스
-
-
-
-
-```java
-class ShowTread extends Thread
-{
-    String threadName;
-    public ShowThread(String name)
-    {
-        threadName=name;
-    }
+- 프로세스(process) : 실행 중인 하나의 애플리케이션
     
-    // 쓰레드의 main 메소드가 run 이다.
-    public void run()
-    {
-       for(int i=0; i<100; i++)
-       {
-           System.out.println("안녕하세요. "+threadName+"입니다.");
-           try
-           {
-              sleep(100);
-           }
-           catch(InterruptedException e)
-           {
-              e.printStackTrace();
-           }
-       }
+    - 하나의 애플리케이션은 다중 프로세스를 만들기도 한다. `크롬 브라우저를 두 개 실행하면 두 개의 크롬 프로세스가 생성`
+
+- 멀티 태스킹(multi tasking) : 두 가지 이상의 작업을 동시에 처리하는 것, 운영체제는 멀티 태스킹을 할 수 있도록 CPU 및 메모리 자원을 프로세스마다 적절히 할당해주고, 병렬로 실행시킨다. 
+
+   - 멀티 프로세스 : 애플리케이션 단위의 멀티 태스킹
+     
+     - 운영체제에서 할당받은 자신의 메모리를 가지고 실행하기 때문에 서로 독립적. 따라서 하나의 프로세스에서 오류가 발생해도 다른 프로세스에게 영향을 미치지 않음. 
+   
+   - 멀티 스레드 : 애플리케이션 내부에서의 멀티 태스킹
+
+     - 하나의 프로세스 내부에서 생성되기 때문에 하나의 스레드가 예외를 발생시키면 프로세스 자체가 종료될 수 있어 다른 스레드에게 영향을 미친다. → 그렇기 때문에 멀티 스레드에서는 **예외 처리에 만전**을 기해야 한다.
+
+<br>
+
+### 메인 스레드
+
+- 모든 자바 애플리케이션은 메인 스레드가 main() 메소드를 실행하면서 시작되고, main() 메소드의 마지막 코드를 실행하거나 return문을 만나면 실행이 종료된다.
+
+- 메인 스레드는 필요에 따라 작업 스레드들을 만들어서 병렬로 코드를 실행할 수 있다. 즉 메인스레드는 멀티 스레드를 생성해서 멀티 태스킹을 수행한다.
+
+    - 싱글 스레드 애플리케이션에서는 메인 스레드가 종료하면 프로세스도 종료된다.
+
+    - 하지만 멀티 스레드 애플리케이션에서는 실행 중인 스레드가 하나라도 있디먄, 프로세스는 종료되지 않는다.
+
+<br>
+
+## 작업 스레드 생성과 실행
+
+- `애플리케이션의 구조를 생각하자!` : 멀티 스레드로 실행하는 애플리케이션을 개발하려면 먼저 몇 개의 작업을 병렬로 실행할지 결정하고, 각 작업별로 스레드를 생성해야 한다.
+
+- 어떤 자바 애플리케이션이건 메인 스레드는 반드시 존재하므로 메인 작업 이외에 추가적인 병렬 작업의 수만큼 스레드를 생성하면 된다.
+
+    - 자바에서는 작업 스레드도 객체로 생성되기 때문에 클래스가 필요
+
+    - `java.lang.Tread` 클래스를 **직접 객체화**해서 생성해도 되지만, **Thread를 상속**해서 하위 클래스를 만들어 생성할 수도 있다.
+
+<br>
+
+### Thread 클래스로부터 "직접" 생성
+
+- `java.lang.Tread` 클래스로부터 작업 스레드 객체를 직접 생성하려면 다음과 같이 **`Runnable`을 매개값으로 갖는 생성자를 호출**해야 한다.
+
+```java
+Thread thread = new Thread(Runnable target);
+```
+
+- `Runnable`은 작업 스레드가 실행할 수 있는 코드를 가지고 있는 객체라고 해서 붙여진 이름이다. Runnable은 인터페이스 타입이기 때문에 구현 객체를 만들어 대입해야 한다.
+
+- **Runnable에는 run() 메소드 하나가 정의되어 있는데, 구현 클래스는 run()을 재정의해서 작업 스레드가 실행할 코드를 작성해야 한다.**
+
+> Runnable 구현 클래스
+
+```java
+class task implements Runnable {
+    public void run() {
+        스레드가 실행할 코드;
     }
 }
 ```
 
-```java
-public static void main(String[] args)
-{
-    ShowThread st1=new ShowThread("멋진 쓰레드");
-    ShowThread st2=new ShowThread("예쁜 쓰레드");
-    st1.start();
-    st2.start();
-}
+- Runnable은 작업 내용을 가지고 있는 객체일 뿐, 실제 스레드는 아니다.
 
-// start 메소드가 호출되면 쓰레드가 생성되고, 생성된 쓰레드는 run 메소드를 호출한다.
+- Runnable 구현 객체를 생성한 후, 이것을 매개값으로 해서 Thread 생성자를 호출하면 비로소 작업 스레드가 생성된다. 
+
+```java
+Runnable task = new Task();
+           │
+           └────────────────┐
+                            ↓
+Thread thread = new Thread(task);
 ```
 
-<br><br>
-***■ 쓰레드를 생성하는 두 번째 방법***
+- 코드를 좀 더 절약하기 위해 Thread 생성자를 호출할 때 Runnable 익명 객체를 매개값으로 사용할 수 있다. (이 방법이 더 많이 사용된다.)
 
-Runnable 인터페이스를 구현하는 클래스의 인스턴스를 대상으로 Thread 클래스의 객체를 생성한다. 이 방법은 상속할 클래스가 존재할 때 유용하게 사용된다.
+- ***익명 객체*** 는 단독으로 생성이 불가능하고, 클래스를 상속하거나 인터페이스를 구현해야만 생성이 가능하다.
 
-`쓰레드 인스턴스의 생성, run 메소드의 정의` : 쓰레드를 생성하는 두 가지 방법 모두 위의 조건을 만족하므로 사실상 동일한 방법임을 알 수 있다.
+    - ① `필드의 초기값`, ② `로컬 변수의 초기값`, ③ `매개 변수의 매개값`으로 주로 대입한다.
+
+    - UI 이벤트 처리, 스레드 객체를 간편하게 생성할 목적으로 사용
 
 ```java
-class Sum
-{
-    int num;
-    public Sum() { num=0; }
-    public void addNum(int n) { num+=n; }
-    public int getNum() { return num; }
-}
+Thread thread = new Thread(new Runnable() {
+    public void run() {
+        스레드가 실행할 코드;
+    }
+});
+```
+ 
+- Runnable 인터페이스는 run() 메소드 하나만 정의되어 있기 때문에 함수적 인터페이스이다.
 
-class AdderThread extends Sum implements Runnable
-{
-    int start, end;
-    public AdderThread(int s, int e)
-    {
-        start=s;
-        end=e;
-    }
-    public void run()
-    {
-        for(int i=start; i<=end; i++)
-            addNum(i);
-    }
-}
+- 따라서 다음과 같이 람다식을 매개값으로 사용할 수도 있다. (자바 8부터 지원)
+
+```java
+Thread thread = new Thread(() -> {
+    스레드가 실행할 코드;
+});
 ```
 
+- 작업 스레드는 생성되는 즉시 실행되지 않고, `start()` 메소드를 다음과 같이 호출해야만 비로소 실행된다.
+
 ```java
-public static void main(String[] args)
-{
-    AdderThread at1=new AdderThread(1, 50);
-    AdderThread at2=new AdderThread(51, 100);
-    Thread tr1=new Thread(at1);
-    Thread tr2=new Thread(at2);
-    tr1.start();
-    tr2.start();
-    
-    // join 메소드가 호출되면, 해당 쓰레드의 종료를 기다리게 된다.
-    
-    try
-    {
-        tr1.join();
-        tr2.join();
-    }
-    catch(InterruptedException e)
-    {
-        e.printStackTrace();
-    }
-    System.out.println("1~100부터 까지의 합 : "+(at1.getNum()+at2.getNum()));   
-}
+thread.start();
 ```
 
-<br><br>
-### *23-2. 쓰레드의 특성*
+- start() 메소드가 호출되면, 작업 스레드는 매개값으로 받은 Runnable의 run() 메소드를 실행하면서 자신의 작업을 처리한다.
 
-***■ 쓰레드의 스케줄링과 우선순위 컨트롤***
+<br>
 
-> 쓰레드 스케줄링의 두 가지 기준
+> 메인 스레드만 이용한 경우
 
-- 우선순위가 높은 쓰레드의 실행을 우선시한다.
+- 비프음이 5번 발생 뒤, 프린팅이 5회 발생한다.
 
-- 우선순위가 동일할 때는 CPU의 할당시간을 나눈다.
+- 비프음 발생과 프린팅은 서로 다른 작업이므로 메인 스레드가 동시에 두 가지 작업을 처리할 수 없다. 
 
 ```java
-class MessageSendingThread extends Thread
-{
-    String message;
-    
-    public MessageSendingThread(String str)
-    {
-        message=str;
-    }
-    public void run()
-    {
-        for(int i=0; i<1000000; i++)
-            System.out.println(message+"("+getPriority()+")");
+import java.awt.*;
+
+public class BeepPrintExample {
+    public static void main(String[] args) {
+        Toolkit toolkit = Toolkit.getDefaultToolkit();  // Toolkit 객체 얻기
+        for (int i = 0; i < 5; i++) {
+            toolkit.beep();  // 비프음 발생
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {}
+        }
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("띵");
+            try {Thread.sleep(500);} catch (Exception e) {}
+        }
     }
 }
 ```
 
+- 비프음을 발생시키면서 동시에 프린팅을 하려면 두 작업 중 하나를 메인 스레드가 아닌 다른 스레드에서 실행시켜야 한다.
+
+- 프린팅은 메인 스레드가 담당하고 비프음은 작업 스레드가 담당하도록 수정한다.
+
+- 작업을 정의하는 Runnable 구현 클래스를 다음과 같이 작성한다.
+
+> 비프음을 들려주는 작업 정의
+
 ```java
-public static void main(String[] args)
-{
-    MessageSendingThread tr1= new MessageSendingThread("First");
-    MessageSendingThread tr2= new MessageSendingThread("Second");
-    MessageSendingThread tr3= new MessageSendingThread("Third");
-    tr1.start();
-    tr2.start();
-    tr3.start();
+import java.awt.*;
+
+public class BeepTask implements Runnable {
+    public void run() {
+        // 스레드 실행 내용
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        for (int i = 0; i < 5; i++) {
+            toolkit.beep();  // 비프음 발생
+            try { Thread.sleep(500); } catch (Exception e) {}
+        }
+    }
 }
 ```
 
-```java
-// 실행결과
+> 메인 스레드와 작업 스레드가 동시에 실행
 
-First(5)
-First(5)
-Second(5)
-......
-Third(5)
-First(5)
-......
-Third(5)
+```java
+import java.awt.*;
+
+public class BeepPrintExample2 {
+    public static void main(String[] args) {  //  main 스레드
+        // 방법 ① : BeepTask 객체 생성 후, 이것을 매개값으로 작업 스레드를 생성
+        Runnable beepTask = new BeepTask();
+        Thread thread = new Thread(beepTask);
+        thread.start();  // 작업 스레드의 start
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("띵");
+            try {Thread.sleep(500);} catch (Exception e) {}
+        }
+    }
+}
 ```
 
-메소드 getPriority의 반환값을 통해서 쓰레드의 우선순위를 확인할 수 있다.
+- BeepTask 객체 생성 후, 이것을 매개값으로 작업 스레드를 생성하는 2라인을 대체하여 작업 스레드를 만들 수 있는 `또다른 두 가지 방법`을 살펴보자.
 
-위의 실행결과에서 보이듯이, 우선순위와 관련해서 별도의 지시를 하지 않으면, 동일한 우선순위의 쓰레드들이 생성된다.
-
-<br><br>
-***■ 우선순위가 다른 쓰레드들의 실행***
+> Runnable 익명 객체 이용
 
 ```java
-class MessageSendingThread extends Thread
-{
-    String message;
-    public MessageSendingThread(String str)
-    {
-        message=str;
+import java.awt.*;
+
+public class BeepPrintExample2 {
+    public static void main(String[] args) {  //  main 스레드
+
+        // 방법 ② : Runnable 익명 객체 이용
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                for (int i = 0; i < 5; i++) {
+                    toolkit.beep();
+                    try { Thread.sleep(500); } catch (Exception e) {}  // .sleep() 의 InterruptedException 예외 처리
+                }
+            }
+        });
+
+        thread.start();
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("띵");
+            try {Thread.sleep(500);} catch (Exception e) {}
+        }
+    }
+}
+```
+
+> 람다식 이용
+
+```java
+import java.awt.*;
+
+public class BeepPrintExample2 {
+    public static void main(String[] args) {  //  main 스레드
+        // 방법 ③ : 람다식(Lambda) 이용
+        Thread thread = new Thread(() -> {
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            for (int i = 0; i < 5; i++) {
+                toolkit.beep();
+                try { Thread.sleep(500); } catch (Exception e) { }
+            }
+        });
+
+        thread.start();
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("띵");
+            try {Thread.sleep(500);} catch (Exception e) {}
+        }
+    }
+}
+```
+
+<br>
+
+### Thread "하위 클래스로부터" 생성
+
+- 작업 스레드가 실행할 작업을 Runnable로 만들지 않고, Thread의 하위 클래스로 작업 스레드를 정의하면서 작업 내용을 포함시킬 수도 있다.
+
+> 비프음을 들려주는 스레드
+
+```java
+import java.awt.*;
+
+public class BeepThread extends Thread {
+    @Override
+    public void run() {
+        // 스레드 실행 내용
+        // super.run();
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        for (int i = 0; i < 5; i++) {
+            toolkit.beep();
+            try { Thread.sleep(500); } catch (Exception e) {}
+        }
+    }
+}
+```
+
+> 메인 스레드와 작업 스레드가 동시에 실행
+
+```java
+public class BeepPrintExample3 {
+    public static void main(String[] args) {
+        Thread thread = new BeepThread();
+        thread.start();  // BeepTread의 run() 메소드 호출
         
-        // 우선순위 설정
-        setPriority(prio);
-    }
-    public void run()
-    {
-        for(int i=0; i<1000000; i++)
-            System.out.println(message+"("+getPriority()+")");
+        for (int i = 0; i < 5; i++) {
+            System.out.println("띵");
+            try { Thread.sleep(500); } catch (Exception e) {}
+        }
     }
 }
 ```
 
+> 'BeepThread 객체 생성'을 대체하여 작업 스레드를 만드는 또 다른 방법
+
 ```java
-public static void main(String[] args)
-{
-    MessageSendingThread tr1= new MessageSendingThread("First", Thread.MAX_PRIORITY);
-    MessageSendingThread tr2= new MessageSendingThread("Second", Thread.NORM_PRIORITY);
-    MessageSendingThread tr3= new MessageSendingThread("Third", Thread.MIN_PRIORITY);
-    tr1.start();
-    tr2.start();
-    tr3.start();
+import java.awt.*;
+
+public class BeepPrintExample3 {
+    public static void main(String[] args) {
+        // Thread thread = new BeepThread(); 을 대체하는 또 다른 방법
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                // super.run();
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                for (int i = 0; i < 5; i++) {
+                    toolkit.beep();
+                    try { Thread.sleep(500); } catch (Exception e) {}
+                }
+            }
+        };
+        thread.start();
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println("띵");
+            try { Thread.sleep(500); } catch (Exception e) {}
+        }
+    }
 }
 ```
 
-```java
-// 실행결과
+<br>
 
-First(10)
-First(10)
-......
-Second(5)
-Second(5)
-......
-Third(1)
+### 스레드의 이름
+
+- 스레드는 자신의 이름을 가지고 있다.
+
+- 스레드의 이름이 큰 역할을 하는 것은 아니지만, 디버깅할 때 어떤 스레드가 어떤 작업을 하는지 조사할 목적으로 가끔 사용된다.
+
+  - 메인 스레드는 `main`이라는 이름을 가지고 있고, 우리가 직접 생성한 스레드는 자동적으로 `Thread-n`이라는 이름으로 설정된다. (`n`은 스레드의 번호)
+
+- Thread-n 대신 **다른 이름으로 설정하고 싶다면** Thread 클래스의 `setName()` 메소드로 변경하면 된다.
+
+```java
+thread.setName("스레드 이름");
 ```
 
-**Thread.MAX_PRIORITY**는 상수로 10
+- 반대로 스레드 **이름을 알고 싶을 경우**에는 `getName()` 메소드를 호출하면 된다.
 
-**Thread.NORM_PRIORITY**는 상수로 5
+```java
+thread.getName();
+```
 
-**Thread.MIN_PRIORITY**는 상수로 1
+- `setName()`과 `getName()` 은 Thread의 인스턴스 메소드이므로 스레드 객체의 참조가 필요하다. 만약 스레드 객체의 참조를 가지고 있지 않다면, **Thread의 정적 메소드인 `currentThread()`** 로 코드를 실행하는 현재 스레드의 참조를 얻을 수 있다.
 
-실행결과에서 보이듯 쓰레드의 실행시간은 우선순위의 비율대로 나뉘지 않는다.
+```java
+Thread thread = Thread.currentThread();
+```
 
-높은 우선순위의 쓰레드가 종료되어야 낮은 우선순위의 쓰레드가 실행된다.
+<br>
 
-<br><br>
-***■ 쓰레드의 라이프 사이클***
+> 메인 스레드 이름 출력 및 UserThread 생성 및 시작
+
+```java
+public class ThreadNameExample {
+    public static void main(String[] args) {
+        Thread mainThread = Thread.currentThread();  // 이 코드를 실행하는 스레드 객체 얻기
+        System.out.println("프로그램 시작 스레드 이름: " + mainThread.getName());
+
+        Thread threadA = new ThreadA();  // ThreadA 생성
+        System.out.println("작업 스레드 이름: " + threadA.getName());
+        threadA.start();
+
+        Thread threadB = new ThreadB();  // ThreadB 생성
+        System.out.println("작업 스레드 이름: " + threadB.getName());
+        threadB.start();
+    }
+}
+```
+
+> ThreadA 클래스
+
+```java
+public class ThreadA extends Thread {
+    public ThreadA() {
+        setName("ThreadA");  // 스레드 이름 설정
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < 2; i++) {
+            System.out.println(getName() + "가 출력한 내용");  // ThreadA 실행 내용
+        }
+    }
+}
+```
+
+> ThreadB 클래스
+
+```java
+public class ThreadB extends Thread {
+    @Override
+    public void run() {
+        for (int i = 0; i < 2; i++) {
+            System.out.println(getName() + "가 출력한 내용");  // ThreadA 실행 내용
+        }
+    }
+}
+```
+
+```
+프로그램 시작 스레드 이름: main
+작업 스레드 이름: ThreadA
+작업 스레드 이름: Thread-1
+ThreadA가 출력한 내용
+ThreadA가 출력한 내용
+Thread-1가 출력한 내용
+Thread-1가 출력한 내용
+```
+
+```
+프로그램 시작 스레드 이름: main
+작업 스레드 이름: ThreadA
+작업 스레드 이름: Thread-1
+ThreadA가 출력한 내용
+Thread-1가 출력한 내용
+ThreadA가 출력한 내용
+Thread-1가 출력한 내용
+```
+
+```
+프로그램 시작 스레드 이름: main
+작업 스레드 이름: ThreadA
+작업 스레드 이름: Thread-1
+Thread-1가 출력한 내용
+Thread-1가 출력한 내용
+ThreadA가 출력한 내용
+ThreadA가 출력한 내용
+```
+
+```
+// ThreadA와 ThreadB 생성 사이에 try { Thread.sleep(500); } catch (Exception e) { } 추가
+// 책에서의 예제가 위의 추가 코드 없이 이러한 결과가 나옴.
+
+프로그램 시작 스레드 이름: main
+작업 스레드 이름: ThreadA
+ThreadA가 출력한 내용
+ThreadA가 출력한 내용
+작업 스레드 이름: Thread-1
+Thread-1가 출력한 내용
+Thread-1가 출력한 내용
+```
+
+<br>
+
+## 스레드 우선 순위
+
+- 멀티 스레드는 동시성(Concurrency) 또는 병렬성(Parallelism)으로 실행되기 때문에 이 용어들에 대해 정확히 이해하는 것이 좋다.
+
+- `동시성` : 멀티 작업을 위해 하나의 코어에서 멀티 스레드가 번갈아가며 실행하는 성질
+
+- `병렬성` : 멀티 작업을 위해 멀티 코어에서 개별 스레드를 동시에 실행하는 성질
+
+    - 싱글 코어 CPU를 이용한 멀티 스레드 작업은 병렬적으로 실행되는 것처럼 보이지만, 사실은 번갈아가며 실행하는 동시성 작업이다.
+
+    - 번갈아 실행하는 것이 워낙 빠르다보니 병렬성으로 보일 뿐이다.
+
+<br>
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/55465735-b963e600-5638-11e9-8e0e-ae06bc5c7547.png'>
+</p>
+<br>
+
+- 스레드의 개수가 코어의 수보다 많을 경우, 스레드를 어떤 순서에 의해 동시성으로 진행할 것인가를 결정해야 하는데, 이것을 **스레드 스케줄링**이라고 한다.
+
+- 스레드 스케줄링에 의해 스레드들은 아주 짧은 시간에 번갈아가면서 그들의 `run()` 메소드를 조금씩 실행한다.
+
+<br>
+
+> 자바의 스레드 스케줄링의 두 가지 방식
+
+1. 우선순위(Priority) 방식
+
+    - 우선순위가 높은 스레드가 실행 상태를 더 많이 가지도록 스케줄링하는 것
+
+    - 스레드 객체에 우선순위를 부여하므로 개발자가 코드로 제어 가능
+
+      - 1 ~ 10까지의 우선 순위가 부여. 1이 가장 우선순위가 낮고, 10이 가장 높다. 우선순위를 부여하지 않으면 모든 스레드들은 기본적으로 5의 우선순위를 할당 받는다.
+
+    - 우선 순위를 변경하고 싶다면 Thread 클래스가 제공하는 `setPriority()` 메소드를 이용한다.
+
+    ```java
+    thread.setPriority(우선순위);
+    ```
+
+    - 우선순위의 매개값으로 1~10까지의 값을 직접 주어도 되지만, 코드의 가독성을 위해 Thread 클래스의 상수를 사용할 수 있다.
+
+    ```java
+    thread.setPriority(Thread.MAX_PRIORITY);    // 10
+    thread.setPriority(Thread.NORM_PRIORITY);   // 5
+    thread.setPriority(Thread.MIN_PRIORITY);    // 1
+    ```
+
+2. 순환 할당(Round-Robin) 방식
+
+    - 시간 할당량(Time Slice)을 정해서 하나의 스레드를 정해진 시간만큼 실행하고 다시 다른 스레드를 실행하는 방식
+
+    - JVM에 의해 정해지므로 코드로 제어가 불가능
+
+<br>
+
+## 동기화 메소드와 동기화 블록
+
+### 공유 객체를 사용할 때의 주의할 점
+
+- 싱글 스레드 프로그램에서는 한 개의 스레드가 객체를 독차지해서 사용하면 되지만, 멀티 스레드 프로그램에서는 **객체를 공유**해서 작업해야 하는 경우가 있다.
+
+- 이 경우, 스레드 A를 사용하던 객체가 스레드 B에 의해 상태가 변경될 수 있기 때문에 스레드 A가 **의도했던 것과는 다른 결과를 산출**할 수도 있다.
+
+> MainThreadExample, 메인 스레드가 실행하는 코드
+
+```java
+public class MainThreadExample {
+    public static void main(String[] args) {
+        Calculator calculator = new Calculator();
+        User1 user1 = new User1();        // User1 스레드 설정
+        user1.setCalculator(calculator);  // 공유 객체 설정
+        user1.start();
+
+        User2 user2 = new User2();        // User2 스레드 설정
+        user2.setCalculator(calculator);  // 공유 객체 설정
+        user2.start();
+    }
+}
+```
+
+> Calculator, 공유 객체
+
+```java
+public class Calculator {
+    private int memory;
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        this.memory = memory;
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
+        System.out.println(Thread.currentThread().getName() + ": " + this.memory);
+    }
+}
+```
+
+> User1, User1 스레드
+
+```java
+public class User1 extends Thread {
+    private  Calculator calculator;
+
+    public void setCalculator(Calculator calculator) {
+        this.setName("User1");  // 스레드 이름을 User1로 설정
+        this.calculator = calculator;  // 공유 갹체인 Calculator를 필드에 저장
+    }
+
+    @Override
+    public void run() {
+        calculator.setMemory(100);  // 공유 객체인 Calculator의 메모리에 100 저장
+    }
+}
+```
+
+> User2, User2 스레드
+
+```java
+public class User2 extends Thread {
+    private  Calculator calculator;
+
+    public void setCalculator(Calculator calculator) {
+        this.setName("User2");  // 스레드 이름을 User2로 설정
+        this.calculator = calculator;  // 공유 갹체인 Calculator를 필드에 저장
+    }
+
+    @Override
+    public void run() {
+        calculator.setMemory(50);  // 공유 객체인 Calculator의 메모리에 100 저장
+    }
+}
+```
+
+> User1은 필드에 100을 저장했지만, User2 스레드가 변경한 memory 필드값 50이 나온다.
+
+```
+User1: 50
+User2: 50
+```
+
+<br>
+
+### 동기화 메소드 및 동기화 블록
+
+- 스레드가 사용 중인 객체를 다른 스레드가 변경할 수 없도록 하려면 스레드 작업이 끝날 때까지 객체에 잠금을 걸어서 다른 스레드가 사용할 수 없도록 해야 한다.
+
+- 멀티 스레드 프로그램에서 단 하나의 스레드만 실행할 수 있는 코드 영역을 **임계 영역(critical section)**이라고 한다.
+
+    - 자바는 임계 영역을 지정하기 위해 **동기화(syncronized) 메소드와 동기화 블록**을 제공한다.
+
+    - 스레드가 객체 내부의 동기화 메소드 또는 블록에 들어가면 즉시 객체에 잠금을 걸어 다른 스레드가 임계 영역 코드를 실행하지 못하도록 한다.
+
+    - `동기화 메소드를 만드는 방법` : 매소드 선언에 **`synchronized`** 키워드를 붙인다. 인스턴스와 정적 메소드 어디든 사용 가능하다.
+
+```java
+public synchronized void method() {
+    임계 영역;  // 단 하나의 스레드만 실행
+}
+```
+
+- **`동기화 메소드`** 는 **메소드 전체 내용이 임계 영역**이므로 스레드가 동기화 메소드를 실행하는 즉시 객체에 잠금이 일어나고, 스레드가 동기화 메소드를 실행 종료하면 잠금이 풀린다.
+
+- 메소드 전체 내용이 아니라, **일부 내용만 임계 영역으로** 만들고 싶다면 다음과 같이 **`동기화 블록`** 을 만들면 된다.
+
+```java
+public void method() {
+    // 여러 스레드가 실행 가능 영역
+    ...
+    synchronized(공유객체) {
+        임계 영역  // 단 하나의 스레드만 실행
+    }
+    // 여러 스레드가 실행 가능 영역
+    ...
+}
+```
+
+<br>
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/55475348-aa882e00-564e-11e9-947b-7d4135ea91d5.png'>
+</p>
+<br>
+
+- 동기화 개념을 통해 이전 예제에서 문제가 된 공유 객체인 Calculator를 수정한다.
+
+> Calculator, 동기화 메소드로 수정된 공유 객체
+
+```java
+public class Calculator {
+    private int memory;
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public synchronized void setMemory(int memory) {
+        this.memory = memory;
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
+        System.out.println(Thread.currentThread().getName() + ": " + this.memory);
+    }
+}
+```
+
+```
+// 제대로 결과값이 나온다.
+
+User1: 100
+User2: 50
+```
+
+<br>
+
+> 위 예제에서는 `setMemory()` 메소드를 동기화 메소드로 만들었는데, 다음과 같이 동기화 블록으로도 수정할 수 있다.
+
+```java
+public class Calculator {
+    private int memory;
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        synchronized (this) {  // 공유 객체인 Calculator의 참조(잠금 대상)
+            this.memory = memory;
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+            }
+            System.out.println(Thread.currentThread().getName() + ": " + this.memory);
+        }
+    }
+}
+```
+
+<br>
+
+## 스레드 상태
+
+- 스레드 객체를 생성하고, `start()` 메소드를 호출하면 곧바로 스레드가 실행되는 것처럼 보이지만 사실은 **실행 대기 상태(RUNNABLE)** 가 된다.
+
+    - 실행 대기 상태에 있는 스레드 중에서 스레드 스케줄링으로 선택된 스레드가 비로서 CPU를 점유하고 run() 메소드를 실행한다. → **이때를 실행(RUNNING) 상태라고 한다.**
+
+    - 스레드는 `실행 대기 상태`와 `실행 상태`를 번갈아가면서 자신의 run() 메소드를 조금씩 실행한다.
+
+    - 실행 상태에서 run() 메소드가 종료되면, 더 이상 실행할 코드가 없기 때문에 스레드의 실행은 멈추게 된다. → **이때를 종료 상태(TERMINATED)라고 한다.**
+
+- 경우에 따라서 스레드는 실행 상태에서 실행 대기 상태로 가지 않을 수도 있다.
+
+    - 실행 상태에서 **일시 정지 상태**로 가기도 하는데, 일시 정지 상태는 스레드가 실행할 수 없는 상태이다.
+
+    - 일시 정지 상태에는 `WAITING, TIMED_WAITING, BLOCKED`가 있다.
+
+<br>
 
 ![Life Cycle of Thread](https://img1.daumcdn.net/thumb/R720x0.q80/?scode=mtistory&fname=http%3A%2F%2Fcfile23.uf.tistory.com%2Fimage%2F123BBA494F699E82126112)
 
-<br><br>
+<br>
+
+> `getState()` 메소드
+
+- 이러한 스레드 상태를 확인할 수 있도록 하기 위해 자바 5부터 Thread 클래스에 `getState()` 메소드가 추가되었다.
+
+- `getState()` 메소드는 다음 표처럼 스레드 상태에 따라서 `Thread.State 열거 상수`를 리턴한다.
 
 |상태|설명|
 |---|---|
-|New|- 객체 생성<br>- 스레드가 만들어진 상태<br>- 아직 start() 메소드가 호출되지 않은 상태|
-|Runnable|- 실행 대기<br>- 실행 상태로 언제든지 갈 수 있는 상태<br> - 스레드 객체가 생선된 후에 start() 메서드를 호출하면 Runnable 상태로 이동|
-|Running|- 실행 상태<br>- Runnable 상태에서 스레드 스케줄러에 의해 Running 상태로 이동<br>- 스케줄러는 Running 상태의 스레드 중 하나를 선택해서 실행|
-|Blocked|- 일시 정지<br>- 사용하고자 하는 객체의 lock이 풀릴 때까지 기다리는 상태<br>- 스레드가 다른 특정한 이유로 Running 상태에서 Blocked 상태로 이동|
+|NEW|- 객체 생성<br>- 스레드가 만들어진 상태<br>- 아직 start() 메소드가 호출되지 않은 상태|
+|RUNNABLE|- 실행 대기<br>- 실행 상태로 언제든지 갈 수 있는 상태<br> - 스레드 객체가 생선된 후에 start() 메서드를 호출하면 Runnable 상태로 이동|
+|RUNNING|- 실행 상태<br>- Runnable 상태에서 스레드 스케줄러에 의해 Running 상태로 이동<br>- 스케줄러는 Running 상태의 스레드 중 하나를 선택해서 실행|
+|BLOCKED|- 일시 정지<br>- 사용하고자 하는 객체의 lock이 풀릴 때까지 기다리는 상태<br>- 스레드가 다른 특정한 이유로 Running 상태에서 Blocked 상태로 이동|
 |WAITING|- 일시 정지<br>- 다른 스레드가 통지할 때까지 기다리는 상태|
 |TIMED_WAITING|- 일시 정지<br>- 주어진 시간 동안 기다리는 상태|
 |TERMINATED(DEAD)|- 실행을 마친 상태(종료)<br>- run() 메소드 완료시 스레드가 종료되면 그 스레드는 다시 시작할 수 없게 된다.|
 
 <br>
 
-Runnable 상태의 쓰레드만이 스케줄러에 의해 스케줄링이 가능하다.
-
-그리고 앞서 보인 sleep, join 메소드의 호출로 인해서 쓰레드는 Blocked 상태가 된다.
-
-한 번 종료된 쓰레드는 다시 Runnable 상태가 될 수 없지만, Blocked 상태의 쓰레드는 조건이 성립되면 다시 Runnable 상태가 된다.
-
-<br>
-
-### *23-3. 동기화(Synchronization)*
-
-***■ 쓰레드의 메모리 접근방식과 그에 따른 문제점***
-
-
-
-
-***■ Thread-safe 한가?***
-
-`Note that this implementation is not synchronized`
-
-API 문서에는 해당 클래스의 인스턴스가 둘 이상의 쓰레드가 동시에 접근을 해도 문제가 발생하지 않는 지를 명시하고 있다.
-
-따라서 쓰레드 기반의 프로그래밍을 한다면, 특정 클래스의 사용에 앞서 쓰레드에 안전한 지를 확인해야 한다.
-
-<br><br>
-***■ 쓰레드의 동기화 기법 1 : synchronize 기반 동기화 메소드***
-
-
-<br><br>
-***■ synchronized 기반 동기화 메소드의 정확한 이해***
-
-
-<br><br>
-***■ 쓰레드의 동기화 기법 1 : synchronize 기반 동기화 블록***
-
-> 동기화 메소드 기반
+> StatePrintThread, 타겟 스레드의 상태를 출력하는 스레드
 
 ```java
-public synchronized int add(int n1, int n2)
-{
-    opCnt++;    // 동기화가 필요한 문장
-    return n1+n2;
-}
+public class StatePrintThread extends Thread {
+    private Thread targetThread;
 
-public synchronized int min(int n1, int n2)
-{
-    opCnt++;    // 동기화가 필요한 문장
-    return n1-n2;
-}
-```
-
-> 동기화 블록 기반
-
-```java
-public int add(int n1, int n2)
-{
-    synchronized(this)
-    {
-        opCnt++;    // 동기화 된 문장
+    public StatePrintThread(Thread targetThread) {  // targetThread : 상태를 조사할 스레드
+        this.targetThread = targetThread;
     }
-    return n1+n2;
-}
 
-public int min(int n1, int n2)
-{
-    synchronized(this)
-    {
-        opCnt++;    // 동기화 된 문장
-    }
-    return n1-n2;
-}
-```
+    @Override
+    public void run() {
+        while (true) {
+            Thread.State state = targetThread.getState();  // 스레드 상태 얻기
+            System.out.println("타겟 스레드 상태: " + state);
 
-동기화 블록을 이용하면 동기화의 대상이 되는 영역을 세밀하게 제한할 수 있다.
+            if (state == Thread.State.NEW) {  // 객체 생성 상태일 경우 실행 대기 상태로 만듬
+                targetThread.start();
+            }
 
-synchronized(this)에서 this는 동기화의 대상을 알리는 용도로 사용이 되었다. 즉, 메소드가 호출된 인스턴스 자신의 열쇠를 대상으로 동기화를 진행하는 문장이다.
-
-<br><br>
-***■ 동기화 블록의 예***
-
-```java
-public void addOneNum1()
-{
-    synchronized(key1)
-    {
-        num1+=1;
-    }
-}
-
-public void addTwoNum1()
-{
-    synchronized(key1)
-    {
-        num1+=2;
-    }
-}
-
-public void addOneNum2()
-{
-    synchronized(key2)
-    {
-    num2+=1;
-    }
-}
-
-public void addTwoNum2()
-{
-    synchronized(key2)
-    {
-        num2+=2;
-    }
-}
-
-. . . . .
-
-Object key1=new Object();
-Object key2=new Object();
-
-```
-
-```java
-// 보다 일반적인 형태
-// 위의 예제와 달리 둘 다 key를 지정하는 것이 아닌, 두 개의 동기화 인스턴스 중 하나는 this로 지정
-
-class IHaveTwoNum
-{
-    . . . . .
-    public void addOneNum1()
-    {
-        synchronized(this) { num1+=1; }
-    }
-    
-    public void addTwoNum1()
-    {
-        synchronized(this) { num1+=2; }
-    }
-    
-    public void addOneNum2()
-    {
-        synchronized(key) { num2+=1; }
-    }
-    
-    public void addTwoNum2()
-    {
-        synchronized(key) { num2+=2; }
-    }
-    
-    . . . . .
-    
-    Object key=new Object();
-}
-```
-
-<br><br>
-***■ 쓰레드 접근순서의 동기화 필요성***
-
-> 수정 전 
-
-```java
-class NewWriter extends Thread
-{
-    NewsPaper paper;
-    public NewsWriter(NewsPaper paper)
-    {
-        this.paper=paper;
-    }
-    public void run()
-    {
-        paper.setTodayNews("자바의 열기가 뜨겁습니다.");
-    }
-}
-
-class NewsReader extends Thread
-{
-    NewsPaper paper;
-    public NewReader(NewsPaper paper)
-    {
-        this.paper=paper;
-    }
-    public void run()
-    {
-        System.out.println("오늘의 뉴스 : "+paper.getTodayNews())
-    }
-}
-```
-
-```java
-class NewsPaper
-{
-    String todayNews;
-    public void setTodayNews(String news)
-    {
-        todayNews=news;
-    }
-    public String getTodayNews()
-    {
-        return todayNews;
-    }
-}
-```
-
-```java
-public static void main(String[] args)
-{
-    NewsPaper paper=new NewsPaper();
-    NewsReader reader=new NewsReader(paper);
-    NewsWriter writer=new NewsWriter(paper);
-    
-    reader.start();
-    writer.start();
-    
-    try
-    {
-        reader.join();
-        writer.join();
-    }
-    
-    catch(InterruptedException e)
-    {
-        e.printStackTrace();
-    }
-}
-```
-
-> 수정 후
-
-```java
-class NewsPaper
-{
-    String todayNews;
-    boolean isTodayNews=false;
-    
-    public void setTodayNews(String news)
-    {
-        todayNews=news;
-        isTodayNews=ture;
-        synchronizde(this)
-        {
-            notifyAll();
+            if (state == Thread.State.TERMINATED) {  // 종료 상태일 경우 while문을 종료
+                break;
+            }
+            try {
+                // 0.5 초간 일시 정지
+                Thread.sleep(500);
+            } catch (Exception e) {}
         }
     }
-    
-    public String getTodayNews()
-    {
-        if(isTodayNews==false)
-        {
-            try
-            {
-                synchronizde(this)
-                {
-                    wait();
-                }
-            }
-            
-            catch(InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+}
+```
+
+> TargetThread, 타켓 스레드
+
+```java
+public class TargetThread extends Thread {
+    @Override
+    public void run() {
+        for (long i = 0; i < 1000000000; i++) {  // RUNNABLE 상태 유지
         }
-        
-        return todayNews;
+
+        try {
+            // 1.5초간 일시 정지
+            Thread.sleep(1500);  // sleep 메소드 호출해서 1.5초간 TIMED_WAITING 상태 유지
+        } catch (Exception e) {}
+
+        for (long i = 0; i < 1000000000; i++) {}  // RUNNABLE 상태 유지
     }
 }
-
-/*
-wait와 notifyAll 메소드에 의한 동기화가 진행될  때, 이전 예제에서 달라지는 부분은 쓰레드 클래스가 아닌
-쓰레드에 의해 접근이 이뤄지는 NewsPaper 클래스라는 사실에 주목.
-*/
 ```
 
+> TargetStateExample, 실행 클래스
 
-<br><br>
-***■ wait, notify, notifyAll에 의한 실행순서 동기화***
+- `StatePrintThread`를 생성해서 매개값으로 전달받은 `TargetThread`의 상태를 출력하도록 작성된 실행 클래스
 
-- public final void wait() throws InterruptedException
+```java
+public class TargetThreadExample {
+    public static void main(String[] args) {
+        StatePrintThread statePrintThread =
+                new StatePrintThread(new TargetThread());
+        statePrintThread.start();
+    }
+}
+```
 
-위의 함수를 호출한 쓰레드는 notify 또는 notifyAll 메소드가 호출될 때까지 블로킹 상태에 놓이게 된다.
+- `TargetTread`가 객체로 생성되면 NEW 상태를 가지고, run() 메소드가 종료되면 TERMINATED 상태가 되므로 결국 다음과 같은 상태로 변한다.
 
-- public final void notify()
+> NEW → RUNNABLE → TIMED_WAITING → RUNNABLE → TERMINATED
 
-wait 함수의 호출을 통해서 블로킹 상태에 놓여있는 쓰레드 하나를 깨운다.
-
-- public final void notifyAll()
-
-wait 함수의 호출을 통해서 블로킹 상태에 놓여있는 모든 쓰레드를 깨운다.
+```
+타겟 스레드 상태: NEW
+타겟 스레드 상태: RUNNABLE
+타겟 스레드 상태: RUNNABLE
+타겟 스레드 상태: TIMED_WAITING
+타겟 스레드 상태: TIMED_WAITING
+타겟 스레드 상태: TIMED_WAITING
+타겟 스레드 상태: RUNNABLE
+타겟 스레드 상태: TERMINATED
+```
 
 <br>
 
-```java
-synchronized(this)
-{
-    wait();
-}
-
-// 위의 함수들은 왼쪽에서 보이는 바와 같이 한 순간에 하나의 쓰레드만 호출할 수 있도록 동기화 처리를 해야 한다.
-```
-
-<br><br>
-### *23-4. 새로운 동기화 방식*
-
-***■ synchronized 키워드의 대체***
-
-ReentrantLock 인스턴스를 이용한 동기화 기법
-
-Java Ver 5.0 이후로 제공된 동기화 방식이다. lock 메소드와 unlock 메소드의 호출을 통해서 동기화 블록을 구성한다.
-
-```java
-class MyClass
-{
-    private final ReentrantLock criticObj=new ReentrantLock();
-    . . . . .
-    void myMethod(int arg)
-    {
-        criticObj.lock();   // 다른 쓰레드가 진입하지 못하게 문을 잠근다.
-        . . . . .
-        . . . . .
-        criticObj.unlock(); // 다른 쓰레드가 진입이 가능하게 문을 연다
-    }
-}
-```
-
-<br>
-↓ 보다 안정적인 구현모델을 위해서는 반드시 unlock 메소드가 호출되도록 모델을 설계한다.
-
-
-
-```java
-void myMethod(int arg)
-{
-    criticObj.lock();   // 다른 쓰레드가 진입하지 못하게 문을 잠근다.
-    try
-    {
-        . . . . .
-        . . . . .
-    }
-    finally
-    {
-        criticObj.unlock(); // 다른 쓰레드의 진입이 가능하게 문을 연다.
-    }
-}
-```
-
-<br><br>
-***■ await, signal, signalAll에 의한 실행순서의 동기화***
-
-- await : 낮잠을 취한다(wait 메소드에 대응)
-
-- signal : 낮잠 자는 쓰레드 하나를 깨운다(notify 메소드에 대응)
-
-- signalAll : 낮잠 자는 모든 쓰레드를 깨운다(notifyAll 메소드에 대응)
-
-<br>
-
-ReentrantLock 인스턴스 대상으로 newCondition 메소드 호출 시, Condition 인터페이스를 구현하는 인스턴스의 참조 값 반환
-
-이 인스턴스를 대상으로 위의 메소드를 호출하여, 쓰레드의 실행순서를 동기화 한다.
-
-
-```java
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.Condition;
-import java.util.Scanner;
-
-class StringComm
-{
-	String newString;
-	boolean isNewString=false;
-	
-	private final ReentrantLock entLock=new ReentrantLock();
-	private final Condition readCond=entLock.newCondition();
-	private final Condition writeCond=entLock.newCondition();
-	
-	public void setNewString(String news)
-	{
-		entLock.lock();
-		try
-		{
-			if(isNewString==true)
-				writeCond.await();
-				
-			newString=news;
-			isNewString=true;
-			readCond.signal();
-		}
-		catch(InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			entLock.unlock();
-		}
-	}
-	
-	public String getNewString()
-	{
-		String retStr=null;
-		
-		entLock.lock();
-		try
-		{
-			if(isNewString==false)
-				readCond.await();
-			
-			retStr=newString;
-			isNewString=false;		
-			writeCond.signal();
-		}
-		catch(InterruptedException e)
-		{
-			e.printStackTrace();
-		}		
-		finally
-		{
-			entLock.unlock();
-		}
-			
-		return retStr;
-	}
-}
-
-class StringReader extends Thread
-{
-	StringComm comm;
-	
-	public StringReader(StringComm comm)
-	{
-		this.comm=comm;
-	}
-	public void run()
-	{
-		Scanner keyboard=new Scanner(System.in);
-		String readStr;
-		
-		for(int i=0; i<5; i++)
-		{
-			readStr=keyboard.nextLine();
-			comm.setNewString(readStr);
-		}
-	}
-}
-
-class StringWriter extends Thread
-{
-	StringComm comm;
-	
-	public StringWriter(StringComm comm)
-	{
-		this.comm=comm;
-	}
-	public void run()
-	{
-		for(int i=0; i<5; i++)
-			System.out.println("read string: "+comm.getNewString());
-	}
-}
-
-class ConditionSyncStringReadWrite
-{
-	public static void main(String[] args)
-	{
-		StringComm strComm=new StringComm();
-		StringReader sr=new StringReader(strComm);
-		StringWriter sw=new StringWriter(strComm);
-	
-		System.out.println("자바의 새로운 동기화...");
-		sr.start();
-		sw.start();
-	}
-}
-```
-
-
-
-
-
-
-
+## 스레드 상태 제어
