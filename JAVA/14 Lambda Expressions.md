@@ -1355,12 +1355,44 @@ Math :: max;
 > Calculator, 정적 및 인스턴스 메소드
 
 ```java
+public class Calculator {
+    // 정적 메소드
+    public static int staticMethod(int x, int y) {
+        return x + y;
+    }
 
+    // 인스턴스 메소드
+    public int instanceMethod(int x, int y) {
+        return x + y;
+    }
+}
 ```
 
 > MethodReferenceExample, 정적 및 인스턴스 메소드 참조
 
 ```java
+import java.util.function.IntBinaryOperator;
+
+public class MethodReferencesExample {
+    public static void main(String[] args) {
+        IntBinaryOperator operator;
+
+        // 정적 메소드 참조
+        operator = (x, y) -> Calculator.staticMethod(x, y);
+        System.out.println("결과1: " + operator.applyAsInt(1, 2));
+
+        operator = Calculator :: staticMethod;
+        System.out.println("결과2: " + operator.applyAsInt(3, 4));
+
+        // 인스턴스 메소드 참조
+        Calculator obj = new Calculator();
+        operator = (x, y) -> obj.instanceMethod(x, y);
+        System.out.println("결과3: " + operator.applyAsInt(5, 6));
+
+        operator = obj :: instanceMethod;
+        System.out.println("결과4: " + operator.applyAsInt(7, 8));
+    }
+}
 
 ```
 
@@ -1391,7 +1423,34 @@ Math :: max;
 > ArgumentMethodReferenceExample, 매개 변수의 메소드 참조
 
 ```java
+import java.util.function.ToIntBiFunction;
 
+public class ArgumentMethodReferencesExample {
+    public static void main(String[] args) {
+        ToIntBiFunction<String, String> function;
+
+        function = (a, b) -> a.compareToIgnoreCase(b);
+        print(function.applyAsInt("Java8", "JAVA8"));
+
+        function = String::compareToIgnoreCase;
+        print(function.applyAsInt("Java8", "JAVA8"));
+    }
+
+    public static void print(int order) {
+        if (order < 0) {
+            System.out.println("사전순으로 먼저 옵니다.");
+        } else if (order == 0) {
+            System.out.println("동일한 문자열입니다.");
+        } else {
+            System.out.println("사전순으로 나중에 옵니다.");
+        }
+    }
+}
+```
+
+```
+동일한 문자열입니다.
+동일한 문자열입니다.
 ```
 
 <br>
@@ -1412,7 +1471,7 @@ Math :: max;
 
     - 클래스 이름 뒤에 `::` 기호를 붙이고 new 연산자를 기술하면 된다.
 
-    - `생성자가 오버로딩되어 여러 개가 있을 경우`, 컴파일러는 함수적 인터페이스의 추상 메소드와 **동일한 매개 변수 타입과 개수를 가지고 있는 생성자를 찾아 실행**한다. 만약 **해당 생성자가 존재하지 않으면 컴파일 오류가 발생**한다.
+    - ★ **`생성자가 오버로딩되어 여러 개가 있을 경우`, 컴파일러는 함수적 인터페이스의 추상 메소드와 동일한 매개 변수 타입과 개수를 가지고 있는 생성자를 찾아 실행한다. 만약 해당 생성자가 존재하지 않으면 컴파일 오류가 발생한다.**
 
 ```java
 클래스 :: new
@@ -1423,11 +1482,45 @@ Math :: max;
 > ConstructorReferencesExample, 생성자 참조
 
 ```java
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
+public class ConstructorReferencesExample {
+    public static void main(String[] args) {
+        Function<String, Member> function1 = Member :: new;
+        Member member1 = function1.apply("angel");
+
+        BiFunction<String, String, Member> function2 = Member :: new;
+        Member member2 = function2.apply("김천사", "angel");
+    }
+}
 ```
 
 > Member, 생성자 오버로딩
 
 ```java
+public class Member {
+    private String name;
+    private String id;
 
+    public Member() {
+        System.out.println("Member() 실행");
+    }
+    public Member(String id) {
+        System.out.println("Member(String id) 실행");
+        this.id = id;
+    }
+    public Member(String name, String id) {
+        System.out.println("Member(String name, String id) 실행");
+        this.name = name;
+        this.id = id;
+    }
+
+    public String getId() { return id; }
+}
+```
+
+```
+Member(String id) 실행
+Member(String name, String id) 실행
 ```
