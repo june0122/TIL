@@ -516,7 +516,7 @@ public class HashSetExample2 {
 
 ## Map 컬렉션
 
-
+- Map 컬렉션은 **키(key)와 값(value)로 구성된 Entry 객체를 저장하는 구조**를 지니고 있다. 여기서 **키와 값은 모두 객체**이다.
 
 <br>
 <p align = 'center'>
@@ -524,7 +524,9 @@ public class HashSetExample2 {
 </p>
 <br>
 
+- Map 컬렉션에는 `HashMap, HashTable, LinkedHashMap, Properties, TreeMap` 등이 있다.
 
+    - 키로 객체들을 관리하기 때문에 키를 매개값으로 갖는 메소드가 많다.
 
 <br>
 <p align = 'center'>
@@ -532,16 +534,62 @@ public class HashSetExample2 {
 </p>
 <br>
 
+- 키를 알고 있다면 `get()` 메소드로 간단하게 객체를 찾아오면 되지만, 저장된 전체 객체를 대상으로 하나씩 얻고 싶을 경우에는 두 가지 방법을 사용할 수 있다.
+
+    1. `keySet()` 메소드로 모든 키를 Set 컬렉션으로 얻은 다음, 반복자를 통해 키를 하나씩 얻고 `get()` 메소드를 통해 값을 얻는다.
+
+    ```java
+    Map<K, V> map = ~;
+    Set<K> keySet = map.keySet();
+    Iterator<K> keyIterator = keySet.iterator();
+    while (keyIterator.hasNext()) {
+        K key = keyIterator.next();
+        V value = map.get(key);
+    }
+    ```
+
+    2. `entrySet()` 메소드로 모든 `Map.Entry`를 Set 컬렉션으로 얻은 다음, 반복자를 통해 `Map.Entry`를 하나씩 얻고 `getKey()`와 `getValue()` 메소드를 이용해 키와 값을 얻는다.
+
+    ```java
+    Set<Map.Entry<K, V>> enteySet = map.entrySet();
+    Iterator<Map.Entery<K, V> entryIterator = entrySet.iterator();
+    while(entryIterator.hasNext()) {
+        Map.Entry<K, V> entry = entryIterator.next();
+        K key = entry.getKey();
+        V value = entry.getValue();
+    }
+    ```
 
 <br>
-<p align = 'center'>
-<img src = ''>
-</p>
+
+### HashMap
+
+- HashMap은 Map 인터페이스를 구현한 대표적인 Map 컬렉션이다.
+
+- HashMap의 키로 사용할 객체는 hashCode()와 equals() 메소드를 재정의해서 동등 객체가 될 조건을 정해야 한다.
+
+    - 동등 객체, 즉 동일한 키가 될 조건은 hashCode()의 리턴값이 같아야 하고, equals() 메소드가 true를 리턴해야 한다.
+
+- **주로 키 타입은 String을 많이 사용**하는데, **String은 문자열이 같을 경우 동등 객체가 될 수 있도록 hashCode()와 equals() 메소드가 재정의되어 있다.**
+
+- HashMap을 생성하기 위해서는 키 타입과 값 타입을 파라미터로 주고 기본 생성자를 호출하면 된다.
+
+```java
+Map<K, V> map = new HashMap<K, V>();
+```
+
+- **키와 값의 타입은 기본 타입(byte, short, int, float, double, boolean, char)을 사용할 수 없고 `클래스 및 인터페이스 타입만 가능`** 하다.
+
+- 키로 String 타입을 사용하고 값으로 Integer 타입을 사용하는 HashMap은 다음과 같이 생성할 수 있다.
+
+```java
+Map<String, Integer> map = new HashMap<String, Integer>();
+```
+
 <br>
 
+> HashMapExample1, 이름을 키로 점수를 값으로 저장하기
 
-<br>
-<p align = 'center'>
-<img src = ''>
-</p>
-<br>
+```java
+
+```
