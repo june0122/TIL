@@ -22,7 +22,11 @@
 
 ### 2. 클래스를 확장할 수 없도록 한다.
 
+> 클래스가 불변임을 보장하려면 "자신을 상속하지 못하게" 해야 한다.
+
 - 하위 클래스에서 부주의하게 혹은 나쁜 의도로 객체의 상태를 변하게 만드는 사태를 막아준다.
+
+- 상속을 막는 대표적인 방법은 클래스를 final로 선언하는 것이지만, **더 유연한 방법**<sup id="a1">[1](#f1)</sup>도 있다.
 
 <br>
 
@@ -52,7 +56,7 @@
 
 <br>
 
-> 불변 복소수 클래스
+> 불변 복소수 클래스<sup id="a2">[ ](#f2)</sup>
 
 ```java
 public final class Complex {
@@ -201,4 +205,52 @@ public final class Complex {
 
 > 값의 가짓수가 많다면 이들을 모두 만드는 데 큰 비용을 치러야 한다.
 
+<br>
 
+### 2. 원하는 객체를 완성하기까지의 단계가 많고, 그 중간 단계에서 만들어진 객체들이 모두 버려진다면 성능 문제가 더 불거진다.
+
+> 이 문제에 대처하는 방법은 두 가지이다.
+
+- 첫 번째. **다단계 연산(multistep operation)** 들을 예측하여 기본 기능으로 제공하는 방법
+
+    - 이러한 다단계 연산을 기본으로 제공한다면 더 이상 각 단계마다 객체를 생성하지 않아도 된다. 불변 객체는 내부적으로 아주 영리한 방식으로 구현할 수 있기 때문이다.
+
+        - 예컨대, BigInteger는 모듈러 지수 같은 다단계 연산 속도를 높여주는 가변 `동반 클래스(companion class)`를 사용하기란 BigInteger를 쓰는 것보다 훨씬 어렵다.
+
+        - 그 어려운 부분을 모두 BigInteger가 대신 처리해준다.
+
+- 두 번째. 클라이언트들이 원하는 **복잡한 연산들을 정확히 예측**할 수 있다면  **package-private의 가변 동반 클래스**만으로 충분하다. 그렇지 않다면 이 클래스를 **public으로 제공**하는 게 최선이다.
+
+    - 자바 플랫폼 라이브러리에서 이에 해당하는 **대표적 예시가 `String 클래스`** 이다.
+
+    - **String의 가변 동반 클래스는 바로 `StringBuilder`**(와 구닥다리 전임자 `StringBuffer`)다.
+
+<br>
+
+## 클래스가 불변임을 보장하려면 "자신을 상속하지 못하게" 해야 한다.
+
+### 자신을 상속하지 못하게 하는 가장 쉬운 방법은 `final 클래스로 선언`이지만, `더 유연한 방법`이 있다.
+
+- #### <b id="f1"><sup>1</sup></b> 모든 생성자를 `private` 혹은 `package-private`으로 만들고 [public 정적 팩터리](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2001%20-%20static%20factory%20method.md)를 제공하는 방법이다. [ ↩](#a1)<br>
+
+<br>
+
+> 다음은 위의 코드의 [**Complex 클래스**](#a2) 를 생성자 대신 정적 팩터리를 사용한 불변 클래스로 구현한 코드이다.
+
+```java
+public class Complex {
+    private final double re;
+    private final double im;
+
+    private Complex(double re, double im) {
+        this.re = re;
+        this.im = im;
+    }
+
+    public static Complex valueOf(double re, double im) {
+        return new Complex(re, im);
+    }
+
+    ...
+}
+```
