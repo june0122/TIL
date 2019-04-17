@@ -164,7 +164,7 @@ public final class Complex {
         public static final Complex I    = new Complex(0, 1);
         ```
 
-    - 불변 클래스는 **자주 사용되는 인스턴스를 '캐싱'하여 같은 인스턴스를 중복 생성하지 않게 해주는** [**정적 팩터리**](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2001%20-%20static%20factory%20method.md)`item 1`**를 제공**할 수 있다.
+    - 불변 클래스는 **자주 사용되는 인스턴스를 '캐싱'하여 같은 인스턴스를 중복 생성하지 않게 해주는** [**정적 팩터리**](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2001.md)`item 1`**를 제공**할 수 있다.
 
       - 정적 팩터리를 사용하면 여러 클라이언트가 인스턴스를 공유하여 메모리 사용량과 가비지 컬렉션 비용이 줄어든다. 
 
@@ -231,7 +231,7 @@ public final class Complex {
 
 ### 자신을 상속하지 못하게 하는 가장 쉬운 방법은 `final 클래스로 선언`이지만, `더 유연한 방법`이 있다.
 
-- #### <b id="f1"><sup>1</sup></b> 모든 생성자를 `private` 혹은 `package-private`으로 만들고 [public 정적 팩터리](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2001%20-%20static%20factory%20method.md)를 제공하는 방법이다. [ ↩](#a1)<br>
+- #### <b id="f1"><sup>1</sup></b> 모든 생성자를 `private` 혹은 `package-private`으로 만들고 [public 정적 팩터리](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2001.md)를 제공하는 방법이다. [ ↩](#a1)<br>
 
 <br>
 
