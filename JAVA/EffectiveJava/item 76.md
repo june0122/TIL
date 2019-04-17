@@ -10,7 +10,7 @@
 
 ## 메서드를 실패 원자적으로 만드는 방법
 
-### 1. [**불변 객체**](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2017%20-%20immutable%20class.md)로 설계 : `item 17`
+### 1. [**불변 객체**](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2017.md)로 설계 : `item 17`
 
 > 메서드를 실패 원자적으로 만드는 **가장 간단한 방법**
 
