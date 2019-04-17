@@ -23,7 +23,7 @@
 
 ### 2. 호출될 때마다 인스턴스를 새로 생성하지는 않아도 된다.
 
-- [**불변 클래스**](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2017%20-%20immutable%20class.md)`item 17` 는 인스턴스를 미리 만들어 놓거나 새로 생성한 인스턴스를 **캐싱하여 재활용**하는 식으로 불필요한 객체 생성을 피할 수 있다.
+- [**불변 클래스**](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2017.md)`item 17` 는 인스턴스를 미리 만들어 놓거나 새로 생성한 인스턴스를 **캐싱하여 재활용**하는 식으로 불필요한 객체 생성을 피할 수 있다.
 
     - 따라서 (특히 생성 비용이 큰) 같은 객체가 자주 요청되는 상황이라면 성능을 상당히 끌어올려 준다.
 
