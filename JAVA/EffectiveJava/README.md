@@ -6,7 +6,7 @@
 
 ## 2 Creating and Destroying Objects
 
-- [Item 1](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2001%20-%20static%20factory%20method.md) : Consider static factory methods instead of constructors
+- [Item 1](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2001.md) : Consider static factory methods instead of constructors
 
 - Item 2 : Consider a builder when faced with many constructor parameters
 
@@ -42,7 +42,7 @@
 
 - Item 16 : In public classes, use accessor methods, not public fields
 
-- [Item 17](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2017%20-%20immutable%20class.md) : Minimize mutability
+- [Item 17](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2017.md) : Minimize mutability
 
 - Item 18 : Favor composition over inheritance
 
@@ -172,7 +172,7 @@
 
 - Item 75 : Include failure-capture information in detail messages
 
-- [Item 76](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2076%20-%20failure%20atomic.md) : Strive for failure atomicity
+- [Item 76](https://github.com/june0122/TIL/blob/master/JAVA/EffectiveJava/item%2076.md) : Strive for failure atomicity
 
 - Item 77 : Don’t ignore exceptions
 
