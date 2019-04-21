@@ -555,7 +555,7 @@ long값이 큰 정수 리터럴은 대문자 L접미사를 사용하며 소문�
 
     - `lowerCamelCase`와 `UpperCamelCase`로 세분화할 수 있다.
       
-      - UpperCamelCase는 CamelCase에서 맨 앞글자를 대문자로 표기하는 것을 뜻하며, PascalCase라고도 부른다.
+    - UpperCamelCase는 CamelCase에서 맨 앞글자를 대문자로 표기하는 것을 뜻하며, PascalCase라고도 부른다.
 
 - 파스칼 표기법
 
