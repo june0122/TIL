@@ -22,8 +22,23 @@ TLS는 스레드 별로 **고유한 저장공간**을 가질 수 있는 방법�
 
   - 오직 필요한 것은 변수 선언 시 다음과 같이 (GNU 확장) **`__thread`** 키워드를 써서 이 변수가 TLS에 저장됨을 알려주는 일이다.
 
+  > GNU C
+
   ```c
   __thread int x;
+  ```
+
+  > C and C++
+
+  ```c
+  #include <threads.h>
+  thread_local int foo = 0;
+  ```
+
+  > java
+
+  ```java
+  private static final ThreadLocal<Integer> myThreadLocalInteger = new ThreadLocal<Integer>();
   ```
 
 ## 본문
