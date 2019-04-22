@@ -6,7 +6,7 @@ TLS는 스레드 별로 **고유한 저장공간**을 가질 수 있는 방법�
 
 ## 왜 사용할까?
 
-- 스택(Stack)에 저장되는 지역 변수는 스레드마다 별도의 스택을 사용하므로 당연히 다른 값을 가지지만, 정적 혹은 전역 변수의 경우에는 모든 스레드가 공유하므로 접근 시에 [**Race Condition(경쟁 상태)**<sup>1</sup>](###-<sup>1</sup>-경쟁-상태-(Race-Condition)) 이 발생할 수 있다.
+- 스택(Stack)에 저장되는 지역 변수는 스레드마다 별도의 스택을 사용하므로 당연히 다른 값을 가지지만, 정적 혹은 전역 변수의 경우에는 모든 스레드가 공유하므로 접근 시에 **Race Condition(경쟁 상태)**<sup id = "a1">[1](#f1)</sup> 이 발생할 수 있다.
 
 - 따라서 **스레드마다 개별적으로 사용할 수 있는**(thread-local) **변수**를 사용하여 안정성 및 성능을 높일 수 있다.
 
@@ -85,11 +85,13 @@ Pthread API Reference : https://www.joinc.co.kr/w/Site/Thread/Beginning/PthreadA
 
 정적, 동적 TLS : http://egloos.zum.com/sweeper/v/1985738
 
+경쟁 상태 : https://wonjayk.tistory.com/251
+
 ---
 
 ## 각주
 
-### <sup>1</sup> 경쟁 상태 (Race Condition)
+### <b id = "f1"><sup>1</sup></b> 경쟁 상태 (Race Condition)[ ↩](#a1)
 
 둘 이상의 입력이나 조작이 동시에 일어나 의도하지 않은 결과를 가져오는 경우를 말한다.
 
