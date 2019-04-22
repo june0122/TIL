@@ -6,7 +6,7 @@ TLS는 스레드 별로 **고유한 저장공간**을 가질 수 있는 방법�
 
 ## 왜 사용할까?
 
-- 스택(Stack)에 저장되는 지역 변수는 스레드마다 별도의 스택을 사용하므로 당연히 다른 값을 가지지만, 정적 혹은 전역 변수의 경우에는 모든 스레드가 공유하므로 접근 시에 **Race Condition(경쟁 상태)** 이 발생할 수 있다.
+- 스택(Stack)에 저장되는 지역 변수는 스레드마다 별도의 스택을 사용하므로 당연히 다른 값을 가지지만, 정적 혹은 전역 변수의 경우에는 모든 스레드가 공유하므로 접근 시에 [**Race Condition(경쟁 상태)**<sup>1</sup>](###-<sup>1</sup>-경쟁-상태-(Race-Condition)) 이 발생할 수 있다.
 
 - 따라서 **스레드마다 개별적으로 사용할 수 있는**(thread-local) **변수**를 사용하여 안정성 및 성능을 높일 수 있다.
 
@@ -77,6 +77,44 @@ TLS는 [동적 연결 라이브러리](https://github.com/june0122/TIL/blob/mast
 
 MS DOC, TLS : https://docs.microsoft.com/ko-kr/windows/desktop/ProcThread/thread-local-storage
 
+wikipedia : https://en.wikipedia.org/wiki/Thread-local_storage
+
 Pthread API Reference : https://www.joinc.co.kr/w/Site/Thread/Beginning/PthreadApiReference
 
 [ELF] TLS (Thread Local Storage) : http://egloos.zum.com/studyfoss/v/5259841
+
+정적, 동적 TLS : http://egloos.zum.com/sweeper/v/1985738
+
+---
+
+## 각주
+
+### <sup>1</sup> 경쟁 상태 (Race Condition)
+
+둘 이상의 입력이나 조작이 동시에 일어나 의도하지 않은 결과를 가져오는 경우를 말한다.
+
+- 파일 또는 변수와 같은 공유 자원을 접근하는, 하나 또는 그 이상의 프로세스들의 **다중 접근이 제대로 제어되지 않은 것**을 말한다.
+
+- 프로세스들끼리 **하나의 자원을 갖기 위해 싸우는 것**, 하나의 자원을 동시에 요청
+
+### 라이브락 (Livelock)
+
+**한 프로세스가 이미 자원을 점유한 상태에서 다른 프로세스가 그 자원을 사용하기 위해 무한정 대기 상태에 빠지는 것**을 라이브락이라 한다.
+
+### 교착상태 (Deadlock)
+
+- 프로세스들이 더 이상 진행을 못하고 영구적으로 블록되어 있는 상태로, 시스템 자원에 대한 경쟁 도중에 발생할 수도 있고 프로세스 간의 통신 과정에서도 발생할 수 있다.
+
+- **두 개 이상의 작업이 서로 상대방의 작업이 끝나기만을 기다리고 있기 때문에 결과적으로는 아무것도 완료되지 못하는 상태**를 말한다.
+
+  #### 교착상태 조건
+
+  1. `상호배제 (Mutual Exclusion)` : 한 순간에 한 프로세스만이 자원을 사용할 수 있다. 즉, 한 프로세스에 의해 점유된 자원을 다른 프로세스들이 접근할 수 없다.
+
+  2. `점유대기 (Hold and Wait)` : 이미 자원을 보유한 프로세스가 다른 자원을 요청하며 기다리고 있다.
+
+  3. `비선점 (No preemption)` : 프로세스에 의해 점유된 자원을 다른 프로세스가 강제적으로 빼앗을 수 없다.
+
+  4. `환형 대기 (Circular Wait)` : 프로세스간에 닫힌 연결이 존재하는 경우이다. 블록된 프로세스가 자원을 점유하고 있는데 이 자원을 다른 프로세스가 원하며 대기하고 있는 상태.
+
+     - `환형 대기`의 경우 `ⅰ ~ ⅲ`의 결과에 의해 발생하게 된다.
