@@ -214,17 +214,7 @@
 - -1	: 실패
 
 
-
-
-
-
-
-
-
-
-
-
-
+<br>
 
 
 > ## Echo Server in C
@@ -350,6 +340,8 @@ public class EchoServer {
 
             while (true) {
                 Socket socket = serverSocket.accept();
+                SessionThread sessionThread = new SessionThread(socket);
+                sessionThread.start();
             }
         } catch (IOException e) {
             e.printStackTrace();
