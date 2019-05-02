@@ -227,9 +227,9 @@
 
 
 
+> ## Echo Server in C
 
-
-> SocketServer
+> ### SocketServer.c
 
 ```c
 #include <stdio.h>
@@ -283,19 +283,7 @@ int main() {
 }
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-> SocketClient
+> ### SocketClient.c
 
 ```c
 #include <unistd.h>
@@ -333,6 +321,87 @@ int main() {
                                 write(1, buf, ret);
                 }
 }
+```
+
+<br>
+
+> ## EchoServer
+
+> ### EchoServer.class
+
+```java
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class EchoServer {
+    public static void main(String[] args) {
+        /*
+        ServerSocket 클래스의 생성자 세부사항을 보면 오버로딩된 생성자 중 아래와 같은 형태가 있다.
+        public ServerSocket(int port, int backlog, InetAddress bindAddr)
+          즉 ServerSocket 클래스는
+             1. 소켓을 지정하는 socket()
+             2. IP 주소와 포트번호를 지정하는 bind()
+             3. 클라이언트의 접속 요청을 받는 listen()
+           3개의 역할을 수행한다.
+        */
+        try {
+            ServerSocket serverSocket = new ServerSocket(5000);
+
+            while (true) {
+                Socket socket = serverSocket.accept();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+> ### SessionThread.class
+
+```java
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
+public class SessionThread extends Thread {
+    private Socket socket;
+
+    public SessionThread(Socket socket) {
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
+        try (OutputStream os = socket.getOutputStream();
+             InputStream is = socket.getInputStream();) {
+
+            while (true) {
+                byte[] buf = new byte[512];
+                int len = is.read(buf);
+                // read() 함수가 -1 을 반환할 때는
+                // stream의 끝에 도달했을 때, 더 이상 데이터가 없을 때이다.
+                if (len == -1) {
+                    System.out.println("Disconnected");
+                    break;
+                }
+                os.write(buf, 0, len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Thread has terminated");
+    }
+}
+```
+
+> ## EchoClient
+
+> ### EchoClient.class
+
+```java
 ```
 
 
