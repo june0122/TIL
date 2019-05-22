@@ -222,15 +222,186 @@ $ gcc -Wall -Wextra -02 -g -o snippet snippet.c
 
 #### 일반 파일
 
+> **바이트 스트림**이라고 부르는 연속적으로 나열된 바이트 배열에 저장된 데이터를 의미
+
+- 리눅스에는 파일을 위한 특별한 자료구조가 없다.
+
+  - 이 데이터에는 어떠한 값이라도 들어갈 수 있으며 어떤 구조로 저장해도 상관없다.
+  
+  - 시스템 수준에서 살펴보면 리눅스는 바이트 스트림 외에 어떤 자료구조도 강제하지 않는다.
+
+  - 바이트 스트림(Byte Stream)의 경우에는 원시 Byte를 그대로 주고 받겠다는 의미를 담고 있다.
+
+- 파일은 바이트를 읽고 쓰는 것이 가능하다.
+
+  - 이런 작업은 파일 내부의 위치를 지정해서 수행할 수 있는데, 이 위치는 **파일 오프셋**<sup> file offset</sup><sup id = "a3">[ 1 ](#f3)</sup>  혹은 파일 위치<sup>file position</sup>라고 한다.
+
+  - 파일이 처음 열리면 파일 오프셋은 0 이다.
+
+  - 파일 오프셋의 최댓값은 이 오프셋을 저장하기 위해 사용하는 C 타입의 크기로 결정되며 최신 리눅스 시스템에서는 64비트 값이다.
+
+- **파일 크기**는 바이트 단위로 측정되며, 이를 파일 길이라 한다.
+
+  - `파일 크기 = 바이트 배열의 크기`  
+
+  - `최대 파일 길이 = 최대 파일 오프셋 값`, 커널에서 파일을 관리하기 위해 사용하는 C 타입의 크기로 제한
+
+    - 일부 파일 시스템에서는 이보다 더 작은 크기로 최대 길이를 제약하는 경우도 존재
+
+- 하나의 파일은 다른 프로세스나 심지어 동일한 프로세스에서 한 번 이상 열 수 있다.
+
+  - 파일은 열릴 때마다 고유한 파일 디스크립터를 반환한다. (프로세스에서는 파일 디스크립터 공유 가능)
+
+  - 커널은 파일에 대한 **동시 접근**을 막지 않는다.
+
+    - 이와 같은 동시 접근은 각각의 연산 순서에 따라 **다른 결과를 발생시키며 예측이 불가능**하다. 그러므로 사용자 영역의 프로그램은 이런 **파일 동시 접근을 회피할 수 있도록 항상 신경** 써야 한다.
+
+- 파일은 파일 이름이 아닌, **inode**<sup>information node(아이노드)</sup>라고 하는 파일시스템 내에서만 고유한 정수 값으로 참조된다.
+
+  - 이 값은 inode 번호라고 하며 ino<sup>i-number</sup>라고 줄여 쓰기도 한다.
+
+  - inode는 변경된 날짜, 소유자, 타입, 길이, 데이터 저장 위치 같은 파일에 관련된 메타데이터를 저장하고 있지만, 파일 이름은 저장하지 않는다.
+
+  - inode는 유닉스 **파일시스템에서 디스크에 저장된 물리적인 객체**임과 동시에 **리눅스 커널에서 자료구조로 표현되는 논리적인 개념**이기도 하다.
+
+<br>
+
 #### 디렉터리와 링크
 
-#### 하드 링크
+- inode 번호로 파일에 접근하려면 번거로운 데다 잠재적 보안 위협까지 있어서 보통 **사용자 영억에서 파일에 접근할 때는 inode 대신 파일 이름을 사용**한다.
 
-#### 심벌릭 링크
+- **디렉터리**는 파일에 접근하기 위한 이름을 제공하는데 디렉터리는 inode 대신에 **사람이 읽을 수 있는 이름**으로 나타낸다.
+
+  - 이 이름과 inode의 쌍을 **링크**라고 한다.
+
+  - 개념적으로 디렉터리는 일반 파일과 유사한 모습이지만 **이름과 inode의 맵핑만 저장**한다는 점에서 차이가 있다.
+
+    - 커널은 이런 맵핑을 사용해서 이름으로 inode를 찾는 작업을 수행한다.
+
+```
+ [사용자 영역 애플리케이션] 특정 파일을 열겠다고 요청
+
+                      ↓
+
+      [커널] 파일 이름으로 inode 번호 얻음
+                      
+                      ↓
+
+      [커널] 얻은 inode 번호로 inode를 찾음
+```
+
+- 디렉터리 내부의 링크 역시 다른 디렉터리의 inode를 가리킬 수 있다.
+
+  - 즉, 디렉터리는 다른 디렉터리 내부에 존재할 수 있고 계층적인 구조를 형성할 수 있다.
+
+  - 이를 활용해 `/home/blackbeard/concorde.png`처럼 우리에게 친숙한 파일 경로를 사용할 수 있는 것이다.
+
+    - 이런 파일 경로를 열겠다고 요청하면 커널은 해당 파일 경로에 속한 각 **디렉터리 엔트리**<sup>directory entry</sup>(커널 내부에서는 **dentry**라고 부른다)를 탐색해서 다음 항목의 inode를 찾는다.
+
+    - 리눅스 커널은 dentry 캐시를 사용해서 디렉터리 찾기 결과를 저장하고 나중에 일시적인 지역성을 활용해 탐색 속도를 높인다.
+
+- 비록 디렉터리를 일반 파일처럼 취급하지만, 커널은 사용자 영역에서 디렉터리를 일반 파일처럼 열고 조작하지 못하도록 **제한**한다.
+
+  - 그래서 디렉터리는 **특수한 시스템 콜을 활용해서 조작**해야 하는데, 이를 위한 시스템 콜로는 **링크 추가와 삭제**가 있다.
+
+  - 사용자 영역에서 커널의 중재 없이 디렉터리를 조작할 수 있게 하면 아주 단순한 오류가 발생해도 파일시스템 전체를 망가뜨릴 수 있다.
+
+<br>
+
+#### 하드 링크 (hard link) & 심벌릭 링크 (symbolic link)
+
+https://jybaek.tistory.com/578
+
+https://github.com/whdlgp/system_programming_pra/wiki/%EC%A2%80-%EB%8D%94-%EB%A6%AC%EB%88%85%EC%8A%A4%EC%97%90%EC%84%9C-%ED%8C%8C%EC%9D%BC-%EB%8B%A4%EB%A4%84%EB%B3%B4%EA%B8%B0(%EB%A7%81%ED%81%AC)
+
+<br>
+<p align = "center">
+<img src = "https://user-images.githubusercontent.com/39554623/58148455-cea0dc80-7c99-11e9-89fd-228c0d695ce8.png">
+</p>
+<br>
+
+> 하드 링크
+
+- 원본 파일과 **동일한 inode**를 가진다.
+
+  - 그렇기 때문에 원본 파일이 삭제되더라도 원본 파일의 inode를 가지고 있는 링크 파일은 여전히 사용이 가능하다.
+
+- 리눅스 시스템은 링크를 해제할 때마다 inode와 관련 자료를 삭제할 수 없다.
+
+  - 파일시스템 내에 다른 하드 링크가 존재한다면, 모든 링크가 삭제될 때까지 파일을 삭제하지 못하도록 보장하기 위해 각 inode는 파일시스템 내부에 **링크 카운터**를 두어 **자신을 가리키는 링크 개수를 추적**한다.
+  
+  - 파일 이름의 링크가 해제하면 링크 카운터가 하나 감소하며 **링크 카운트가 0이 되면 파일시스템에서 inode와 관련 자료를 실제로 삭제**한다.
+
+  - `같은 inode를 가르키는 서로 다른 이름으로 원본이라는 개념이 모호하다. → 원본은 존재하는게 아닌가?`
+
+> 심벌릭 링크
+
+- 원본 파일의 **이름을 가리키는 링크**이다.
+
+  - 그렇기 때문에 원본 파일이 사라지게 되면 역할을 수행할 수 없다.
+
+  - 장점은 전혀 다른 파일이라도 원본 파일과 이름이 같다면 계속 사용이 가능하다는 것이다.
+
+    - 주로 dynamic library의 so 파일과 연계해서 사용하게 된다.
+
+
+```
+june0122@ubuntu:~/linux/link$ echo "This is test file" > test
+june0122@ubuntu:~/linux/link$ ls
+test
+june0122@ubuntu:~/linux/link$ cat test
+This is test file
+june0122@ubuntu:~/linux/link$ vi test
+june0122@ubuntu:~/linux/link$
+june0122@ubuntu:~/linux/link$ echo add new line >> test
+june0122@ubuntu:~/linux/link$ ls
+test
+june0122@ubuntu:~/linux/link$ cat test
+This is test file
+add new line
+june0122@ubuntu:~/linux/link$ more test
+This is test file
+add new line
+june0122@ubuntu:~/linux/link$ ls -ali test
+530554 -rw-rw-r-- 1 june0122 june0122 31 May 22 05:16 test
+june0122@ubuntu:~/linux/link$ ln -s test aaaa
+june0122@ubuntu:~/linux/link$ ls
+aaaa  test
+june0122@ubuntu:~/linux/link$ vi aaaa
+june0122@ubuntu:~/linux/link$ ln test bbbb
+june0122@ubuntu:~/linux/link$ ls
+aaaa  bbbb  test
+june0122@ubuntu:~/linux/link$ ls -i
+530555 aaaa  530554 bbbb  530554 test
+june0122@ubuntu:~/linux/link$ ls -ali
+total 16
+530553 drwxrwxr-x 2 june0122 june0122 4096 May 22 05:22 .
+528258 drwxrwxr-x 3 june0122 june0122 4096 May 22 05:04 ..
+530555 lrwxrwxrwx 1 june0122 june0122    4 May 22 05:21 aaaa -> test
+530554 -rw-rw-r-- 2 june0122 june0122   31 May 22 05:21 bbbb
+530554 -rw-rw-r-- 2 june0122 june0122   31 May 22 05:21 test
+june0122@ubuntu:~/linux/link$ rm test
+june0122@ubuntu:~/linux/link$ ls
+aaaa  bbbb
+june0122@ubuntu:~/linux/link$ cat aaaa
+cat: aaaa: No such file or directory
+june0122@ubuntu:~/linux/link$ cat bbbb
+This is test file
+add new line
+
+```
+
+
+
+
+<br>
 
 #### 특수 파일
 
+<br>
+
 #### 파일 시스템과 네임스페이스
+
 
 
 ### 1.4.2 프로세스
@@ -352,3 +523,13 @@ EBX는 DS 세그먼트에 대한 포인터를 주로 저장하고 ESI나 EDI와 
 - **라이브러리**는 이러한 **컴포넌트 자체**를 뜻하고
 
 - **API**는 이 **컴포넌트를 활용하는 규약**이라고 보면 된다.
+
+<br>
+
+## <b id = "f3"><sup>3 </sup></b>오프셋(offset)[ ↩](#a3)
+
+- 컴퓨터 과학에서 배열이나 자료 구조 오브젝트 내의 오프셋(offset)은 일반적으로 동일 오브젝트 안에서 **오브젝트의 처음부터 주어진 요소나 지점까지의 변위차**를 나타내는 정수형이다.
+
+  - 이를테면, 문자 A의 배열이 abcdef를 포함한다면 'c' 문자는 A 시작점에서 2의 오프셋을 지닌다고 할 수 있다.
+
+  - 어셈블리어와 같은 저급 프로그래밍 언어에서 오프셋은 **상대 주소(relative address)**로 부른다.
