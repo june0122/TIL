@@ -1,0 +1,206 @@
+# Model과 JSON, Protocol Buffers
+
+## JSON (JavaScript Object Notation, 자바스크립트 객체 표기법)
+
+### JSON의 정의
+
+- JSON은 경량(Lightweight)의 DATA 교환 형식
+
+- Javascript에서 객체를 만들 때 사용하는 표현식을 의미한다.
+
+- JSON 표현식은 사람과 기계 모두 이해하기 쉬우며 용량이 작아서, 최근에는 JSON이 XML을 대체해서 데이터 전송 등에 많이 사용한다.
+
+- **특정 언어에 종속되지 않으며**, 대부분의 프로그래밍 언어에서 JSON 포맷의 데이터를 핸들링 할 수 있는 라이브러리를 제공한다.
+
+  - 객체 직렬화와 역직렬화는 자바 언어에서만 사용이 가능하다.
+
+### JSON의 장점과 단점
+
+> JSON은 문자열 형식의 데이터이다.
+
+- 장점 : 데이터 로깅이 편리해진다.
+
+  - 로그(Log)는 컴퓨터나 서버(Server) 등에서 유저(User)의 플레이 정보를 시간에 따라 남기는 기록을 뜻한다.
+
+- 단점 : binary 데이터를 직접 교환하는거에 비해 더 많은 데이터를 보내야 한다. (용량이 커진다) 
+
+### Gson (구글 Gson, Google Gson)
+
+> JSON의 자바 오브젝트의 직렬화, 역직렬화를 해주는 오픈 소스 자바 라이브러리
+
+<br>
+
+## Model
+
+> ### 데이터를 교환하거나 저장하기 위한 목적의 클래스 <br> MVC 패턴에서 Model은 ① DAO, ② DTO, ③ Service 로 나눌 수 있다.
+
+### ① DTO (Data Transfer Object)
+
+- 계층 간 **데이터 교환**을 위한 자바빈즈 (Java Beans)
+
+  - Database에서 Data를 얻어 Service나 Controller 등으로 **보낼 때 사용**하는 객체
+
+  - 보통 로직을 가지고 있지 않고 **data와 해당 data에 접근을 위한 getter, setter만 가지고 있다.** 
+
+- **VO (Value Object)** 는 DTO와 동일한 개념이지만 read only 속성을 지닌다.
+
+
+### ② DAO (Data Access Object)
+
+- DB를 사용해 **데이터를 조회하거나 조작**하는 기능을 담당하는 것들
+  
+- Domain Logic(비즈니스 로직이나 DB와 관련 없는 코드들)을 persistence mechanism과 분리하기 위해 사용.
+  
+  - Persistence Layer: Database에 data를 CRUD(Create, Read, Update, Drop)하는 계층
+
+### ③ Service
+
+- Service는 비지니스 로직이 들어가는 부분이다.
+  
+  - Controller가 Request를 받으면 적절한 Service에 전달하고, 전달 받은 Service는 비즈니스 로직을 처리한다.
+  
+  - DAO로 데이터베이스를 접근하고, DTO로 데이터를 전달받은 다음, 적절한 처리를 해 반환한다.
+
+
+<br>
+
+## Model에 필요한 세 가지 기능
+
+### 1. toString()
+
+### 2. equals (비교)
+
+### 3. Map (HashMap, HashCode 개념)
+
+  - 동등성과 관련된다.
+  
+  - `hashCode()` 와 `equals()`를 **@Override** 해서 사용
+
+```java
+@Override
+public boolean equals(Object obj) {
+    if (obj == this)
+    return true;
+
+    if (obj == null)
+    return false;
+
+    // primitive 타입은 null이 될 수 없다.
+
+
+    // 타입 체크
+    // 1. instanceOf - 자식 타입도 포함되어 true가 나온다.
+
+    // 2. class 타입 비교
+    
+    // return name != null && name.equals(other.name) && age == other.age;
+    // name이 null 이면 nullPointerExecption이 발생할 수 있다.
+    return Objects.eqauls(name, other.name) && age == other.age;
+
+} 
+```
+
+- `Map<User, String> map = new HashMap<>();`
+
+- `Map<User, String> map = new TreeMap<>();`
+
+  - Tree : 좌측은 작은 값, 우측은 큰 값 => 대소 비교
+  
+  - Comparable 인터페이스
+  
+    - 자기가 만든 것이 아닌, 가져다 쓰는 라이브러리라면 `Comparable` 사용 불가 
+
+    - `Comparable` : 기존 코드 수정해야 함 => OCP 불만족
+  
+    - `Comparator (비교자)` : 기존 코드 수정 X => OCP 만족, 진보된 방식
+
+<br>
+
+## Database : Table 형식의 자료구조
+
+- OR Mapping (Object Relational Mapping) → DAO
+
+- DTO → JSON (Gson)
+
+- POJO (Plain Old Java Object) : 자바의 코어 라이브러리만을 이용
+
+
+<br>
+
+## Lombok 라이브러리 : @Data
+
+- Project Structure → Libraries → + 추가 버튼 → From Maven → projectlombok (디렉토리 설정과 Transitive dependencies 옵션 클릭)
+
+  - 어노테이션 사용되는 위치를 확인하려면 어노테이션 문서에서 Target을 확인하면 된다.
+
+    - `@Target(ElementType.METHOD)`
+  
+  - 라이브러리 추가 시 @Retention(보유)이 SOURCE 이냐 RUNTIME 이냐에 따라 사용법이 다르다.
+    
+    - `@Retention(RetentionPolicy.SOURCE)` (Lombok의 @Data)
+    - `@Retention(RetentionPolicy.RUNTIME)` (Junit의 @Test)
+
+<br>
+
+## 결합도(의존도, Coupling)
+
+### 강한 결합 (tightly coupling)
+
+- 하나의 클래스가 다른 클래스의 이름을 직접 사용하는 것 
+  
+  - 빠른 동작을 제공해주지만, 설계 변경에는 취약하다.
+
+### 약한 결합 (loosely coupling)
+
+> 하나의 클래스가 다른 클래스를 사용할 때, 부모인 추상 클래스를 사용해서 접근하는 것
+
+- 교체 가능한 유연한 디자인의 핵심.
+
+- 나중에 새로운 코드가 추가되어도 기존 코드는 수정될 필요가 없다. 
+
+  - **OCP**를 만족한다.
+
+  - DIP(의존관계 역전의 원칙) : 클라이언트는 구체 클래스에 의존하는 것이 아니라 **추상 클래스나 인터페이스에 의존**해야 한다.
+
+<br>
+
+### [덕 타이핑(duck typing)](https://ko.wikipedia.org/wiki/%EB%8D%95_%ED%83%80%EC%9D%B4%ED%95%91)
+ 
+- 동적 타이핑의 한 종류로, 객체의 변수 및 메소드의 집합이 객체의 타입을 결정하는 것을 말한다. 클래스 상속이나 인터페이스 구현으로 타입을 구분하는 대신, 덕 타이핑은 객체가 어떤 타입에 걸맞은 변수와 메소드를 지니면 객체를 해당 타입에 속하는 것으로 간주한다.
+
+  - 컴파일 타임에 체킹이 불가능하기 때문에 점점 사용을 하지 않으려한다.
+  
+  - **타입 안정성**이 중요시 되고 있기 때문
+
+- 다형성
+  
+  - 상속을 통한 다형성
+  
+  - 기능적인 부분을 통한 다형성 
+
+<br>
+
+
+## 프로토콜 버퍼 (Protocol Buffers) - Google
+
+- 다양한 언어를 지원한다. (Go, Kotlin, Python, C++, C#, Java, Javascript, Typescript... )
+
+- snappy
+
+### gRPC (내부적으로 proto buffers를 이용하여 동작) 예습
+
+- Java RMI(Java Remote Method Invoke) 
+ 
+  - 자바 프로그램에서 각 객체간, 컴퓨터간 메서드를 호출할 수 있게 해주는 기술
+
+  - java에서만 지원
+
+- RPC(Remote Procedure Call)
+
+  - proto buffers 지원 언어 모두 지원
+
+  - invoke 는 call과 같은 의미
+
+- proxy - stub 패턴
+
+  - stub : 실제 그 기능을 가지고 있는 구현체
