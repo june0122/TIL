@@ -310,21 +310,233 @@ char c = StringUtilKt.lastChar("Java");
 
 ### 3.3.3 확장 함수로 유틸리티 함수 정의
 
+> #### 프로그래밍 언어 용어에서 `정적` 이라는 말은 **컴파일 시점** 을 의미하고, `동적` 이라는 말은 **실행 시점** 을 의미한다. 
+
+- **실행 시점**에 객체 타입에 따라 동적으로 호출될 대상 메소드를 결정하는 방식을 **동적 디스패치(dynamic dispatch)** 라고 한다.
+  
+- **컴파일 시점**에 알려진 변수 타입에 따라 정해진 메소드를 호출하는 방식은 **정적 디스패치(static dispatch)** 라고 한다. 
+
+### 3.3.4 확장 함수는 오버라이드 할 수 없다
+
+***코틀린은 호출될 확장 함수를 '정적'으로 결정한다.***
+
+> 멤버 함수 오버라이드하기
+
+```kotlin
+open class View {
+    open fun click() = println("View clicked")
+}
+
+class Button: View() {
+    override fun click() = println("Button clicked")
+}
+
+fun main(args: Array<String>) {
+    val view: View = Button()
+    view.click()
+}
+```
+
+```kotlin
+>>> val view: View = Button()
+>>> view.click()
+
+Button clicked
+```
+
+- 확장 함수는 클래스의 밖에 선언되므로 **클래스의 일부가 아니다.**
+
+- 이름과 파라미터가 완전히 같은 확장 함수를 기반 클래스와 하위 클래스에 대해 정의해도 실제로는 확장 함수를 호출할 때 **수신 객체로 지정한 변수의 정적 타입에 의해 확장 함수가 결정**된다.
+
+  - 그 변수에 저장된 객체의 동적인 타입에 의해 확장 함수가 결정되지 않는다.
+
+<br>
+
+> 확장 함수는 오버라이드할 수 없다.
+
+```kotlin
+fun View.showOff() = println("I'm a view!")
+fun Button.showOff() = println("I'm a button!")
+
+>>> val view: View = Button()
+>>> view.showOff()  // 확장 함수는 정적으로 결정된다.
+I'm a view!
+```
+
+- view가 가리키는 객체의 실체 타입이 Button이지만, 이 경우 view의 타입이 View이기 때문에 무조건 View의 확장 함수가 호출된다.
+
+> 자바 코드
+
+```
+>>> View view = new Button();
+>>> ExtensionsKt.showOff(view);
+
+I'm a view!
+```
+
+- 어떤 클래스를 확장한 함수와 그 클래스의 멤버 함수의 이름과 시그니처가 같다면 확장 함수가 아니라 멤버 함수가 호출된다.
+
+  - 멤버 함수의 우선순위가 더 높다.
+
+  - 클래스의 API를 변경할 경우 항상 이를 염두해둬야 한다.
+
+<br>
+
+### 3.3.5 확장 프로퍼티
+
+```kotlin
+val String.lastChar: Char
+    get() = get(length - 1)
+var StringBuilder.lastChar: Char
+    get() = get(length - 1)
+    set(value: Char) {
+        this.setCharAt(length - 1, value)
+    }
+```
+
+```
+>>> println("Kotlin".lastChar)
+n
+
+>>> val sb = StringBuilder("Kotlin?")
+>>> sb.lastChar = '!'
+>>> println(sb)
+Kotlin!
+```
+
+- 자바에서 확장 프로퍼티를 사용하고 싶다면 항상 `StringUtilKt.getLastChar("Java")` 처럼 게터나 세터를 명시적으로 호출해야 한다.
+
+<br>
+
+## 컬렉션 처리: 가변 길이 인자, 중위 함수 호출, 라이브러리 지원
+
+- `vararg` 키워드를 사용하면 호출 시 인자 개수가 달라질 수 있는 함수를 정의할 수 있다.
+
+- 중위<sup> infix</sup> 함수 호출 구문을 사용하면 인자가 하나뿐인 메소드를 간편하게 호할 수 있다.
+
+- 구조 분해 선언<sup> destructuring declaration</sup>을 사용하면 복합적인 값을 분해해서 여러 변수에 나눠 담을 수 있다.
+
+<br>
+
+### 3.4.1 자바 컬렉션 API 확장
+
+> **가변 길이 인자** : 메소드를 호출할 때 원하는 개수만큼 값을 인자로 넘기면 자바 컴파일러가 배열에 그 값들을 넣어주는 기능
+
+- 자바에서는 타입 뒤에 `...` 를 붙였지만, 코틀린에서는 파라미터 앞에 `vararg` 변경자를 붙인다.
+
+```kotlin
+fun listOf<T>(vararg values: T): List<T> { ... }
+```
+
+- 이미 배열에 들어있는 원소를 가변 길이 인자로 넘길 때도 코틀린과 자바 구문이 다르다.
+
+  - 자바에서는 배열을 그냥 넘기면 되지만 코틀린에서는 배열을 명시적으로 풀어서 배열의 각 원소가 인자로 전달되게 해야 한다.
+
+  - 기술적으로는 **스프레드<sup> spread</sup> 연산자** 가 그런 작업을 해준다.
+
+    - 실제로 전달하려는 배열 앞에 `*`를 붙이기만 하면 된다.
+
+<br>
+
+### 3.4.2 가변 인자 함수: 인자의 개수가 달라질 수 있는 함수 정의
 
 
 
+<br>
+
+### 3.4.3 값의 쌍 다루기: 중위 호출과 구조 분해 선언
+
+> 중위 호출 <sup> infix call</sup> 방식으로 `to` 라는 일반 메소드를 호출
+
+```kotlin
+val map = mapOf(1 to "one", 7 to "seven", 53 to "fifty-three")
+```
+
+- 중위 호출 시에는 수신 객체와 유일한 메소드 인자 사이에 메소드 이름을 넣는다.
+
+  - 이때 객체, 메소드 이름, 유일한 인자 사이에는 공백이 들어가야 한다.
+
+```kotlin
+// 다음 두 호출은 동일하다.
+
+1.to("one")  // 일반적인 방식의 to 메소드 호출
+1 to "one"   // 중위 호출 방식으로 to 메소드 호출
+```
+
+- **인자가 하나뿐인** 일반 메소드나 인자가 하나뿐인 확장 함수에 중위 호출을 사용할 수 있다.
+
+- 함수(메소드)를 중위 호출에 사용하게 허용하고 싶다면 **`infix` 변경자를 함수 선언 앞에 추가**해야 한다.
+
+> `to` 함수의 정의 간략 ver.
+
+```kotlin
+infix fun Any.to(other: Any) = Pair(this, other)
+```
+
+- 이 `to` 함수는 `Pair의` 인스턴스를 반환한다.
+
+  - `Pair`는 **코틀린 표준 라이브러리 클래스**로, 그 이름대로 두 원소로 이뤄진 순서쌍을 표현한다.
+  
+  - 실제로 `to`는 제네릭 함수이지만 여기서는 설명을 위해 세부 사항을 생략했다.
+ 
+- **`to` 함수는 확장 함수다.**
+
+  - `to`를 사용하면 타입과 관계없이 임의의 순서쌍을 만들 수 있다.
+  
+  - 이는 `to`의 수신 객체가 **'제네릭'** 하다는 뜻이다.
+
+
+- `Pair`의 내용으로 **두 변수를 즉시 초기화**할 수 있다.
+
+```kotlin
+val (number, name) = 1 to "one"
+```
+
+> 이러한 기능을 **구조 분해 선언<sup> destructuring declaration</sup>** 이라 부른다.
+
+<br>
+
+- `Pair` 인스턴스 외 다른 객체에도 구조 분해를 적용할 수 있다.
+
+  - key와 value라는 두 변수를 맵의 원소를 사용해 초기화할 수 있다.
+
+  - 루프에서도 구조 분해 선언을 활용할 수 있다.
+
+    ```kotlin
+    for ((index, element) in collection.withIndex()) {
+        println("$index: $element")
+    }
+    ```
+
+
+>  mapOf 함수의 선언
+
+```kotlin
+fun <K, V> mapOf(vararg values: Pair<K, V>): Map<K, V>
+```
+- 코틀린을 잘 모른다면, 코틀린이 맵에 대해 제공하는 특별한 문법인 것처럼 느껴질 수 있다.
+
+  - 하지만 실제로는 **일반적인 함수를 더 간결한 구문으로 호출하는 것** 뿐이다.
+
+<br>
+
+## 3.5 문자열과 정규식 다루기
+
+<br>
 
 
 
+## 3.6 코드 다듬기: 로컬 함수와 확장
 
+> 반복하지 말라 (DRY, Don't Repeat Yourself)
 
+- 자바 코드를 작성할 때는 DRY 원칙을 피하기는 쉽지 않다.
 
+- 코틀린에서는 함수에서 추출한 함수를 원 함수 내부에 중첩시킬 수 있다.
 
+  - 문법적인 부가 비용을 들이지 않고도 깔끔하게 코드를 조작할 수 있다.
 
-
-
-
-
+<br>
 
 -------------------------------------------------------
 
