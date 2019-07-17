@@ -134,3 +134,16 @@ android {
 ## [Material Design Color Tool](https://material.io/tools/color/#!/?view.left=0&view.right=0)
 
 - `color.xml` 에 적용
+
+<br>
+
+## 참고 링크
+
+https://material.io/tools/icons/?icon=info&style=round
+
+https://github.com/HeroTransitions/Hero
+
+https://airbnb.design/lottie/
+
+https://black-jin0427.tistory.com/80
+
