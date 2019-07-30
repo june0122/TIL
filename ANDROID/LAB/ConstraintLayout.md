@@ -57,7 +57,7 @@
   
 <br>
 
-### 1. Relative Positioning
+## 1. Relative Positioning
 
 <br>
 <p align = 'center'>
@@ -90,7 +90,7 @@
 
 <br>
 
-### 2. Centering & Bias
+## 2. Centering & Bias
 
 <br>
 <p align = 'center'>
@@ -135,7 +135,7 @@
 
 <br>
 
-### 3. Circular Constraints
+## 3. Circular Constraints
 
 <br>
 <p align = 'center'>
@@ -153,7 +153,7 @@ app:layout_constraintCircleAngle="45"
 
 <br>
 
-### 4. Adjust the view size
+## 4. Adjust the view size
 
 > **Attributes 윈도우의 컨트롤들**
 
@@ -171,14 +171,14 @@ app:layout_constraintCircleAngle="45"
 
 - <img align = "absmiddle" height = 20 src = 'https://user-images.githubusercontent.com/39554623/62110195-dbb8f800-b2e8-11e9-87cf-60b6b59978fc.png' > **Fixed** : 특정한 크기를 지정할 수 있다.
 
-- <img align = "absmiddle" height = 20 src = 'https://user-images.githubusercontent.com/39554623/62110197-dbb8f800-b2e8-11e9-9eb0-e4d4f359ab29.png' > **Wrap Content** : view의 contents에 알맞게 확장된다.
+- <img align = "absmiddle" height = 20 src = 'https://user-images.githubusercontent.com/39554623/62110197-dbb8f800-b2e8-11e9-9eb0-e4d4f359ab29.png' > **Wrap Content** : 뷰의 contents에 알맞게 확장된다.
 
 - <img align = "absmiddle" height = 20 src = 'https://user-images.githubusercontent.com/39554623/62110198-dbb8f800-b2e8-11e9-9d1a-82adfaeb79ca.png' > **Match Constraints** : 각면의 제약 조건을 충족시킬 수 있도록, 가능한만큼 view가 확장된다. 그리고 아래의 속성들과 값들을 통해서 이러한 동작을 수정할 수 있다.
 
   - **`layout_constraintWidth_default`**
 
-     - `spread` : 기본값으로, 각면의 제약 조건을 충족시킬 수 있도록, 가능한만큼 view가 확장된다.
-     - `wrap` : contents에 크기를 맞추기 위해 필요한만큼만 view를 확장하지만, 제약 조건이 더 작은 view를 요구하는 경우 그것을 허용한다. `Wrap Content`와의 차이점을 눈여겨봐야하는데, `Wrap Content`로 설정할 경우, 너비가 항상 content의 너비와 일치해야 하지만, `Match Constraints`의 `layout_constraintWidth_default` 속성에서 `wrap`으로 값을 설정하면 view가 content의 너비보다 작아질 수 있다. 
+     - `spread` : 기본값으로, 각면의 제약 조건을 충족시킬 수 있도록, 가능한만큼 뷰가 확장된다.
+     - `wrap` : contents에 크기를 맞추기 위해 필요한만큼만 뷰를 확장하지만, 제약 조건이 더 작은 뷰를 요구하는 경우 그것을 허용한다. `Wrap Content`와의 차이점을 눈여겨봐야하는데, `Wrap Content`로 설정할 경우, 너비가 항상 content의 너비와 일치해야 하지만, `Match Constraints`의 `layout_constraintWidth_default` 속성에서 `wrap`으로 값을 설정하면 뷰가 content의 너비보다 작아질 수 있다. 
 
   - **`layout_constraintWidth_min`** : 뷰의 최소 너비에 대한 dp 수치를 취한다.
 
@@ -187,7 +187,7 @@ app:layout_constraintCircleAngle="45"
 
 <br>
 
-### 5. Set size as a ratio
+## 5. Set size as a ratio
 
 <br>
 <p align = 'center'>
@@ -196,7 +196,7 @@ app:layout_constraintCircleAngle="45"
 <img src = 'https://user-images.githubusercontent.com/39554623/62115021-b204ce80-b2f2-11e9-9e41-99d29b598c27.png'>
 </p>
 
-- view 크기 중 하나 이상이 `match constraints`<sup> 0dp</sup>로 설정된 경우, view의 크기를 원하는 비율로 설정할 수 있다.
+- 뷰의 크기 중 하나 이상이 `match constraints`<sup> 0dp</sup>로 설정된 경우, 뷰의 크기를 원하는 비율로 설정할 수 있다.
 
   - 비율을 설정하려면 패널 정사각형의 좌측 상단의 삼각형<sup> Attributes 윈도우 컨트롤 ①번</sup>을 클릭한 다음 비율을 입력한다.
 
@@ -229,15 +229,17 @@ app:layout_constraintDimensionRatio="H,16:9" <!-- height:width -->
 
 <br>
 
-### 6. Chains
+## 6. Chains
 
 <br>
 <p align = 'center'>
-<img width = 600 src = 'https://user-images.githubusercontent.com/39554623/62119927-93ef9c00-b2fb-11e9-84d5-1d81cf3a6f3c.png'>
+<img width = 600 src = 'https://user-images.githubusercontent.com/39554623/62127064-2009bf80-b30c-11e9-8a91-6d70ee747775.png'>
+</p>
+
+<p align = 'center'>
+▲ 체인은 양방향 위치 제한으로 서로 연결된 뷰 그룹이다. (bi-directional position constraints)
 </p>
 <br>
-
-- 두 뷰가 서로 연결되어 있을 경우 Chain이 생성되며, 여러 뷰끼리 묶어서 처리할 때 유용하다.
 
     ```xml
     <Button
@@ -252,30 +254,89 @@ app:layout_constraintDimensionRatio="H,16:9" <!-- height:width -->
     ```
 
 <br>
+
+> ## Chain의 style들
+
+<br>
 <p align = 'center'>
 <img src = 'https://user-images.githubusercontent.com/39554623/62120526-b7671680-b2fc-11e9-9ab0-ebd361e2280a.png'>
 </p>
-<br>
+
+<p align = 'center'>
+<strong>
+① Spread, ② Spread inside, ③ Weighted, ④ Packed
+</strong>
+</p>
 
 
 <br>
 <p align = 'center'>
 <img src = 'https://user-images.githubusercontent.com/39554623/62125097-0d40bc00-b307-11e9-8df5-2213e4bb721c.png'>
 </p>
-<br>
 
-<br>
 <p align = 'center'>
-<img src = 'https://user-images.githubusercontent.com/39554623/62126155-0ff0e080-b30a-11e9-8da6-50102f0ea3fe.png'>
+▲ Chain의 기본 동작을 변경하고 싶다면, Chain Style을 설정한다.
 </p>
 <br>
 
+### ① Spread
 
+> Chain Style의 **기본값**으로, (여백을 계산한 후) 뷰가 **균등하게 분산**된다.
+
+<p align = 'center'>
 <img src = 'https://user-images.githubusercontent.com/39554623/62126158-10897700-b30a-11e9-93ee-9805874f58e0.png'>
+</p>
+
+
+### ② Spread inside
+
+> 첫번째 뷰와 마지막 뷰가 체인의 **각 끝에 있는 제한에 부착**되고, 나머지는 고르게 분산된다.
+
+<p align = 'center'>
 <img src = 'https://user-images.githubusercontent.com/39554623/62126159-10897700-b30a-11e9-99e7-72d2171d44cb.png'>
+</p>
+
+### ③ Weighted
+
+> Chain Style이 `spread`나 `spread inside`로 설정되었을 때, 한 개 이상의 뷰를 `match constraints`<sup> 0dp</sup>로 설정하여 나머지 공간을 채울 수 있다.
+
+- 기본적으로 공간은 `match constraints`로 균등하게 분배되지만, `layout_constraintHorizontal_weight` 나 `layout_constraintVertical_weight` 속성을 이용하여 **가중치**<sup> weight</sup> 를 설정할 수 있다.
+
+  - 가장 높은 가중치를 가지는 뷰가 가장 많은 공간을 차지한다.
+
+<p align = 'center'>
 <img src = 'https://user-images.githubusercontent.com/39554623/62126156-0ff0e080-b30a-11e9-8dc1-5365aa4db4fa.png'>
+</p>
+
+<p align = 'center'>
+▲ 'layout_constraintHorizontal_weight' 값을 좌측부터 각각 10, 30, 50씩 주었다.
+</p>
+
+
+### ④ Packed
+
+> (여백을 계산 한 후) 뷰가 함께 **포장**<sup> packed</sup> 된다.
+
+- `layout_constraintHorizontal_bias` 나 `layout_constraintVertical_bias`를 통해 **체인의 bias를 조절**할 수 있다.
+
+<p align = 'center'>
 <img src = 'https://user-images.githubusercontent.com/39554623/62126160-10897700-b30a-11e9-95fc-160fd1d3cec4.png'>
+</p>
+
+<p align = 'center'>
 <img src = 'https://user-images.githubusercontent.com/39554623/62126161-11220d80-b30a-11e9-9c8b-0c5aaa2d0d86.png'>
+</p>
+
+<br>
+
+## 7. Guideline
+
+<br>
+<p align = 'center'>
+<img src = 'https://user-images.githubusercontent.com/39554623/62128961-855faf80-b310-11e9-8ee9-1648b36c9d8d.png'>
+</p>
+<br>
+
 
 <br>
 
