@@ -177,7 +177,18 @@ fun main() {
 
 <br>
 
-## Iterable, Iterator / Observable, Observer
+## [RxJava: Reactive Extensions for JVM](https://github.com/ReactiveX/RxJava)  
+
+> RxJava는 Reactive Extensions의 Java VM<sup> 가상머신</sup> 버전 구현이다. observable sequences를 이용하여 비동기 프로그램<sup> asynchronous</sup>과 이벤트 기반<sup> event-based</sup> 프로그램을 구성하기 위한 라이브러리이다.
+
+- 선언적으로 모든 것이 연속되어 일어나게 조립할 수 있도록 해주는 operator들을 추가하고 데이터/이벤트 sequences를 지원하기 위해 옵저버 패턴을 확장하였다.
+
+  - 그러면서 추상화를 통해 low-level threading, synchronization, thread-safety, concurrent data structures, and non-blocking I/O 같은 것들에 대한 걱정은 하지 않도록 하였다.
+
+  - RxJava는 Groovy, Clojure, JRuby, Kotlin 그리고 Scala 같은 Java 6 또는 그 이상의 JVM 기반 언어를 지원한다.
+
+
+### Iterable, Iterator / Observable, Observer
 
 기존 자바에선 **Iterable, Iterator**를 이용해 mapping을 하는 구조<sup> `pull`</sup>였다면 RxJava에선 **Observable, Observer**를 이용하여 mapping을 한다.<sup> `push`</sup>
 
