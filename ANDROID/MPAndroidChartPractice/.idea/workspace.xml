@@ -62,11 +62,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/june0122/dynamic_graph/ui/GraphFragmentA.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="475">
-              <caret line="25" column="59" selection-start-line="25" selection-start-column="59" selection-end-line="25" selection-end-column="59" />
-              <folding>
-                <element signature="e#35#796#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-785">
+              <caret line="12" column="46" lean-forward="true" selection-start-line="12" selection-start-column="46" selection-end-line="12" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -293,7 +290,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="2560" height="1417" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Capture Tool" />
       <window_info content_ui="combo" id="Project" visible="true" weight="0.16203336" />
@@ -308,11 +304,11 @@
       <window_info anchor="bottom" id="Logcat" weight="0.32981133" />
       <window_info anchor="bottom" id="TODO" />
       <window_info anchor="bottom" id="Debug" />
-      <window_info anchor="bottom" id="Terminal" weight="0.32981133" />
+      <window_info active="true" anchor="bottom" id="Terminal" visible="true" weight="0.32981133" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" weight="0.32981133" />
       <window_info anchor="bottom" id="Build" weight="0.32981133" />
-      <window_info active="true" anchor="bottom" id="Android Profiler" visible="true" weight="0.32981133" />
+      <window_info anchor="bottom" id="Android Profiler" weight="0.32981133" />
       <window_info anchor="right" id="Device File Explorer" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" />
       <window_info anchor="right" id="Gradle" />
@@ -355,11 +351,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/june0122/dynamic_graph/ui/GraphFragmentA.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="25" column="59" selection-start-line="25" selection-start-column="59" selection-end-line="25" selection-end-column="59" />
-          <folding>
-            <element signature="e#35#796#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-785">
+          <caret line="12" column="46" lean-forward="true" selection-start-line="12" selection-start-column="46" selection-end-line="12" selection-end-column="46" />
         </state>
       </provider>
     </entry>
