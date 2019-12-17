@@ -1,7 +1,8 @@
-package june0122.dynamic_graph
+package june0122.dynamic_graph.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import june0122.dynamic_graph.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,7 +12,9 @@ class MainActivity : AppCompatActivity() {
 
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, GraphFragmentA(), GraphFragmentA::class.java.name)
+            .replace(
+                R.id.fragmentContainer,
+                GraphFragmentA(), GraphFragmentA::class.java.name)
             .commit()
     }
 }

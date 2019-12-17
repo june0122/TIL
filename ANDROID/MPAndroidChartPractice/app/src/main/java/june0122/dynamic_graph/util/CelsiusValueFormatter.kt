@@ -1,4 +1,4 @@
-package june0122.dynamic_graph
+package june0122.dynamic_graph.util
 
 import com.github.mikephil.charting.formatter.ValueFormatter
 

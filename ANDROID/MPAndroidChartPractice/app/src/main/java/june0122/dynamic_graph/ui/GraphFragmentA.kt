@@ -1,4 +1,4 @@
-package june0122.dynamic_graph
+package june0122.dynamic_graph.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,12 +13,17 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import june0122.dynamic_graph.R
+import june0122.dynamic_graph.util.CelsiusValueFormatter
 import kotlinx.android.synthetic.main.fragment_graph_a.*
 
 class GraphFragmentA : Fragment() {
     private val entries: ArrayList<Entry> = arrayListOf()
+    private var maxValue: Float? = 0f
+    private var minValue: Float? = 0f
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         addEntry()
         return inflater.inflate(R.layout.fragment_graph_a, container, false)
@@ -31,29 +36,26 @@ class GraphFragmentA : Fragment() {
 
     private fun setChart() {
         val lineData = LineData(createSet())
-        val xAxis = lineChart.xAxis
-        val yAxisLeft = lineChart.axisLeft
-        val yAxisRight = lineChart.axisRight
 
-        val upperLimitLine = LimitLine(35f, "max")
+        val upperLimitLine = LimitLine(35f, "max : $maxValue")
                 .apply {
                     lineWidth = 2f
-                    lineColor = context?.let { ContextCompat.getColor(it, R.color.pale_gray) } ?: 0
+                    lineColor = ContextCompat.getColor(lineChart.context, R.color.pale_gray)
                     enableDashedLine(10f, 15f, 0f)
                     labelPosition = LimitLine.LimitLabelPosition.LEFT_BOTTOM
-                    textColor = context?.let { ContextCompat.getColor(it, R.color.gray) } ?: 0
+                    textColor = ContextCompat.getColor(lineChart.context, R.color.gray)
                 }
 
-        val lowerLimitLine = LimitLine(5f, "min")
+        val lowerLimitLine = LimitLine(5f, "min : $minValue")
                 .apply {
                     lineWidth = 2f
-                    lineColor = context?.let { ContextCompat.getColor(it, R.color.pale_gray) } ?: 0
+                    lineColor = ContextCompat.getColor(lineChart.context, R.color.pale_gray)
                     enableDashedLine(10f, 15f, 0f)
                     labelPosition = LimitLine.LimitLabelPosition.LEFT_BOTTOM
-                    textColor = context?.let { ContextCompat.getColor(it, R.color.gray) } ?: 0
+                    textColor = ContextCompat.getColor(lineChart.context, R.color.gray)
                 }
 
-        xAxis.apply {
+        val xAxis = lineChart.xAxis.apply {
             setDrawLabels(false)
             setDrawAxisLine(false)
             setDrawGridLines(false)
@@ -65,20 +67,22 @@ class GraphFragmentA : Fragment() {
         }
 
 
-        yAxisLeft.apply {
-            axisMinimum = 0f
-            setDrawGridLines(false)
-            addLimitLine(upperLimitLine)
-            addLimitLine(lowerLimitLine)
-            setDrawLimitLinesBehindData(true)
-            textColor = context?.let { ContextCompat.getColor(it, R.color.gray) } ?: 0
-        }
+        val yAxisLeft = lineChart.axisLeft
+                .apply {
+                    axisMinimum = 0f
+                    setDrawGridLines(false)
+                    addLimitLine(upperLimitLine)
+                    addLimitLine(lowerLimitLine)
+                    setDrawLimitLinesBehindData(true)
+                    textColor = context?.let { ContextCompat.getColor(it, R.color.gray) } ?: 0
+                }
 
-        yAxisRight.apply {
-            setDrawLabels(false)
-            setDrawAxisLine(false)
-            setDrawGridLines(false)
-        }
+        val yAxisRight = lineChart.axisRight
+                .apply {
+                    setDrawLabels(false)
+                    setDrawAxisLine(false)
+                    setDrawGridLines(false)
+                }
 
         lineChart.apply {
             setScaleEnabled(false)
@@ -106,10 +110,11 @@ class GraphFragmentA : Fragment() {
     private fun addEntry() {
         for (i in 0..50 step 2) {
             val temperatureValue = Math.random() * 40
-
             entries.add(Entry(i.toFloat(), temperatureValue.toFloat()))
-        }
 
+            maxValue = entries.maxBy { it.y }?.y
+            minValue = entries.minBy { it.y }?.y
+        }
     }
 
     private fun createSet(): LineDataSet {
@@ -122,12 +127,9 @@ class GraphFragmentA : Fragment() {
             setDrawCircles(false)
             setDrawHighlightIndicators(false)
 
-            color = context?.let { ContextCompat.getColor(it, R.color.denimBlue) }
-                    ?: R.color.denimBlue
-            circleHoleColor = context?.let { ContextCompat.getColor(it, R.color.denimBlue) }
-                    ?: R.color.denimBlue
-            setCircleColor(context?.let { ContextCompat.getColor(it, R.color.denimBlue) }
-                    ?: R.color.denimBlue)
+            color = ContextCompat.getColor(lineChart.context, R.color.denimBlue)
+            circleHoleColor = ContextCompat.getColor(lineChart.context, R.color.denimBlue)
+            setCircleColor(ContextCompat.getColor(lineChart.context, R.color.denimBlue))
             lineWidth = 2f
             circleRadius = 4f
             valueFormatter = celsiusValueFormatter
