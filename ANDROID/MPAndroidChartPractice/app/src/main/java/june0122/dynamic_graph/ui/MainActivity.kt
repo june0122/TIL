@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(
                 R.id.fragmentContainer,
-                GraphFragmentA(), GraphFragmentA::class.java.name)
+                TemperatureGraphFragment(), TemperatureGraphFragment::class.java.name)
             .commit()
     }
 }
