@@ -1,7 +1,6 @@
 package com.june0122.bis_sample
 
 import android.os.Bundle
-import android.os.StrictMode
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +15,9 @@ import java.net.URL
 
 class StationBusListFragment : Fragment() {
 
-    data class ItemList(val stationId: String, val stationName: String)
+    data class ItemList(val stationName: String, val stationId: String, val firstTime: String, val lastTime: String)
 
-    private val itemLists = arrayListOf<String>()
+    private val itemLists = arrayListOf<ItemList>()
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -29,26 +28,22 @@ class StationBusListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
+        setStrictMode()
 
         Thread(Runnable {
             activity?.runOnUiThread {
                 getXmlData()
-
             }
         }).start()
-
     }
 
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun getXmlData() {
-        val serviceKey = "5K4YH8DzyYk6r4IHryQgYEXHCIOLtnuw%2BlwR3oevwZr%2F5kdBfD2N%2B%2F1OUqNUFTOuNRGjfIerFnv4yZYWNnFenQ%3D%3D"
+        val serviceKey = "6Gi1UHlRZK0oxUZHrb5I5L%2Fb466WpwHkOp%2BBfVMdZFJAq6O7B5E1uQuxNlgAbfxrjjDSTJOuyGjrU25iiZS6hA%3D%3D"
         val busRouteId = "100100118"
-//        val url: URL = URL("http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?ServiceKey=5K4YH8DzyYk6r4IHryQgYEXHCIOLtnuw%2BlwR3oevwZr%2F5kdBfD2N%2B%2F1OUqNUFTOuNRGjfIerFnv4yZYWNnFenQ%3D%3D&busRouteId=100100118")
+        val url = URL("http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?ServiceKey=$serviceKey&busRouteId=$busRouteId")
 
-        val url: URL = URL("http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?ServiceKey=$serviceKey&busRouteId=$busRouteId")
         val inputStream = url.openStream()
         val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
         val parser = factory.newPullParser()
@@ -57,6 +52,18 @@ class StationBusListFragment : Fragment() {
 
         var parserEvent = parser.eventType
 
+        var arrmsg1Tag = false
+        var arrmsg2Tag = false
+        var firstTimeTag = false
+        var lastTimeTag = false
+        var stationIdTag = false
+        var stationNameTag = false
+
+        var stationId = ""
+        var firstTime = ""
+        var lastTime = ""
+        var stationName: String
+
         while (parserEvent != XmlPullParser.END_DOCUMENT) {
             when (parserEvent) {
                 XmlPullParser.START_DOCUMENT -> {
@@ -64,16 +71,74 @@ class StationBusListFragment : Fragment() {
                 }
 
                 XmlPullParser.START_TAG -> {
-                        Log.d("XXX", parser.name)
+                    when (parser.name) {
+                        "arrmsg1" -> {
+                            arrmsg1Tag = true
+                        }
+                        "arrmsg2" -> {
+                            arrmsg2Tag = true
+                        }
+                        "arsId" -> {
+                            stationIdTag = true
+                        }
+                        "firstTm" -> {
+                            firstTimeTag = true
+                        }
+                        "lastTm" -> {
+                            lastTimeTag = true
+                        }
+                        "stNm" -> {
+                            stationNameTag = true
+                        }
+                    }
                 }
 
                 XmlPullParser.TEXT -> {
-                        Log.d("XXX", parser.text)
+                    when {
+                        arrmsg1Tag -> {
+                            Log.d("XXX-arrmsg1", parser.text)
+                        }
+                        arrmsg2Tag -> {
+                            Log.d("XXX-arrmsg2", parser.text)
+                        }
+                        stationIdTag -> {
+                            stationId = parser.text
+                            Log.d("XXX-arsId", parser.text)
+                        }
+                        firstTimeTag -> {
+                            firstTime = formatTime(parser.text)
+                            Log.d("XXX-firstTm", formatTime(parser.text))
+                        }
+                        lastTimeTag -> {
+                            lastTime = formatTime(parser.text)
+                            Log.d("XXX-lastTm", formatTime(parser.text))
+                        }
+                        stationNameTag -> {
+                            stationName = parser.text
+                            Log.d("XXX-stNm", parser.text)
+
+                            val data = ItemList(stationName, stationId, firstTime, lastTime)
+                            itemLists.add(data)
+                        }
+                    }
+
+                    arrmsg1Tag = false
+                    arrmsg2Tag = false
+                    firstTimeTag = false
+                    lastTimeTag = false
+                    stationIdTag = false
+                    stationNameTag = false
                 }
             }
             parserEvent = parser.next()
         }
-        Log.d("XXX", "[End Document]")
-    }
 
+        Log.d("XXX", "[End Document]")
+
+
+        itemLists.forEach {
+            Log.d("XXX", "${it.stationName} (${it.stationId}) / 첫차 ${it.firstTime} ~ 막차 ${it.lastTime}")
+        }
+
+    }
 }
