@@ -1,7 +1,8 @@
-package com.june0122.bis_sample
+package com.june0122.bis_sample.ui.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.june0122.bis_sample.ui.viewholder.StationBusListViewHolder
 
 class StationBusListAdapter : RecyclerView.Adapter<StationBusListViewHolder>() {
     var items = arrayListOf<BusInfo>()
@@ -9,7 +10,7 @@ class StationBusListAdapter : RecyclerView.Adapter<StationBusListViewHolder>() {
     data class BusInfo(val string: String)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StationBusListViewHolder =
-            StationBusListViewHolder(parent)
+        StationBusListViewHolder(parent)
 
     override fun getItemCount(): Int = items.count()
 
