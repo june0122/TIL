@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.june0122.bis_sample.utils.formatTime
+import com.june0122.bis_sample.utils.setStrictMode
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
@@ -41,7 +43,7 @@ class StationBusListFragment : Fragment() {
     @Throws(XmlPullParserException::class, IOException::class)
     private fun getXmlData() {
         val serviceKey = "6Gi1UHlRZK0oxUZHrb5I5L%2Fb466WpwHkOp%2BBfVMdZFJAq6O7B5E1uQuxNlgAbfxrjjDSTJOuyGjrU25iiZS6hA%3D%3D"
-        val busRouteId = "100100118"
+        val busRouteId = "100100118"  // 버스 노선 ID
         val url = URL("http://ws.bus.go.kr/api/rest/arrive/getArrInfoByRouteAll?ServiceKey=$serviceKey&busRouteId=$busRouteId")
 
         val inputStream = url.openStream()
