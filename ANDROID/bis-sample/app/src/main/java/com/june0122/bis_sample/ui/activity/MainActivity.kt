@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.fragmentContainer,
-                    StationBusListFragment(), StationBusListFragment::class.java.name)
+                    SearchFragment(), SearchFragment::class.java.name)
                 .commit()
     }
 
