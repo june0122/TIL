@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.june0122.bis_sample.R
+import com.june0122.bis_sample.model.*
+import com.june0122.bis_sample.model.Data.Companion.SERVICE_KEY
 import com.june0122.bis_sample.utils.formatArrivalTime
 import com.june0122.bis_sample.utils.formatTime
 import com.june0122.bis_sample.utils.setStrictMode
@@ -18,25 +20,6 @@ import java.io.InputStreamReader
 import java.net.URL
 
 //const val SERVICE_KEY = "6Gi1UHlRZK0oxUZHrb5I5L%2Fb466WpwHkOp%2BBfVMdZFJAq6O7B5E1uQuxNlgAbfxrjjDSTJOuyGjrU25iiZS6hA%3D%3D"
-//
-//data class ParserElement(val parser: XmlPullParser, val parserEvent: Int)
-//
-//data class StationList(val stationId: String, val stationName: String)
-//
-//data class BusRouteMap(val stationName: String, val stationId: String, val firstTime: String, val lastTime: String)
-//
-//data class BusList(val busNumber: String, val nextStation: String, val firstArrivalBusInfo: String, val secondArrivalBusInfo: String)
-//
-//data class BusData(val busNumber: String,
-//                   val busId: String,
-//                   val busType: String,
-//                   val term: String,
-//                   val startStationName: String,
-//                   val endStationName: String,
-//                   val firstTime: String,
-//                   val lastTime: String,
-//                   val lastBusPresence: String
-//)
 
 class StationBusListFragment : Fragment() {
     private val stationList = arrayListOf<StationList>()

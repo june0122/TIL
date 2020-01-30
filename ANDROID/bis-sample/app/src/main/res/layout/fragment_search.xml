@@ -34,23 +34,24 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/searchTypeTabs"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/backButton"/>
+        app:layout_constraintTop_toBottomOf="@+id/backButton"
+        app:tabGravity="fill"
+        app:tabInlineLabel="true"
+        app:tabMode="fixed"
+        app:tabTextColor="@android:color/darker_gray" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/searchInfoRecyclerView"
-        android:layout_width="match_parent"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/searchResultViewPager"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchTypeTabs"
-        tools:listitem="@layout/item_search_bus_list" />
+        app:layout_constraintTop_toBottomOf="@+id/searchTypeTabs" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

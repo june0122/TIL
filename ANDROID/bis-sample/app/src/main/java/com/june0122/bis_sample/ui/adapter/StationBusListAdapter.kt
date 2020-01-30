@@ -20,9 +20,6 @@ class StationBusListAdapter : RecyclerView.Adapter<StationBusListViewHolder>() {
         with(holder.itemView) {
 
         }
-
     }
-
-
 }
 
