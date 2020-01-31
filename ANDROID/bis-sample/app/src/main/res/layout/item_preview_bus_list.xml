@@ -6,9 +6,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-
     <TextView
-        android:id="@+id/busNumberTextView"
+        android:id="@+id/busNumberPreviewTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -27,7 +26,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         android:text="서울 간선버스"
+        android:textColor="@color/dark_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/busNumberTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/busNumberPreviewTextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

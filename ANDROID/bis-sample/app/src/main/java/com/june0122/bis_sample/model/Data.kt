@@ -32,6 +32,16 @@ data class BusData(
         val lastBusPresence: String
 )
 
+data class StationPreviewData(
+        val stationName: String,
+        val stationArsId: String,
+        val stationId: String,
+        val wgs84X: String,
+        val wgs84Y: String,
+        val grs80X: String,
+        val grs80Y: String
+)
+
 class Data {
     companion object {
         const val SERVICE_KEY = "6Gi1UHlRZK0oxUZHrb5I5L%2Fb466WpwHkOp%2BBfVMdZFJAq6O7B5E1uQuxNlgAbfxrjjDSTJOuyGjrU25iiZS6hA%3D%3D"

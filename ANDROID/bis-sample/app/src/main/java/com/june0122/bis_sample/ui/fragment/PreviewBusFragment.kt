@@ -10,34 +10,47 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.june0122.bis_sample.R
 import com.june0122.bis_sample.model.BusData
 import com.june0122.bis_sample.model.Data.Companion.SERVICE_KEY
-import com.june0122.bis_sample.model.ParserElement
-import com.june0122.bis_sample.ui.adapter.SearchAdapter
+import com.june0122.bis_sample.ui.adapter.PreviewBusAdapter
+import com.june0122.bis_sample.utils.createParser
 import com.june0122.bis_sample.utils.formatTime
 import com.june0122.bis_sample.utils.setStrictMode
-import kotlinx.android.synthetic.main.fragment_search_bus.*
+import kotlinx.android.synthetic.main.fragment_preview_bus.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
-import org.xmlpull.v1.XmlPullParserFactory
 import java.io.IOException
-import java.io.InputStreamReader
 import java.net.URL
 
+private fun checkBusType(busTypeNumber: String): String {
+    return when (busTypeNumber) {
+        "0" -> "공용"
+        "1" -> "공항"
+        "2" -> "마을"
+        "3" -> "간선"
+        "4" -> "지선"
+        "5" -> "순환"
+        "6" -> "광역"
+        "7" -> "인천"
+        "8" -> "경기"
+        "9" -> "폐지"
+        else -> "미정"
+    }
+}
 
-class SearchBusFragment(private var inputData: String) : Fragment() {
+class PreviewBusFragment(private var inputData: String) : Fragment() {
     private val busData = arrayListOf<BusData>()
-    private val searchAdapter = SearchAdapter()
+    private val previewBusAdapter = PreviewBusAdapter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_search_bus, container, false)
+        return inflater.inflate(R.layout.fragment_preview_bus, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val busListLayoutManager = LinearLayoutManager(context)
-        searchInfoRecyclerView.layoutManager = busListLayoutManager
-        busListLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        searchInfoRecyclerView.adapter = searchAdapter
+        val previewBusListLayoutManager = LinearLayoutManager(context)
+        previewBusRecyclerView.layoutManager = previewBusListLayoutManager
+        previewBusListLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        previewBusRecyclerView.adapter = previewBusAdapter
 
         setStrictMode()
 
@@ -78,8 +91,6 @@ class SearchBusFragment(private var inputData: String) : Fragment() {
         var routeType = ""
         var stStationNm = ""
         var term: String
-
-
 
 
         while (parserEvent != XmlPullParser.END_DOCUMENT) {
@@ -142,7 +153,7 @@ class SearchBusFragment(private var inputData: String) : Fragment() {
                             lastBusYn = parser.text
                         }
                         routeTypeTag -> {
-                            routeType = parser.text
+                            routeType = checkBusType(parser.text)
                         }
                         stStationNmTag -> {
                             stStationNm = parser.text
@@ -179,9 +190,9 @@ class SearchBusFragment(private var inputData: String) : Fragment() {
             parserEvent = parser.next()
         }
 
-        searchAdapter.items.clear()
-        searchAdapter.items.addAll(busData)
-        searchAdapter.notifyDataSetChanged()
+        previewBusAdapter.items.clear()
+        previewBusAdapter.items.addAll(busData)
+        previewBusAdapter.notifyDataSetChanged()
 
         busData.forEach {
             Log.d(
@@ -189,30 +200,5 @@ class SearchBusFragment(private var inputData: String) : Fragment() {
                     "[${it.busNumber}번 버스] (${it.busId}), [버스 종류] : ${checkBusType(it.busType)}, [배차 간격] : ${it.term}분, [기점] : ${it.startStationName} ~ [종점] : ${it.endStationName}, [첫차] : ${it.firstTime} ~ [막차] : ${it.lastTime}, [막차 운행 여부] : ${it.lastBusPresence}"
             )
         }
-    }
-}
-
-private fun createParser(url: URL): ParserElement {
-    val inputStream = url.openStream()
-    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
-    val parser = factory.newPullParser()
-    parser.setInput(InputStreamReader(inputStream, "UTF-8"))
-
-    return ParserElement(parser, parser.eventType)
-}
-
-private fun checkBusType(busTypeNumber: String): String {
-    return when (busTypeNumber) {
-        "0" -> "공용"
-        "1" -> "공항"
-        "2" -> "마을"
-        "3" -> "간선"
-        "4" -> "지선"
-        "5" -> "순환"
-        "6" -> "광역"
-        "7" -> "인천"
-        "8" -> "경기"
-        "9" -> "폐지"
-        else -> "미정"
     }
 }

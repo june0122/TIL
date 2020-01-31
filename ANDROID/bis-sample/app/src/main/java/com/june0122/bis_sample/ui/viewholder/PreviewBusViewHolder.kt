@@ -5,6 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.june0122.bis_sample.R
 
-class SearchViewHolder(parent : ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_search_bus_list, parent, false)
+class PreviewBusViewHolder(parent : ViewGroup) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.item_preview_bus_list, parent, false)
 )

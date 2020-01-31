@@ -1,6 +1,19 @@
 package com.june0122.bis_sample.utils
 
 import android.os.StrictMode
+import com.june0122.bis_sample.model.ParserElement
+import org.xmlpull.v1.XmlPullParserFactory
+import java.io.InputStreamReader
+import java.net.URL
+
+fun createParser(url: URL): ParserElement {
+    val inputStream = url.openStream()
+    val factory: XmlPullParserFactory = XmlPullParserFactory.newInstance()
+    val parser = factory.newPullParser()
+    parser.setInput(InputStreamReader(inputStream, "UTF-8"))
+
+    return ParserElement(parser, parser.eventType)
+}
 
 fun formatTime(string: String): String {
     val hour = string.substring(8, 10)

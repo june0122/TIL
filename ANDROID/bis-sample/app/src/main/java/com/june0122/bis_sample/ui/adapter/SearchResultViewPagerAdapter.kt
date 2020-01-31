@@ -30,8 +30,12 @@ class SearchResultViewPagerAdapter(supportFragmentManager: FragmentManager) : Fr
         mFragmentTitleList.add(title)
     }
 
-    fun updateFragment(fragment: Fragment) {
+    fun updateBusFragment(fragment: Fragment) {
         mFragmentList[0] = fragment
+    }
+
+    fun updateStationFragment(fragment: Fragment) {
+        mFragmentList[1] = fragment
     }
 
 }
