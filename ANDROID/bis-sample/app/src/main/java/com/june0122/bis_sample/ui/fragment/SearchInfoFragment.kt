@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.june0122.bis_sample.R
 import com.june0122.bis_sample.ui.adapter.SearchResultViewPagerAdapter
@@ -42,6 +44,7 @@ class SearchInfoFragment : Fragment() {
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
+                Log.d("INPUT", inputData)
                 when (tab?.position) {
                     0 -> searchEditText.setAttributes(getString(R.string.search_tab_hint_1), InputType.TYPE_CLASS_NUMBER)
                     1 -> searchEditText.setAttributes(getString(R.string.search_tab_hint_2), InputType.TYPE_CLASS_TEXT)
@@ -55,11 +58,15 @@ class SearchInfoFragment : Fragment() {
         Thread(Runnable {
             activity?.runOnUiThread {
 
+
                 searchEditText.addTextChangedListener(object : TextWatcher {
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                         inputData = searchEditText.text.toString()
-                        viewPagerAdapter.updateBusFragment(PreviewBusFragment(inputData))
-                        viewPagerAdapter.updateStationFragment(PreviewStationFragment(inputData))
+
+                        when (searchTypeTabs.selectedTabPosition) {
+                            0 -> viewPagerAdapter.updateBusFragment(PreviewBusFragment(inputData))
+                            1 -> viewPagerAdapter.updateStationFragment(PreviewStationFragment(inputData))
+                        }
                         viewPagerAdapter.notifyDataSetChanged()
                     }
 
@@ -73,5 +80,19 @@ class SearchInfoFragment : Fragment() {
 
             }
         }).start()
+
+
+        searchResultViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+
+            }
+        })
     }
 }

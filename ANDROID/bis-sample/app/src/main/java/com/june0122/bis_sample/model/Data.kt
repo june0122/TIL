@@ -14,6 +14,8 @@ data class BusRouteMap(
 )
 
 data class BusList(
+        val arsId: String,
+        val stationName: String,
         val busNumber: String,
         val nextStation: String,
         val firstArrivalBusInfo: String,

@@ -4,4 +4,7 @@
     <string name="search_tab_text_2">정류장</string>
     <string name="search_tab_hint_1">버스 검색</string>
     <string name="search_tab_hint_2">정류장, ID 검색</string>
+    <string name="direction_station">%s 방면</string>
+    <string name="direction_bus">%s 방향</string>
+    <string name="estimated_time_of_arrival">%s분 %s초</string>
 </resources>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="80dp"
     android:orientation="vertical">
 
     <ImageView
@@ -14,7 +14,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_star" />
+        app:srcCompat="@drawable/ic_star_filled" />
 
     <TextView
         android:id="@+id/routeNumberTextView"
@@ -23,20 +23,21 @@
         android:layout_marginStart="16dp"
         android:layout_marginBottom="4dp"
         android:text="220"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/directionTextView"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/busDirectionTextView"
         app:layout_constraintStart_toEndOf="@+id/favoriteButton"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/directionTextView"
-        android:layout_width="120dp"
+        android:id="@+id/busDirectionTextView"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:singleLine="true"
         android:text="아데나펠리스 방향"
+        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/favoriteButton"
         app:layout_constraintTop_toBottomOf="@+id/routeNumberTextView"
@@ -49,8 +50,9 @@
         android:layout_marginStart="32dp"
         android:layout_marginBottom="4dp"
         android:text="2분 18초"
+        android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@+id/secondEtaTextView"
-        app:layout_constraintStart_toEndOf="@+id/directionTextView"
+        app:layout_constraintStart_toEndOf="@+id/busDirectionTextView"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
@@ -61,8 +63,9 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="4dp"
         android:text="15분 45초"
+        android:textSize="13sp"
         app:layout_constraintBottom_toTopOf="@+id/busListDivider"
-        app:layout_constraintStart_toEndOf="@+id/directionTextView"
+        app:layout_constraintStart_toEndOf="@+id/busDirectionTextView"
         app:layout_constraintTop_toBottomOf="@+id/firstEtaTextView"
         app:layout_constraintVertical_chainStyle="packed" />
 
@@ -84,4 +87,30 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/firstArrivalCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/rounded_corner"
+        android:text="3번째전"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="9sp"
+        app:layout_constraintBottom_toBottomOf="@+id/firstEtaTextView"
+        app:layout_constraintStart_toEndOf="@+id/firstEtaTextView"
+        app:layout_constraintTop_toTopOf="@+id/firstEtaTextView" />
+
+    <TextView
+        android:id="@+id/secondArrivalCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/rounded_corner"
+        android:text="4번째전"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="9sp"
+        app:layout_constraintBottom_toBottomOf="@+id/secondEtaTextView"
+        app:layout_constraintStart_toEndOf="@+id/secondEtaTextView"
+        app:layout_constraintTop_toTopOf="@+id/secondEtaTextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

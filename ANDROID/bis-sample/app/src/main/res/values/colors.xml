@@ -9,4 +9,9 @@
     <color name="gray">#cdcdcd</color>
     <color name="pale_gray">#eeeeee</color>
     <color name="dark_gray">#979797</color>
+    <color name="dove_gray">#6d6d6d</color>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="yellow">#FDCB35</color>
 </resources>
