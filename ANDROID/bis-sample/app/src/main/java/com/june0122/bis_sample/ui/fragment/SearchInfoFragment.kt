@@ -14,6 +14,8 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.june0122.bis_sample.R
 import com.june0122.bis_sample.ui.adapter.SearchResultViewPagerAdapter
+import com.june0122.bis_sample.utils.RecyclerItemClickListener
+import kotlinx.android.synthetic.main.fragment_preview_bus.*
 import kotlinx.android.synthetic.main.fragment_search.*
 
 fun EditText.setAttributes(hint: String, inputType: Int) {
@@ -81,8 +83,7 @@ class SearchInfoFragment : Fragment() {
             }
         }).start()
 
-
-        searchResultViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+        searchResultViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
             }
 

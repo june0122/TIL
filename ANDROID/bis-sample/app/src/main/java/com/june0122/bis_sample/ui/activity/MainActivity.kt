@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, BusRouteFragment(), BusRouteFragment::class.java.name)
+                .replace(R.id.fragmentContainer, SearchInfoFragment(), SearchInfoFragment::class.java.name)
                 .commit()
     }
 }

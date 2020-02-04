@@ -51,6 +51,3 @@ class StationBusListAdapter : RecyclerView.Adapter<StationBusListViewHolder>() {
         }
     }
 }
-
-
-

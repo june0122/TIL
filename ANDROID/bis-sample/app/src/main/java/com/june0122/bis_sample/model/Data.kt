@@ -4,7 +4,15 @@ import org.xmlpull.v1.XmlPullParser
 
 data class ParserElement(val parser: XmlPullParser, val parserEvent: Int)
 
-data class StationList(val stationId: String, val stationName: String)
+data class StationList(
+        val busRouteId: String,
+        val busRouteName: String,
+        val stationName: String,
+        val stationId: String,
+        val firstTime: String,
+        val lastTime: String,
+        val routeType: String
+)
 
 data class BusRouteMap(
         val stationName: String,
@@ -20,6 +28,19 @@ data class BusList(
         val nextStation: String,
         val firstArrivalBusInfo: String,
         val secondArrivalBusInfo: String
+)
+
+data class RouteData(
+        val busRouteId: String,
+        val busRouteNumber: String,
+        val routeLength: String,
+        val routeType: String,
+        val startStationName: String,
+        val endStationName: String,
+        val term: String,
+        val firstTime: String,
+        val lastTime: String,
+        val corpName: String
 )
 
 data class BusData(

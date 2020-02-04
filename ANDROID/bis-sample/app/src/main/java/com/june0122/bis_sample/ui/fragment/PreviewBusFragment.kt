@@ -11,30 +11,12 @@ import com.june0122.bis_sample.R
 import com.june0122.bis_sample.model.BusData
 import com.june0122.bis_sample.model.Data.Companion.SERVICE_KEY
 import com.june0122.bis_sample.ui.adapter.PreviewBusAdapter
-import com.june0122.bis_sample.utils.createParser
-import com.june0122.bis_sample.utils.formatTime
-import com.june0122.bis_sample.utils.setStrictMode
+import com.june0122.bis_sample.utils.*
 import kotlinx.android.synthetic.main.fragment_preview_bus.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.net.URL
-
-private fun checkBusType(busTypeNumber: String): String {
-    return when (busTypeNumber) {
-        "0" -> "공용"
-        "1" -> "공항"
-        "2" -> "마을"
-        "3" -> "간선"
-        "4" -> "지선"
-        "5" -> "순환"
-        "6" -> "광역"
-        "7" -> "인천"
-        "8" -> "경기"
-        "9" -> "폐지"
-        else -> "미정"
-    }
-}
 
 class PreviewBusFragment(private var inputData: String) : Fragment() {
     private val busData = arrayListOf<BusData>()
@@ -63,6 +45,22 @@ class PreviewBusFragment(private var inputData: String) : Fragment() {
                 }
             }
         }).start()
+
+        previewBusRecyclerView.addOnItemTouchListener(
+                RecyclerItemClickListener(view.context, previewBusRecyclerView, object : RecyclerItemClickListener.OnItemClickListener {
+                    override fun onItemClick(view: View, position: Int) {
+                        Log.d("TOUCH", "$position, ${ previewBusAdapter.items[position].busNumber}")
+
+                        fragmentManager?.beginTransaction()
+                                ?.replace(
+                                        R.id.fragmentContainer,
+                                        BusRouteFragment(previewBusAdapter.items[position].busNumber),
+                                        BusRouteFragment::class.java.name
+                                )
+                                ?.commit()
+                    }
+                })
+        )
     }
 
     @Throws(XmlPullParserException::class, IOException::class)

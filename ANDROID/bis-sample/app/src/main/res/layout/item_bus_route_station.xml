@@ -9,17 +9,17 @@
     <View
         android:id="@+id/bottomDivider"
         android:layout_width="2.5dp"
-        android:layout_height="0dp"
+        android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/busDirectionImageView"
         app:layout_constraintStart_toStartOf="@+id/busDirectionImageView"
         app:layout_constraintTop_toBottomOf="@+id/topDivider"
-        tools:background="@color/yellow" />
+        android:background="@color/yellow" />
 
     <View
         android:id="@+id/topDivider"
         android:layout_width="2.5dp"
-        android:layout_height="0dp"
+        android:layout_height="30dp"
         android:background="@color/yellow"
         app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
         app:layout_constraintEnd_toEndOf="@+id/busDirectionImageView"
