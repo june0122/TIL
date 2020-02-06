@@ -2,7 +2,7 @@
 <com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/busRouteAppBarLayout"
+    android:id="@+id/stationBusListAppBarLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="0dp"
@@ -19,7 +19,7 @@
         app:contentScrim="@color/dove_gray"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:statusBarScrim="@color/transparent"
-        app:toolbarId="@id/busRouteToolbar">
+        app:toolbarId="@id/stationBusListToolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -40,11 +40,11 @@
                 tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/busTypeTextView"
+                android:id="@+id/stationArsIdTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="서울 간선버스"
+                android:text="144226"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -52,39 +52,16 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/busNumberTextView"
+                android:id="@+id/stationNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="753"
+                android:text="연남동"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/busTypeTextView" />
-
-            <Button
-                android:id="@+id/appbarBusInfoButton"
-                android:layout_width="70dp"
-                android:layout_height="25dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
-                android:background="@drawable/rounded_corner_button"
-                android:clickable="true"
-                android:drawableStart="@drawable/ic_info_small"
-                android:drawableTint="@color/white"
-                android:focusable="auto"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:text="정보"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/appbarMapButton"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstStationNameTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/stationArsIdTextView" />
 
             <Button
                 android:id="@+id/appbarMapButton"
@@ -105,8 +82,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/favoriteButton"
                 app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toEndOf="@+id/appbarBusInfoButton"
-                app:layout_constraintTop_toBottomOf="@+id/endStationNameTextView" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/stationDirectionTextView" />
 
             <Button
                 android:id="@+id/favoriteButton"
@@ -122,52 +99,26 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toEndOf="@+id/appbarMapButton"
-                app:layout_constraintTop_toBottomOf="@+id/endStationNameTextView" />
+                app:layout_constraintStart_toEndOf="@id/appbarMapButton"
+                app:layout_constraintTop_toBottomOf="@+id/stationDirectionTextView" />
 
             <TextView
-                android:id="@+id/endStationNameTextView"
+                android:id="@+id/stationDirectionTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="구산동"
+                android:text="동교동삼거리 방향"
                 android:textColor="@color/gray"
                 android:textSize="11sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toEndOf="@+id/arrowImagView"
-                app:layout_constraintTop_toBottomOf="@+id/busNumberTextView" />
-
-            <TextView
-                android:id="@+id/firstStationNameTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="상도동"
-                android:textColor="@color/gray"
-                android:textSize="11sp"
-                app:layout_constraintEnd_toStartOf="@+id/arrowImagView"
-                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/busNumberTextView" />
-
-            <ImageView
-                android:id="@+id/arrowImagView"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="8dp"
-                android:tint="@color/gray"
-                app:layout_constraintBottom_toBottomOf="@+id/endStationNameTextView"
-                app:layout_constraintEnd_toStartOf="@id/endStationNameTextView"
-                app:layout_constraintStart_toEndOf="@id/firstStationNameTextView"
-                app:layout_constraintTop_toTopOf="@+id/endStationNameTextView"
-                app:srcCompat="@drawable/ic_both_side_arrow" />
+                app:layout_constraintTop_toBottomOf="@+id/stationNameTextView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/busRouteToolbar"
+            android:id="@+id/stationBusListToolbar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hapticFeedbackEnabled="false"
@@ -200,26 +151,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_home" />
 
-                <ImageView
-                    android:id="@+id/toolbarBusInfoButton"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="16dp"
-                    android:tint="@color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/toolbarBusRouteMapButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_info" />
-
-                <ImageView
-                    android:id="@+id/toolbarBusRouteMapButton"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/toolbarHomeButton"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_map" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

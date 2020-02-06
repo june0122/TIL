@@ -13,6 +13,7 @@ import com.june0122.bis_sample.ui.adapter.StationBusListAdapter
 import com.june0122.bis_sample.utils.createParser
 import com.june0122.bis_sample.utils.setStrictMode
 import kotlinx.android.synthetic.main.fragment_station_bus_list.*
+import kotlinx.android.synthetic.main.layout_appbar_station_bus_list.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -44,6 +45,20 @@ class StationBusListFragment(private val arsId : String) : Fragment() {
                 searchBusListAtStation(arsId)
             }
         }).start()
+
+        backButtonImageView.setOnClickListener {
+            activity?.supportFragmentManager
+                    ?.beginTransaction()
+                    ?.replace(R.id.fragmentContainer, SearchInfoFragment())
+                    ?.addToBackStack(null)?.commit()
+        }
+
+        toolbarHomeButton.setOnClickListener {
+            activity?.supportFragmentManager
+                    ?.beginTransaction()
+                    ?.replace(R.id.fragmentContainer, SearchInfoFragment())
+                    ?.addToBackStack(null)?.commit()
+        }
 
     }
 
@@ -133,7 +148,7 @@ class StationBusListFragment(private val arsId : String) : Fragment() {
         stationBusListAdapter.items.addAll(busList)
         stationBusListAdapter.notifyDataSetChanged()
 
-        stationIdTextView?.text = busList[0].arsId
+        stationArsIdTextView?.text = busList[0].arsId
         stationNameTextView?.text = busList[0].stationName
         stationDirectionTextView?.text = resources.getString(R.string.direction_station, busList[0].nextStation)
     }

@@ -1,22 +1,24 @@
 package com.june0122.bis_sample.ui.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.june0122.bis_sample.R
 import com.june0122.bis_sample.ui.adapter.SearchResultViewPagerAdapter
-import com.june0122.bis_sample.utils.RecyclerItemClickListener
-import kotlinx.android.synthetic.main.fragment_preview_bus.*
 import kotlinx.android.synthetic.main.fragment_search.*
+
 
 fun EditText.setAttributes(hint: String, inputType: Int) {
     this.hint = hint
@@ -57,6 +59,9 @@ class SearchInfoFragment : Fragment() {
             }
         })
 
+
+
+
         Thread(Runnable {
             activity?.runOnUiThread {
 
@@ -96,4 +101,6 @@ class SearchInfoFragment : Fragment() {
             }
         })
     }
+
+
 }

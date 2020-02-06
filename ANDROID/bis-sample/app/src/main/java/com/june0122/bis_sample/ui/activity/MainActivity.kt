@@ -1,11 +1,10 @@
 package com.june0122.bis_sample.ui.activity
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.june0122.bis_sample.R
-import com.june0122.bis_sample.ui.fragment.BusRouteFragment
 import com.june0122.bis_sample.ui.fragment.SearchInfoFragment
-import com.june0122.bis_sample.ui.fragment.StationBusListFragment
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

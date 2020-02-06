@@ -13,6 +13,8 @@ import com.june0122.bis_sample.model.Data.Companion.SERVICE_KEY
 import com.june0122.bis_sample.ui.adapter.PreviewBusAdapter
 import com.june0122.bis_sample.utils.*
 import kotlinx.android.synthetic.main.fragment_preview_bus.*
+import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.layout_appbar_bus_route.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
@@ -28,6 +30,7 @@ class PreviewBusFragment(private var inputData: String) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         val previewBusListLayoutManager = LinearLayoutManager(context)
         previewBusRecyclerView.layoutManager = previewBusListLayoutManager
@@ -49,19 +52,24 @@ class PreviewBusFragment(private var inputData: String) : Fragment() {
         previewBusRecyclerView.addOnItemTouchListener(
                 RecyclerItemClickListener(view.context, previewBusRecyclerView, object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View, position: Int) {
-                        Log.d("TOUCH", "$position, ${ previewBusAdapter.items[position].busNumber}")
 
-                        fragmentManager?.beginTransaction()
-                                ?.replace(
-                                        R.id.fragmentContainer,
-                                        BusRouteFragment(previewBusAdapter.items[position].busNumber),
-                                        BusRouteFragment::class.java.name
-                                )
-                                ?.commit()
+                        activity?.supportFragmentManager
+                                ?.beginTransaction()
+                                ?.replace(R.id.fragmentContainer, BusRouteFragment(previewBusAdapter.items[position].busNumber))
+                                ?.addToBackStack(null)?.commit()
+
+//                        childFragmentManager
+//                                .beginTransaction()
+//                                .replace(
+//                                        R.id.fragmentContainer,
+//                                        BusRouteFragment(previewBusAdapter.items[position].busNumber),
+//                                        BusRouteFragment::class.java.name
+//                                ).commit()
                     }
                 })
         )
     }
+
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun searchBusRouteId(busNumber: String) {

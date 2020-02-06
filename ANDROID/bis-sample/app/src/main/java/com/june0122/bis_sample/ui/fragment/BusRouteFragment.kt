@@ -59,7 +59,19 @@ class BusRouteFragment(private var inputData: String) : Fragment() {
         }).start()
 
 
+        backButtonImageView.setOnClickListener {
+            activity?.supportFragmentManager
+                    ?.beginTransaction()
+                    ?.replace(R.id.fragmentContainer, SearchInfoFragment())
+                    ?.addToBackStack(null)?.commit()
+        }
 
+        toolbarHomeButton.setOnClickListener {
+            activity?.supportFragmentManager
+                    ?.beginTransaction()
+                    ?.replace(R.id.fragmentContainer, SearchInfoFragment())
+                    ?.addToBackStack(null)?.commit()
+        }
 
     }
 
@@ -187,7 +199,7 @@ class BusRouteFragment(private var inputData: String) : Fragment() {
                             arsId = parser.text
                         }
                         beginTmTag -> {
-                                  beginTm = parser.text
+                            beginTm = parser.text
                         }
                         busRouteIdTag -> {
                             busRouteId = parser.text
@@ -249,26 +261,26 @@ class BusRouteFragment(private var inputData: String) : Fragment() {
                         }
                     }
 
-                     arsIdTag = false
-                     beginTmTag = false
-                     busRouteIdTag = false
-                     busRouteNmTag = false
-                     directionTag = false
-                     gpsXTag = false
-                     gpsYTag = false
-                     lastTmTag = false
-                     posXTag = false
-                     posYTag = false
-                     routeTypeTag = false
-                     sectSpdTag = false
-                     sectionTag = false
-                     seqTag = false
-                     stationTag = false
-                     stationNmTag = false
-                     stationNoTag = false
-                     transYnTag = false
-                     fullSectDistTag = false
-                     trnstnidTag = false
+                    arsIdTag = false
+                    beginTmTag = false
+                    busRouteIdTag = false
+                    busRouteNmTag = false
+                    directionTag = false
+                    gpsXTag = false
+                    gpsYTag = false
+                    lastTmTag = false
+                    posXTag = false
+                    posYTag = false
+                    routeTypeTag = false
+                    sectSpdTag = false
+                    sectionTag = false
+                    seqTag = false
+                    stationTag = false
+                    stationNmTag = false
+                    stationNoTag = false
+                    transYnTag = false
+                    fullSectDistTag = false
+                    trnstnidTag = false
                 }
             }
             parserEvent = parser.next()
@@ -287,7 +299,7 @@ class BusRouteFragment(private var inputData: String) : Fragment() {
 
 
     @Throws(XmlPullParserException::class, IOException::class)
-    fun searchBusRouteInfo(busNumber: String) : String {
+    fun searchBusRouteInfo(busNumber: String): String {
         val url = URL("http://ws.bus.go.kr/api/rest/busRouteInfo/getBusRouteList?ServiceKey=$SERVICE_KEY&strSrch=$busNumber")
 
         val parser = createParser(url).parser
