@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Sticky Header</string>
+
+    <string name="header">Header %d</string>
+    <string name="custom_header">Custom Header</string>
+    <string name="item">Item %d</string>
+</resources>
