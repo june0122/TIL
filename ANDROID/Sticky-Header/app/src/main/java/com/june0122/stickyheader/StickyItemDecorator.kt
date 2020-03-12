@@ -17,7 +17,6 @@ class StickyHeaderItemDecorator(
     private var lastViewOverlappedByHeader: View? = null
 
     fun attachToRecyclerView(recyclerView: RecyclerView?) {
-
         this.recyclerView = recyclerView
 
         if (recyclerView != null) {
@@ -31,14 +30,12 @@ class StickyHeaderItemDecorator(
         recyclerView?.addItemDecoration(this)
     }
 
-    override fun onDrawOver(
-            c: Canvas,
-            parent: RecyclerView,
-            state: RecyclerView.State
-    ) {
+    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDrawOver(c, parent, state)
+
         val layoutManager = parent.layoutManager ?: return
         var topChildPosition = RecyclerView.NO_POSITION
+
         if (layoutManager is LinearLayoutManager) {
             topChildPosition = layoutManager.findFirstVisibleItemPosition()
         } else {
@@ -47,11 +44,13 @@ class StickyHeaderItemDecorator(
                 topChildPosition = parent.getChildAdapterPosition(topChild)
             }
         }
+
         if (topChildPosition == RecyclerView.NO_POSITION) {
             return
         }
-        var viewOverlappedByHeader =
-                getChildInContact(parent, currentStickyHolder.itemView.bottom)
+
+        var viewOverlappedByHeader = getChildInContact(parent, currentStickyHolder.itemView.bottom)
+
         if (viewOverlappedByHeader == null) {
             viewOverlappedByHeader = if (lastViewOverlappedByHeader != null) {
                 lastViewOverlappedByHeader
@@ -62,10 +61,10 @@ class StickyHeaderItemDecorator(
         lastViewOverlappedByHeader = viewOverlappedByHeader
 
         if (viewOverlappedByHeader != null) {
-
             val overlappedByHeaderPosition = parent.getChildAdapterPosition(viewOverlappedByHeader)
             val overlappedHeaderPosition: Int
             val preOverlappedPosition: Int
+
             if (overlappedByHeaderPosition > 0) {
                 preOverlappedPosition =
                         adapter.getHeaderPositionForItem(overlappedByHeaderPosition - 1)
@@ -113,10 +112,7 @@ class StickyHeaderItemDecorator(
         c.restore()
     }
 
-    private fun moveHeader(
-            c: Canvas,
-            nextHeader: View
-    ) {
+    private fun moveHeader(c: Canvas, nextHeader: View) {
         c.save()
         c.translate(0f, nextHeader.top - nextHeader.height.toFloat())
         currentStickyHolder.itemView.draw(c)
@@ -150,7 +146,7 @@ class StickyHeaderItemDecorator(
                         )
                         val heightSpec = View.MeasureSpec.makeMeasureSpec(
                                 recyclerView.height,
-                                View.MeasureSpec.UNSPECIFIED
+                                View.MeasureSpec.EXACTLY
                         )
 
                         // Specs for children (headers)
