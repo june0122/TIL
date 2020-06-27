@@ -1,0 +1,181 @@
+<!-- (CC-NC-BY) Junseop Lim 2020 -->
+<!-- WebGL 1.0 Tutorial - HTML image texture mapping & Phong Shading tutorial -->
+
+<html>
+
+<head>
+    <title>WebGL Tutorial</title>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" href="final-script.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
+
+
+    <script type="text/javascript" src="gl-matrix.js">
+    </script>
+    <script>
+        window['mat4'] = glMatrix.mat4;
+        window['vec4'] = glMatrix.vec4;
+        window['vec3'] = glMatrix.vec4;
+    </script>
+    <script type="text/javascript" src="final-script.js">
+    </script>
+
+
+</head>
+
+<body onload="main()">
+
+    <div class="image-container">
+        <div class="text">TEXTURE</div>
+    </div>
+
+    <h1 id="content-title1">HTML image texture mapping & Phong Shading tutorial</h1>
+
+    <div class="paragraph">
+        <p>This page is tutorial for WebGL, Texture Mapping Using Images and Phong Shading Tutorial.</p>
+        <p>While OpenGL 2.0 and later for the desktop offer full support for non-power-of-two (NPOT) textures, OpenGL ES 2.0 and WebGL have only limited NPOT support.</p>
+        <p>In this tutorial, you will understand how to mapping texture and restrictions of using NPOT in WebGL. You can also understand about Phong shading briefly.</p><br>
+        <p><strong>Note:</strong> If you are running this locally you'll need a simple web server to allow WebGL to load the images. See <a href="https://webglfundamentals.org/webgl/lessons/webgl-setup-and-installation.html" target="_blank">here</a> for
+            how to setup one up in couple of minutes.</p> <br> <br>
+    </div>
+
+    <table class="project-table" align="center">
+        <thead>
+            <tr>
+                <th class="render-table" rowspan="2">
+                    <div align="center">
+                        <canvas id="texture-canvas" style="border: none;" width="800" height="600"></canvas>
+                    </div>
+                </th>
+                <th class="button-table" colspan="2">
+                    <form>
+
+                        <label align="left" for="userImage"><i class="fa fa-file-image"><span class="fa-icon-innter-text">&ensp;Choose images to upload (PNG, JPG)</span></i></label>
+                        <input type="file" id="userImage" accept=".jpg, .jpeg, .png">
+
+                    </form>
+
+                    <div class="parent">
+                        <div class="child" style="margin-right: 8px;">
+                            <button class="toggle-btn" onclick="toggleAnimation()"><i class="fa fa-sync"><span class="fa-icon-innter-text">&ensp;Toggle Animation</span></i></button>
+                        </div>
+                        <div class="child" style="margin-right: 8px;">
+                            <button class="toggle-btn" onclick="toggleNPOT()"><i class="fa fa-laptop-code"><span class="fa-icon-innter-text">&ensp;Toggle NPOT</span></i></button>
+                        </div>
+                        <div class="child">
+                            <button class="toggle-btn" onclick="toggleDeleteTexture()"><i class="fa fa-trash-alt"><span class="fa-icon-innter-text">&ensp;Delete Texture Image</span></i></button>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <td class="reflection-table">
+                    <div class="slidecontainer">
+                        Ambient Reflection&ensp;<span id="Ka"></span>
+                        <input type="range" style="vertical-align: -3px;" min="0" max="100" value="0" id="KaSlider">
+                    </div>
+
+
+                    <script>
+                        var slider = document.getElementById("KaSlider");
+                        var output = document.getElementById("Ka");
+
+                        slider.oninput = function() {
+                            KaVal = document.getElementById("KaSlider").value / 100;
+                        }
+                    </script>
+
+                    <div class="slidecontainer">
+                        Diffuse Reflection&ensp;<span id="Kd"></span>
+                        <input type="range" style="vertical-align: -3px;" min="0" max="100" value="50" id="KdSlider">
+                    </div>
+
+                    <script>
+                        var slider = document.getElementById("KdSlider");
+                        var output = document.getElementById("Kd");
+
+                        slider.oninput = function() {
+                            KdVal = document.getElementById("KdSlider").value / 100;
+                        }
+                    </script>
+
+                    <div class="slidecontainer">
+                        Specular Reflection&ensp;<span id="Ks"></span>
+                        <input type="range" style="vertical-align: -3px;" min="0" max="100" value="0" id="KsSlider">
+                    </div>
+
+                    <script>
+                        var slider = document.getElementById("KsSlider");
+                        var output = document.getElementById("Ks");
+
+                        slider.oninput = function() {
+                            KsVal = document.getElementById("KsSlider").value / 100;
+                        }
+                    </script>
+
+                    <div class="slidecontainer">
+                        Shininess&ensp;<span id="Ksh"></span>
+                        <input type="range" style="vertical-align: -3px;" min="100" max="10000" value="1" id="KshSlider">
+                    </div>
+
+                    <script>
+                        var slider = document.getElementById("KshSlider");
+                        var output = document.getElementById("Ksh");
+
+                        slider.oninput = function() {
+                            KshVal = document.getElementById("KshSlider").value / 100;
+                        }
+                    </script>
+                </td>
+                <td class="light-color-table">
+                    <div class="slidecontainer-right">
+                        <span id="red"></span>
+                        <input type="range" style="vertical-align: -3px;" min="0" max="100" value="100" id="redSlider">&ensp;Red Light
+                    </div>
+
+                    <script>
+                        var slider = document.getElementById("redSlider");
+                        var output = document.getElementById("red");
+
+                        slider.oninput = function() {
+                            redVal = document.getElementById("redSlider").value / 100;
+                        }
+                    </script>
+
+                    <div class="slidecontainer-right">
+                        <span id="green"></span>
+                        <input type="range" style="vertical-align: -3px;" min="0" max="100" value="100" id="greenSlider">&ensp;Green Light
+                    </div>
+
+                    <script>
+                        var slider = document.getElementById("greenSlider");
+                        var output = document.getElementById("green");
+
+                        slider.oninput = function() {
+                            greenVal = document.getElementById("greenSlider").value / 100;
+                        }
+                    </script>
+
+                    <div class="slidecontainer-right">
+                        <span id="blue"></span>
+                        <input type="range" style="vertical-align: -3px;" min="0" max="100" value="100" id="blueSlider"> &ensp;Blue Light
+                    </div>
+
+                    <script>
+                        var slider = document.getElementById("blueSlider");
+                        var output = document.getElementById("blue");
+
+                        slider.oninput = function() {
+                            blueVal = document.getElementById("blueSlider").value / 100;
+                        }
+                    </script>
+                </td>
+            </tr>
+        </thead>
+    </table>
+    <br>
+    <br>
+    <br>
+</body>
+
+</html>
