@@ -425,3 +425,167 @@
 - upstream
   - 마찬가지로 다른 주파수로 분리하여 데이터 전송
   - 여러 유저가 같은 bandwidth를 통해 동시에 업로드하면 multiple access issue가 있으므로 사용자가 upstream 요청을 하면 **CMTS**가 리소스를 할당하는 방식을 사용한다.
+
+## 6.4 LANs
+
+### MAC address 
+
+> 네트워크 카드 하드웨어에 부여되는 고유한 물리적 주소
+
+- MAC (LAN or physical or Ethernet) address : 48-bit
+  - 16진수 표현법을 사용하며 8bit(1byte) 단위로 끊어서 총 6개의 자리를 `:`을 이용하여 구분
+  - `1A:2F:BB:76:09:AD`
+  - 전역적으로 관리되는 주소는 제조업체에 의해 고유하게 할당된다.
+  
+- IP address는 참고로 32-bit
+
+- IP 주소가 집주소라면, MAC 주소는 주민등록번호라고 비유할 수 있다.
+
+### ARP <sup>Address Resolution Protocol</sup>
+
+- 네트워크 상에서 IP 주소를 물리적 네트워크 주소로 대응(bind) 시키기 위해 사용되는 프로토콜
+- TCP/IP 3계층(네트워크계층)의 IP Address를  2계층(데이터링크계층)의 MAC address로 대응 시킬때 사용한다.
+
+#### 동작과정
+
+- A wants to send datagram to B
+  - B’s MAC address not in A’s ARP table.
+
+- A **broadcasts** ARP querypacket, containing B's IP address
+  - destination MAC address = FF-FF-FF-FF-FF-FF
+  - all nodes on LAN receive ARP query
+
+- B receives ARP packet, replies to A with its (B's) MAC address
+  - frame sent to A’s MAC address (unicast)
+
+- A caches (saves) IP-to-MAC address pair in itsARP table until information becomes old (times out)
+  - soft state: information that times out (goes away) unless refreshed
+
+- ARP is “plug-and-play”
+  - nodes create their ARP tables without intervention from net administrator
+
+### Ethernet
+
+> 유선 LAN 기술에서 가장 많이 활용되는 기술 규격
+
+- LAN <sup>local area network</sup> : 근거리 통신망, 로컬 영역 네트워크
+- 초창기에는 10Mbps 정도였으나 10Gbps 정도로 속도가 올라가면서 Ethernet은 LAN에만 사용되는 것이 아니라 WAN<sup>wide area network</sup>, backbone network <sup>백본망</sup>을 구성할때도 사용되고 있다.
+
+#### Ethernet의 physical topology
+
+- bus : 초창기의 Ethernet
+  - node들이 동시에 전송할 경우 bus에서 signal이 합쳐지면 collision이 발생함
+
+- star : 현재의 Ethernet
+  - switch를 이용하여 collision이 발생하지 않음
+  - switch는 Layer2로 MAC 주소를 이용하여 routing을 한다
+
+<br>
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/86251218-8bc76d00-bbec-11ea-9c3a-709c53103e2b.png'>
+</p>
+<br>
+
+#### Ethernet frame structure
+
+<br>
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/86251928-7ef74900-bbed-11ea-99b1-ef502d90360b.png'>
+</p>
+<br>
+
+- preamble
+  - 7 bytes with pattern 10101010 followed by one byte with pattern 10101011
+  - used to **synchronize** receiver, sender clock rates
+
+- addresss
+  - 6 byte source & destination MAC addresses
+
+- type
+  - indicates higher layer protocol (**mostly IP** but others possible, e.g., Novell IPX, AppleTalk)
+
+- CRC
+  - cyclic redundancy check at receiver
+  - error detection 목적
+
+
+#### Ethernet의 특징
+
+- **connectionless**
+  - no handshaking between sending and receiving NICs
+ 
+- **unreliable**
+  - receiving NIC doesn't send acks or nacks to sending NIC
+  - data in dropped frames recovered only if initial sender uses higher layer rdt (e.g., TCP), otherwise dropped data lost
+
+- Ethernet’s MAC protocol: **unslotted CSMA/CD** with binary backoff
+
+#### 802.3 Ethernet standards: link & physical layers
+
+> 수많은 이더넷 표준들을 포괄
+
+- many different Ethernet standards
+  - common MAC protocol and frame format
+  - different speeds: 2 Mbps, 10 Mbps, 100 Mbps, 1Gbps, 10 Gbps, 40 Gbps
+  - different physical layer media: fiber, cable
+
+### Ethernet Switch
+
+<br>
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/86253904-15c50500-bbf0-11ea-9375-4be036a3fb7e.png'>
+</p>
+<br>
+
+- **link-layer device**
+  - store, forward Ethernet frames
+  - examine incoming frame’s MAC address, selectively forward frame to one-or-more outgoing links when frame is to be forwarded on segment, uses CSMA/CD to access segment
+
+- **transparent**
+  - hosts are unaware of presence of switches
+
+- **plug-and-play, self-learning**
+  - switches do not need to be configured
+
+#### Switch forwarding table
+
+- Switch는 어떤 interface를 통해 호스트에 연결될 수 있는지 **학습**한다.
+- switch table에 host에 대한 정보가 있으면 그대로 전송하고, 그렇지 않으면 모든 interface에서 **flood**해서 어떤 destination에서 응답이 오는지를 switch table에 기록한다.
+
+### Switch vs Router
+
+<br>
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/86254170-6b99ad00-bbf0-11ea-8e4b-507b22e70483.png'>
+</p>
+<br>
+
+- both are store-and-forward:
+  - routers: **network-layer** devices (examine networklayer headers)
+  - switches: **link-layer** devices (examine link-layer headers)
+
+- both have forwarding tables:
+  - routers: compute tables using **routing algorithms**, IP addresses
+  - switches: **learn** forwarding table using **flooding**, learning, MAC addresses
+
+### VLANs <sup>Virtual Local Area Network</sup>
+
+<br>
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/86254773-4ce7e600-bbf1-11ea-9a0f-f88c9cd1ffa4.png'>
+</p>
+<br>
+
+- 한 개의 스위치를 virtual하게 여러개의 스위치처럼 작동하도록 하는 방법
+  - 스위치의 **각 포트 별로** VLAN을 할당하는 방법 
+- 물리적 배치와 상관없이 논리적으로 LAN을 구성할 수 있는 기술
+
+#### 802.1Q VLAN frame format
+
+<br>
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/86254947-8587bf80-bbf1-11ea-86e6-5ed1febfa626.png'>
+</p>
+<br>
+
+- VLAN의 ID를 tag 할 수 있도록 802.1 frame의 type에 정보를 추가한 버전
