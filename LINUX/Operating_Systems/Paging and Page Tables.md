@@ -76,8 +76,8 @@
 </p>
 <br>
 
-- 프로세스가 뿜어내는 Virtual address가 있는데, paging을 사용하면 이 중에 page bumber part와 남아있는 offset part가 있을 것이다.
-- VFN는 PFN로 translate되기 위해 page table로 가야하는데, page table은 Page-table base register <sup>PTBR</sup>가 가리키고 있다.
+- 프로세스가 뿜어내는 Virtual address가 있는데, paging을 사용하면 이 중에 page number part와 남아있는 offset part가 있을 것이다.
+- VPN는 PFN로 translate되기 위해 page table로 가야하는데, page table은 Page-table base register <sup>PTBR</sup>가 가리키고 있다.
 - Page table은 Offset을 그대로 가져간다.
 
 ### Address Translation Example
