@@ -81,3 +81,23 @@ Include Google Play Store       |  Uninclude Google Play Store
 <img src = 'https://user-images.githubusercontent.com/39554623/88522834-edcf9280-d031-11ea-99e1-17e6341bc1ee.png'>
 </p>
 <br>
+
+### ※ File 관련 오류 참고사항
+
+- File I/O와 관련된 App을 개발할 경우, 위의 내용과 같이 설정을 한 뒤에도 AVD에서 갑작스럽게 `Error: open failed: ENOENT (No such file or directory)` 와 같은 에러가 발생할 수 있는데 SD card storage와 관련된 오류일 가능성이 높다.
+
+<br>
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/88750737-1f12a480-d191-11ea-9c61-6e14228dd038.png'>
+</p>
+<br>
+
+- 그럴 경우 알림창을 보면 위 이미지와 달리 *SD card is missing...* 과 같은 알림이 있을 것이다.
+
+<br>
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/88751121-ef17d100-d191-11ea-9a6c-78e293b750f4.png'>
+</p>
+<br>
+
+- AVD를 생성할 때 SD card storage를 넉넉히 주면 문제를 해결 및 방지할 수 있다.
