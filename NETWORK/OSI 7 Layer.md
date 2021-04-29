@@ -84,3 +84,4 @@
 - https://youtu.be/1pfTxp25MA8
 - https://velog.io/@amuse/OSI-7-Layers
 - https://medium.com/harrythegreat/osi%EA%B3%84%EC%B8%B5-tcp-ip-%EB%AA%A8%EB%8D%B8-%EC%89%BD%EA%B2%8C-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0-f308b1115359
+- http://melonicedlatte.com/network/2019/12/21/154500.html#fnref:1
