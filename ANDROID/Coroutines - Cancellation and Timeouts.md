@@ -26,7 +26,7 @@ main: I'm tired of waiting! [main]
 main: Now I can quit. [main]
 ```
 
-코루틴을 실행할 떄 launch를 해서 반환된 Job 객체에서 `cancle()`을 호출할 수 있고, 이를 통해 코루틴 실행을 취소시킬 수 있다.
+코루틴을 실행할 떄 launch를 해서 반환된 Job 객체에서 `cancel()`을 호출할 수 있고, 이를 통해 코루틴 실행을 취소시킬 수 있다.
 
 > ### ② Cancellation is cooperative
 
