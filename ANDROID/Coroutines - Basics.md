@@ -20,7 +20,7 @@
 ### Android Developers 코틀린 가이드에서의 코루틴 정의 <sup id = "a1">[2](#f1)</sup>
 
 - 코루틴은 **비동기적으로 실행되는 코드를 간소화하기 위해** Android에서 사용할 수 있는 동시 실행 설계 **패턴**<small>(concurrency design pattern)</small>이다.
-  - 비동기 처리는 callback, cancle, 리소스 관리 등을 해줘야하므로 어려움이 있는데 코루틴을 이용하면 쉽게 처리할 수 있다.
+  - 비동기 처리는 callback, cancel, 리소스 관리 등을 해줘야하므로 어려움이 있는데 코루틴을 이용하면 쉽게 처리할 수 있다.
 - Android에서 코루틴은 **메인 스레드를 blocking하여 앱이 응답하지 않게 만들 수도 있는 장기 실행 작업을 관리하는 데 도움**이 됩니다.
 
 ### Google Codelabs의 코루틴 정의 <sup id = "a1">[3](#f1)</sup>
