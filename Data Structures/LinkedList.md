@@ -351,19 +351,68 @@ Popped value: 1
 
 ### removeLast 연산
 
+리스트의 마지막 노드를 제거하는 것은 다소 번거로운 작업이다.
+
+tail 노드에 대한 참조가 있더라도 그 앞에 노드에 대한 참조가 없으면 잘라낼 수 없다. 따라서 마지막 노드 이전의 노드를 찾으려면 전체 리스트를 탐색해야한다. 
+
 > `removeLast()` (*LinkedList.kt*)
 
 ```kotlin
-
+fun removeLast(): T? {
+    // ①
+    val head = head ?: return null
+    // ②
+    if (head.next == null) return pop()
+    // ③
+    size -= 1
+    // ④
+    var prev = head
+    var current = head
+    var next = current.next
+    while (next != null) {
+        prev = current
+        current = next
+        next = current.next
+    }
+    // ⑤
+    prev.next = null
+    tail = prev
+    return current.value
+}
 ```
+
+1. head가 null이면 제거할 항목이 없으므로 null을 반환한다.
+2. 목록이 하나의 노드로만 구성된 경우 *removeLast*는 기능적으로 *pop*과 동일하다. *pop*은 head 및 tail의 참조를 업데이트하는 것을 처리하므로 이 작업을 *pop* 함수에 위임할 수 있다.
+3. 이 시점에서 노드를 제거 할 것임을 알고 있으므로 그에 따라 목록의 크기를 업데이트한다.
+4. current.next가 null이 될 때까지 다음 노드를 계속 검색한다. 이것은 current가 목록의 마지막 노드임을 나타낸다.
+5. current가 마지막 노드이므로 prev.next 참조를 사용하여 연결을 끊는다. tail의 참조도 업데이트해야 한다. 
 
 > 테스트 (*Main.kt*)
 
 ```kotlin
-
+fun main() {
+    val list = LinkedList<Int>()
+    list.push(3)
+    list.push(2)
+    list.push(1)
+    println("Before removing last node: $list")
+    val removedValue = list.removeLast()
+    println("After removing last node: $list")
+    println("Removed value: $removedValue")
+}
 ```
 
+```
+Before removing last node: 1 -> 2 -> 3
+After removing last node: 1 -> 2
+Removed value: 3
+```
+
+`removeLast()`를 사용하려면 리스트를 순회해야 한다. 이것은 비교적 비용이 많이 드는 *O(n)* 연산을 하게 된다. 
+
 ### remove 연산
+
+remove 연산은 리스트의 특정 지점에서 노드를 제거하는 것이다. 이것은 `insert()`와 매우 유사하다. 먼저 제거하려는 노드의 바로 앞 노드를 찾은 다음 연결을 해제<small>(unlink)</small>해야 한다.
 
 <p align = 'center'>
 <img width = '250' src = 'https://user-images.githubusercontent.com/39554623/122572442-b40fdc00-d088-11eb-9132-9ac1d7a295f0.png'>
@@ -373,11 +422,37 @@ Popped value: 1
 > `removeAfter()` (*LinkedList.kt*)
 
 ```kotlin
-
+fun removeAfter(node: Node<T>): T? {
+    val result = node.next?.value
+    
+    if (node.next == tail) tail = node
+    if (node.next != null) size -= 1
+    
+    node.next = node.next?.next
+    return result
+}
 ```
+
+tail 참조를 업데이트해야 하므로 제거된 노드가 tail 노드인 경우 특별한 주의가 필요하다.
 
 > 테스트 (*Main.kt*)
 
 ```kotlin
-
+Before removing at particular index: 1 -> 2 -> 3
+After removing at index 1: 1 -> 3
+Removed value: 2
 ```
+
+`insert()`와 유사하게 이 작업의 시간 복잡도는 *O(1)*이지만 미리 특정 노드에 대한 참조가 있어야 한다.
+
+### 성능 분석
+
+||pop|removeLast|removeAfter|
+|:--:|:--:|:--:|:--:|
+|행동|head를 제거|tail을 제거|바로 다음 노드를 제거|
+|시간 복잡도|O(1)|O(n)|O(1)|
+
+지금까지 대부분의 프로그래머가 공감할 수 있는 linked list에 대한 인터페이스를 정의했다. 하지만 Kotlin semantic을 더욱 돋보이게 하려면 수행해야 할 작업이 존재한다. 본문의 다음 절반에서는 Kotlin의 관용적<small>(idomatic)</small>인 부분을 활용하여 더 나은 인터페이스를 만드는데 초점을 맞출 것이다.
+
+## Kotlin collection interfaces
+
