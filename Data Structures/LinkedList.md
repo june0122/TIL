@@ -456,3 +456,13 @@ Removed value: 2
 
 ## Kotlin collection interfaces
 
+Kotlin 표준 라이브러리에는 특정 유형에 대해 예상되는 사항을 정의하는데 도움이 되는 인터페이스 모음이 있다. 이러한 각 인터페이스는 특성과 성능에 대한 특정한 보증을 제공한다. 이러한 인터페이스 모음 중 4개를 컬렉션 인터페이스라고 한다.
+
+다음은 각 인터페이스가 나타내는 작은 예시들이다.
+
+1. Iterable : iterable 타입은 *Iterator*를 통해 요소들에 대한 순차적 접근을 제공한다.
+2. Collection : 컬렉션 타입은 추가 기능을 제공하는 iterable 타입으로, 컬렉션이 특정 요소 또는 요소들의 컬렉션을 포함하고 있는지 확인할 수 있게 해준다.
+3. MutableIterable : 주어진 컬렉션에서 항목들을 제거할 수 있는 MutableIterator를 제공한다.
+4. MutableCollection : 단순 컬렉션과 달리, MutableCollection 인터페이스는 컬렉션을 변경하는 메서드를 제공한다. 예를 들어, 요소를 *추가* 및 *제거*할 수 있으며 전체 *컬렉션을 지울 수도* 있다.
+
+Linked list는 컬렉션 인터페이스의 계층 4에 도달 할 수 있습니다. Linked list는 연결된 노드들이므로<small>(chain of nodes)</small> Iterable 인터페이스를 채택하는 것이 합리적이다. 이미 요소 추가 및 제거를 구현 했으므로 MutableCollection 인터페이스로 이동할 수 있다는 것이 매우 분명하다.
