@@ -193,14 +193,143 @@ Kotlin ArrayList를 활용하여 리스트 기반 큐를 간단하게 구현하�
 
 ### 이중 연결 리스트<small>(doubly linked list)</small> 구현
 
+linkedlist 패키지 내부에 LinkedListQueue.kt 파일을 생성한다.
+
+```kotlin
+class LinkedListQueue<T : Any> : Queue<T> {
+    private val list = DoublyLinkedList<T>()
+
+    private var size = 0
+
+    override val count: Int
+        get() = size
+}
+```
+
+위 구현은 **ArrayListQueue**와 유사하지만 **ArrayList** 대신 **DoublyLinkedList**를 생성한다.
+
+DoublyLinkedList가 제공하지 않는 *count* 속성 아래로 Queue 인터페이스의 구현을 시작한다.
+
+#### Enqueue
+
+큐의 뒤에 요소를 추가하기 위해 아래의 코드를 작성한다.
+
+```kotlin
+override fun enqueue(element: T): Boolean {
+    list.append(element)
+    size += 1
+    return true
+}
+```
+
 <p align = 'center'>
 <img width = '500' src = 'https://user-images.githubusercontent.com/39554623/124506865-80161400-de07-11eb-841b-a5acb773c7a8.png'>
 </p>
+
+이중 연결 리스트는 내부에서 새 노드에 대한 꼬리 노드의 이전<small>(prev)</small> 및 다음<small>(next)</small> 참조를 업데이트하고 크기를 늘린다. 이 과정은 *O(1)* 연산이다.
+
+#### Dequeue
+
+큐에서 요소를 제거하기 위해서 아래의 코드를 추가한다.
+
+> 간단한 구현
+
+```kotlin
+override fun dequeue(): T? = list.pop()
+```
+
+원서는 DoublyLinkedList에 대한 코드가 제공되지 않은 상태에서 위의 코드를 예시로 들어놓았는데, 직접 구현한 LinkedList를 기반으로 Queue를 구현한다면 `dequeue()`를 리스트에서 첫 번째 노드를 제거하는 메서드를 호출하는 것으로 간단히 구현할 수 있다.
+
+> 원서의 코드
+
+```kotlin
+override fun dequeue(): T? {
+  val firstNode = list.first ?: return null
+  size--
+  return list.remove(firstNode)
+}
+```
+
+원서의 코드는 큐의 첫 번째 요소가 존재하는지 확인하고 존재하지 않는다면 null을 반환한다. 큐에 첫 번째 요소가 존재한다면 맨 앞에 있는 요소를 제거하고 이를 반환한다. 크기도 감소한다.
 
 <p align = 'center'>
 <img width = '500' src = 'https://user-images.githubusercontent.com/39554623/124506868-81dfd780-de07-11eb-875b-2bb97909b55f.png'>
 </p>
 
+리스트 맨 앞을 제거하는 것 또한 *O(1)* 연산이다. ArrayList 구현과 비교할 때 요소를 하나씩 이동할 필요가 없는 대신, 위의 이미지처럼 연결 리스트의 처음 두 노드 사이의 전<small>(prev)</small> 및 다음<small>(next)</small> 포인터를 업데이트하기만 하면 된다.
+
+#### Peek
+
+ArrayList 기반 구현과 유사하게, DoublyLinkedList의 속성을 이용하여 `peek()`을 간단히 구현할 수 있다.
+
+```kotlin
+override fun peek(): T? = list.first?.value
+```
+
+#### 디버그와 테스트
+
+디버깅을 위해 아래의 코드를 클래스에 추가하고 테스트 해보자.
+
+```kotlin
+override fun toString(): String = list.toString()
+```
+
+```kotlin
+fun main() {
+    val queue = LinkedListQueue<String>().apply {
+    enqueue("Ray")
+    enqueue("Brian")
+    enqueue("Eric")
+    }
+    println(queue)
+    queue.dequeue()
+    println(queue)
+    println("Next up: ${queue.peek()}")
+}
+```
+
+이 테스트 코드는 ArrayListQueue 구현과 동일한 결과를 생성한다.
+
+#### 장점과 단점
+
 <p align = 'center'>
 <img width = '500' src = 'https://user-images.githubusercontent.com/39554623/124506871-84423180-de07-11eb-8b5b-ae09b51587b4.png'>
+</p>
+
+ArrayListQueue의 주요 문제점 중 하나는 항목을 대기열에서 빼는데 <i>O(n)</i>이 걸리는 것이다. 연결 리스트 구현을 통해 노드의 이전 및 다음 포인터를 업데이트하는 것만으로 시간 복잡도를 <i>O(1)</i>으로 축소시켰다.
+
+LinkedListQueue의 주요 단점은 위의 표에서 분명하게 나타나지 않는다. <i>O(1)</i> 성능에도 불구하고 높은 오버헤드가 존재하는데, 각 요소는 이전과 다음의 참조를 위한 추가 공간이 있어야 한다<small>(공간 복잡도 증가)</small>. 또한 새 요소를 만들 때마다 상대적으로 비용이 많이 드는 동적 할당이 필요하다. 이에 비해, ArrayListQueue는 더 빠른 대량 할당을 수행한다.
+
+할당에 대한 오버헤드를 제거하고 <i>O(1)</i>의 dequeue를 유지할 수 있을까? 큐가 고정된 크기 이상으로 커지는 것에 대해 걱정할 필요가 없는 경우 **링 버퍼**와 같은 다른 접근 방식을 사용할 수 있다. 예를 들어, 5명의 플레이어가 참여하는 모노폴리 게임에 링 버퍼를 기반으로 한 큐를 사용하여 다음에 올 차례를 추적할 수 있다. 다음으로 링 버퍼 구현을 살펴보자.
+
+### 링 버퍼<small>(Ring Buffer)</small> 구현
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657417-72cb5900-dedd-11eb-83e7-d1347a5734db.png'>
+</p>
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657442-7828a380-dedd-11eb-9b9e-81cb4ceefc91.png'>
+</p>
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657453-7bbc2a80-dedd-11eb-9434-92854fd7844a.png'>
+</p>
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657465-7fe84800-dedd-11eb-80da-d4634f1a86d8.png'>
+</p>
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657480-824aa200-dedd-11eb-9928-35956b11d604.png'>
+</p>
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657496-8676bf80-dedd-11eb-8b69-b5961c7d5dc8.png'>
+</p>
+
+#### 장점과 단점
+
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/124657508-8aa2dd00-dedd-11eb-86f7-208f48e10b6b.png'>
 </p>
