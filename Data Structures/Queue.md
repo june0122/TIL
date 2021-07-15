@@ -61,7 +61,7 @@ interface Queue<T : Any> {
 3. ring buffer 사용
 4. 두 개의 스택 사용
 
-### 리스트 기반 구현
+### 1. 리스트 기반 구현
 
 코틀린 표준 라이브러리에는 더 높은 수준의 추상화를 구축하는데 사용할 수 있는 고도로 최적화된 자료구조의 핵심 세트가 함께 제공된다. 이들 중 하나가 연속적이고<small>(contiguous)</small> 정렬된 요소들의 리스트를 저장하는 자료구조인 **ArrayList**이다. ArrayList를 이용해서 큐를 구현해보자.
 
@@ -147,7 +147,7 @@ override fun dequeue(): T? =
 
 큐의 전면에서 요소를 제거하는 연산은 *O(n)* 시간 복잡도를 가진다. 대기열에서 요소를 제거하려면 리스트 시작 부분에서 요소를 제거해야 한다. 리스트의 나머지 모든 요소를 메모리에서 이동시켜야하므로 항상 선형 시간<small>(Linear time, O(n))</small>의 연산이다.
 
-#### 디버그 및 테스트
+#### 테스트
 
 디버깅을 위해 구현한 큐가 `toString()`을 재정의하도록 한다.
 
@@ -191,7 +191,7 @@ Kotlin ArrayList를 활용하여 리스트 기반 큐를 간단하게 구현하�
 
 하지만 이 구현에는 몇 가지 단점들이 있다. 항목을 제거하면 모든 요소가 하나씩 이동하므로 큐에서 항목을 제거하는 것은 비효율적일 수 있다. 이것은 매우 큰 큐에서 차이를 만든다. 리스트가 가득 차면 크기를 조정해야 하며 사용하지 않는 공간이 있을 수 있다. 이것은 시간이 지남에 따라 메모리 사용량을 증가시킬 수 있다. 이러한 단점을 어떻게 해결할 수 있을까? 연결 리스트 기반 구현을 살펴보고 ArrayListQueue와 비교해보도록 하자.
 
-### 이중 연결 리스트<small>(doubly linked list)</small> 구현
+### 2. 이중 연결 리스트<small>(doubly linked list)</small> 기반 구현
 
 linkedlist 패키지 내부에 LinkedListQueue.kt 파일을 생성한다.
 
@@ -266,7 +266,7 @@ ArrayList 기반 구현과 유사하게, DoublyLinkedList의 속성을 이용하
 override fun peek(): T? = list.first?.value
 ```
 
-#### 디버그와 테스트
+#### 테스트
 
 디버깅을 위해 아래의 코드를 클래스에 추가하고 테스트 해보자.
 
@@ -302,34 +302,247 @@ LinkedListQueue의 주요 단점은 위의 표에서 분명하게 나타나지 �
 
 할당에 대한 오버헤드를 제거하고 <i>O(1)</i>의 dequeue를 유지할 수 있을까? 큐가 고정된 크기 이상으로 커지는 것에 대해 걱정할 필요가 없는 경우 **링 버퍼**와 같은 다른 접근 방식을 사용할 수 있다. 예를 들어, 5명의 플레이어가 참여하는 모노폴리 게임에 링 버퍼를 기반으로 한 큐를 사용하여 다음에 올 차례를 추적할 수 있다. 다음으로 링 버퍼 구현을 살펴보자.
 
-### 링 버퍼<small>(Ring Buffer)</small> 구현
+### 3. 링 버퍼<small>(Ring Buffer)</small> 기반 구현
+
+원형 버퍼<small>(circular buffer)</small>라고도 불리는 링 버퍼<small>(ring buffer)</small>는 고정 크기 배열이다. 이 자료구조는 마지막에 제거할 항목이 없을 때 시작 부분으로 래핑된다.
+
+링 버퍼를 사용하여 큐를 구현하는 방법에 대한 간단한 예를 아래의 이미지들로 살펴보자.
+
+> 링 버퍼 생성
 
 <p align = 'center'>
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657417-72cb5900-dedd-11eb-83e7-d1347a5734db.png'>
 </p>
 
+먼저 고정 크기가 4인 링 버퍼를 만든다. 링 버퍼에는 두 개의 포인터가 존재한다.
+
+1. 읽기<small>(read)</small> 포인터 : 큐의 앞쪽을 추적
+2. 쓰기<small>(write)</small> 포인터 : 사용 가능한 다음 칸을 추적하여 이미 읽어 들인 기존 요소를 재정의할 수 있다.
+
+> 대기열에 항목 추가
+
 <p align = 'center'>
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657442-7828a380-dedd-11eb-9b9e-81cb4ceefc91.png'>
 </p>
+
+대기열에 항목을 추가할 때마다 쓰기 포인터가 1씩 증가한다.
+
+> 항목 2개를 더 추가
 
 <p align = 'center'>
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657453-7bbc2a80-dedd-11eb-9434-92854fd7844a.png'>
 </p>
 
+쓰기 포인터가 두 자리 더 이동하여 읽기 포인터보다 3칸 앞서 있는 것을 확인 할 수 있다. 이는 대기열이 비어 있지 않다는 것을 의미한다.
+
+> 대기열에서 두 개의 항목을 빼기
+
 <p align = 'center'>
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657465-7fe84800-dedd-11eb-80da-d4634f1a86d8.png'>
 </p>
+
+대기열에서 항목을 빼는 것을 링 버퍼를 읽는 것과 동일하다. 읽기 포인터가 어떻게 두 번 이동했는지 주목하자.
+
+> 대기열을 채우기 위해 항목을 하나 더 추가
 
 <p align = 'center'>
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657480-824aa200-dedd-11eb-9928-35956b11d604.png'>
 </p>
 
+쓰기 포인터가 끝에 도달했으므로 시작 인덱스로 다시 랩핑된다.
+
+> 마지막으로 남은 두 개의 항목을 대기열에서 빼기
+
 <p align = 'center'>
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/124657496-8676bf80-dedd-11eb-8b69-b5961c7d5dc8.png'>
 </p>
+
+남은 두 항목도 대기열에서 빼면서 읽기 포인터도 시작 부분으로 돌아온다.
+
+위 이미지를 통해 읽기와 쓰기 포인터가 동일한 인덱스에 있을 경우 대기열, 즉 큐가 비어 있다는 것을 알 수 있다.
+
+링 버퍼를 통한 큐의 구현은 개념만 확인하고 구현은 생략하였다.
 
 #### 장점과 단점
 
 <p align = 'center'>
 <img width = '500' src = 'https://user-images.githubusercontent.com/39554623/124657508-8aa2dd00-dedd-11eb-86f7-208f48e10b6b.png'>
 </p>
+
+링 버퍼 기반 큐는 연결 리스트 기반 구현과 `enqueue`와 `dequeue`의 시간 복잡도가 동일하다. 유일한 차이점은 공간 복잡도인데, 링 버퍼의 크기는 고정되어 있으므로 큐에 넣는 것 자체가 실패할 수 있는 단점이 존재한다.
+
+지금까지 배열, 연결 리스트, 링 버퍼 기반까지 총 세 가지의 구현 방법을 보았는데 마지막으로 두 개의 스택을 사용하여 구현된 큐를 알아 볼 것이다.
+
+이중 스택 기반 구현 큐는 메모리 상의 공간적 지역성이 연결 리스트보다 훨씬 우수하고, 링 버퍼와 같이 고정된 크기가 필요하지 않다는 장점이 있다.
+
+### 4. 이중 스택<small>(Double-Stack)</small> 기반 구현
+
+doublestack 패키지 내부에 StackQueue.kt를 추가한다.
+
+```kotlin
+class StackQueue<T : Any> : Queue<T> {
+    private val leftStack = StackImpl<T>()
+    private val rightStack = StackImpl<T>()
+}
+```
+
+두 개의 스택을 사용하는 아이디어는 요소를 큐에 넣을 때마다 **오른쪽** 스택으로 이동하고, 요소를 큐에서 뺄 때는 FIFO 순서를 사용하여 요소를 검색할 수 있도록 오른쪽 스택을 반대로 뒤집어서 **왼쪽** 스택에 넣는다.
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/125627123-d8f7ca3e-d598-4fda-b7e8-bf87d948cef6.png'>
+</p>
+
+#### 스택 활용하기
+
+그러면 아래의 코드를 추가하여 큐의 공통 기능들을 구현해본다.
+
+```kotlin
+override val count: Int
+    get() = leftStack.count + rightStack.count 
+
+override val isEmpty: Boolean
+    get() = leftStack.isEmpty && rightStack.isEmpty
+```
+
+큐가 비어 있는지 확인하려면 왼쪽과 오른쪽의 스택이 모두 비어 있는지 확인하면 된다. 큐에 있는 요소의 개수는 두 스택에 있는 요소 개수의 합이다.
+
+이중 스택으로 구현한 큐는 위에서 설명했듯이 오른쪽 스택에서 왼쪽 스택으로 요소를 전달해야 할 때가 있다. 이는 왼쪽 스택이 비어 있을 때마다 발생한다. 
+
+다음의 헬퍼 메서드를 추가하자.
+
+> 오른쪽 스택에서 왼쪽 스택으로 요소 이동
+
+```kotlin
+private fun transferElements() {
+    var nextElement = rightStack.pop()
+    while (nextElement != null) {
+        leftStack.push(nextElement)
+        nextElement = rightStack.pop()
+    }
+}
+```
+
+위 코드를 통해 오른쪽 스택으로부터 요소를 꺼내어 왼쪽 스택에 넣을 수 있다. 스택은 LIFO 방식으로 작동하기 때문에 추가적인 작업 없이 역순으로 요소들을 가져올 수 있다.
+
+> `peek()`
+
+```kotlin
+override fun peek(): T? {
+    if (leftStack.isEmpty) {
+        transferElements()
+    }
+    return leftStack.peek()
+}
+```
+
+`peek()`은 최상위 요소를 보는 메서드이다. 만약 왼쪽 스택이 비어 있지 않다면 이 스택의 맨 위에 있는 요소가 큐의 맨 앞에 있다.
+
+왼쪽 스택이 비어 있으면 `transferElements()`를 사용한다. 그렇게 하면 `leftStack.peek()`은 항상 올바른 요소 또는 *null*을 반환한다. `isEmpty()`는 여전히 <i>O(1)</i> 작업인 반면 `peek()`은 <i>O(n)</i>이다.
+
+이러한 `peek()`의 구현이 비싼 비용을 요구하는 것처럼 보이지만, 큐의 각 요소는 오른쪽 스택에서 왼쪽 스택으로 한 번만 이동하면 되기 때문에 amortized <i>O(1)</i>이다. 왼쪽 스택이 비어 있을 때 `peek()` 호출은 오른쪽 요소들을 모두 왼쪽 스택으로 이동시키므로 <i>O(n)</i>이지만, 그 외 추가적인 호출에 대해선 <i>O(1)</i>이 된다.
+
+#### Enqueue
+
+```kotlin
+override fun enqueue(element: T): Boolean {
+    rightStack.push(element)
+    return true
+}
+```
+
+요소를 큐에 추가할 때는 오른쪽 스택이 사용된다. 스택에 요소를 넣는 `push()`는 <i>O(1)</i>이다.
+
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/125709812-534b1733-5132-4770-9b10-23b3b17392b7.png'>
+</p>
+
+#### Dequeue
+
+```kotlin
+override fun dequeue(): T? {
+    if (leftStack.isEmpty) {
+        transferElements()
+    }
+    return leftStack.pop()
+}
+```
+동작 원리는 다음과 같다.
+
+1. 왼쪽 스택이 비어 있는지 확인한다.
+2. 왼쪽 스택이 비어 있으면 오른쪽 스택의 요소를 역순으로 이동시킨다.
+3. 왼쪽 스택에서 맨 위의 요소를 제거한다.
+
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/125709818-4e175602-0dbc-45ef-b299-999bc03ec2d2.png'>
+</p>
+
+왼쪽 스택이 비어 있을 때에만 오른쪽 스택의 요소를 이동시키므로 `dequeue()`는 `peek()`처럼 amortized <i>O(1)</i> 연산이다.
+
+#### 테스트
+
+```kotlin
+override fun toString(): String {
+  return "Left stack: \n$leftStack \nRight stack: \n$rightStack"
+}
+```
+
+```kotlin
+fun main() {
+    val queue = StackQueue<String>().apply {
+        enqueue("Ray")
+        enqueue("Brian")
+        enqueue("Eric")
+    }
+    println(queue)
+    queue.dequeue()
+    println(queue)
+    println("Next up: ${queue.peek()}")
+}
+```
+
+```
+Left stack: 
+----top----
+-----------
+ 
+Right stack: 
+----top----
+Eric
+Brian
+Ray
+-----------
+
+Left stack: 
+----top----
+Brian
+Eric
+-----------
+ 
+Right stack: 
+----top----
+-----------
+
+Next up: Brian
+```
+
+#### 장점과 단점
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/125711056-d0be53af-a4b3-4029-bacb-3a914e9d8115.png'>
+</p>
+
+리스트 기반 구현과 비교했을 때, 두 개의 스택을 활용하면 `dequeue()`의 구현을 amortized <i>O(1)</i> 연산으로 변환할 수 있다. 또한 이중 스택 기반 구현은 완전히 동적이고 링 버퍼 기반 구현처럼 고정된 크기로 제한되지도 않는다. 마지막으로 공간적 지역성<small>(spatial locality, 메모리 상 인접 데이터의 재이용률이 높음)</small> 측면에서 연결 리스트 기반 구현을 능가하는데, 이는 리스트이 요소가 메모리 블록에서 서로 옆에 있기 때문이다. 따라서 많은 수의 요소가 한 번의 접근<small>(access)</small>으로 캐시에 로드된다.
+
+> 연속된 배열에 있는 요소들
+
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/125709832-3a3d4f43-4b43-4c06-8319-85f9d593084e.png'>
+</p>
+
+> 메모리 전체에 흩어져 있는 연결 리스트의 요소들
+
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/125709837-9a7d64d5-f7cf-45ef-825e-33b7f79b5e18.png'>
+</p>
+
+연결 리스트에서 요소는 메모리 블록에 연속적으로 존재하지 않는다. 이로 인해 더 많은 캐시 미스가 발생하여 접근 시간이 늘어난다.
