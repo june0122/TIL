@@ -246,7 +246,7 @@ private inner class CrimeHolder(view: View) : RecyclerView.ViewHolder(view) {
 </p>
 
 
-여기서 CrimeHolder의 기본 생성사에 정의된 인자 겸 속성인 `view`는 `itemView` 속성과 동일한 항목 View의 참조 값을 갖는다. 따라서 새로 추가한 코드에서 `itemView` 대신 `view`를 사용해도 된다.
+여기서 CrimeHolder의 기본 생성자에 정의된 인자 겸 속성인 `view`는 `itemView` 속성과 동일한 항목 View의 참조 값을 갖는다. 따라서 새로 추가한 코드에서 `itemView` 대신 `view`를 사용해도 된다.
 
 이제는 변경된 CrimeHolder가 항목 View의 TextView들에 대한 참조를 보존할 수 있으므로 이 TextView들의 값을 쉽게 보여줄 수 있게 되었다.
 
@@ -480,6 +480,21 @@ RecyclerView에 평범한 범죄를 보여주는 행과 심각한 범죄를 보�
 <p align = 'center'>
 <img width = '150' src = 'https://user-images.githubusercontent.com/39554623/119218988-027b9a80-bb1e-11eb-8e9e-042f8542e9eb.jpeg'>
 </p>
+
+```kotlin
+data class Crime(
+    val id: UUID = UUID.randomUUID(),
+    var title: String = "",
+    var date: Date = Date(),
+    var isSolved: Boolean = false,
+    var requirePolice: Int = VIEW_TYPE_NORMAL
+) {
+    companion object {
+        const val VIEW_TYPE_NORMAL = 0
+        const val VIEW_TYPE_SERIOUS = 1
+    }
+}
+```
 
 ```kotlin
 class CrimeListFragment : Fragment() {
