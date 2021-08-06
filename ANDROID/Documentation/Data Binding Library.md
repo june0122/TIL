@@ -148,17 +148,6 @@ val listItemBinding = ListItemBinding.inflate(layoutInflater, viewGroup, false)
 val listItemBinding = DataBindingUtil.inflate(layoutInflater, R.layout.list_item, viewGroup, false)
 ```
 
-###
-
-
-
-
-
-
-
-
-
-
 ## 3. Observable 데이터 객체 작업
 
 
