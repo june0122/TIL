@@ -34,8 +34,5 @@ Compose는 매우 지능적이고 효율적이어서 변경되지 않은 요소�
 </p>
 
 Composable 함수
-<<<<<<< HEAD
 - 값을 반환하는 대신 UI를 전달<small>(emit)</small>한다.
-=======
-- 값을 반환하는 대신 UI를 전달<small>(emit)</small>한다.
->>>>>>> 5737f72657e7e2693476a66763b4fedba3a6b410
+
