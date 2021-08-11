@@ -1,13 +1,30 @@
 # What's new in Jetpack Compose (Google I/O 2021)
 
-> # 선언적 UI 툴킷<small>(Declarative UI Toolkit)</small>
+## Jetpack Compose의 등장 배경
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128816157-8c2f051a-b69a-482c-a6a7-03aa66eb8aa7.png'>
+</p>
+
+새로운 UI 툴킷이 필요한 이유는 무엇일까?
+- 뷰 기반의 기존 툴킷은 벌써 10년 넘게 사용해왔다. 그 당시와는 기술이 달라졌다.
+- 기기 성능은 향상됐고 사용자들은 앱에 대한 더 높은 기대를 가지고 있다.
+- UI는 훨씬 동적이고 표현이 풍부해졌다.
+
+Views로도 멋진 앱을 개발할 수 있지만 최신 아키텍처를 기반으로 하고 Kotlin을 활용하는 현대적 툴킷을 원한다는 의견이 많았다.
+- 구글에서도 기능과 개선 사항을 더욱 빠르게 적용하고 싶어했다.
+- 그래서 Jetpack Compose라는 선언형 독립형 툴킷<small>(declarative unbundled toolkit)</small>을 3년 전부터 개발하기 시작했다.
+- API Surface가 안정화되어 2021년 2월에 첫 베타를 출시하였다.
+- 2021년 7월 28일, Jetpack Compose 1.0이 안정화 버전이 출시되었다. <small>[릴리즈 노트](https://developer.android.com/jetpack/androidx/versions/all-channel#july_28_2021)</small>
+
+## 선언적 UI 툴킷<small>(Declarative UI Toolkit)</small>
 
 ## 1. 선언적<small>(Declarative)</small>
 
 최근 앱들은 데이터가 동적이고 실시간으로 업데이트 됨.
 
 <p align = 'center'>
-<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128521129-ab2d133b-b3ec-4fb6-8f4c-a7441dad113d.png'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128815112-3838bc87-5064-439d-8fc2-28311c32df03.png'>
 </p>
 
 원래 Android Views를 사용하면 XML에 UI를 선언해야 하며, 데이터가 바뀌면 UI도 업데이트해야 하고 변형도 필요하다.
@@ -240,7 +257,7 @@ Kotlin은 툴링<small>(tooling)</small>으로 구성된 강력한 에코시스�
 > interoperability : 상호 운용성
 
 <p align = 'center'>
-<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128813954-3fdc923e-91ff-45a9-82da-ee529197ad62.png'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128814913-a4cb5f4e-490a-417b-87cc-8456cae208e0.png'>
 </p>
 
 Jetpack Compose는 기존 View 시스템과 호환된다.
@@ -248,11 +265,11 @@ Jetpack Compose는 기존 View 시스템과 호환된다.
   - 화면의 작은 요소부터 시작해서 UI의 큰 부분이나 화면 전체를 교체하면 된다.
 
 <p align = 'center'>
-<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128814494-18485bd6-fcd7-4c94-b021-523e9edaf831.png'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128814927-385840ad-8d1e-427d-9f9c-9a245f75efc6.png'>
 </p>
 
 <p align = 'center'>
-<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128814524-db889c62-85ca-4723-b7c1-f9839342ecdb.png'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128814933-5ee2c524-6124-4b7b-a26b-217c136ca506.png'>
 </p>
 
 Compose는 필요한 단계를 진행할 수 있도록 도와준다.
@@ -261,7 +278,7 @@ Compose는 필요한 단계를 진행할 수 있도록 도와준다.
 - Compose로 점차 migrate하면서 원하는 속도대로 도입할 수 있다.
 
 <p align = 'center'>
-<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128814547-d5c6661d-6e24-4b63-b026-4c30a7adfd1f.png'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/128814954-0e0f0c4a-9504-4e87-ac78-e5534903b75f.png'>
 </p>
 
 View와 상호 운용성 이외에도 다른 주요 라이브러리와의 통합을 제공한다.
