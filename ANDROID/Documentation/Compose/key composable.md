@@ -5,7 +5,7 @@
 inline fun <T : Any?> key(keys: vararg Any?, block: () -> T): @Composable T
 ```
 
-`key`는 컴포지션 내부에서 실행 블록을 "그룹화"하거나 "key"하는데 사용되는 유틸리티 컴포저블이다. 이는 주어진 컴포저블 호출이 컴포지션 중에 두 번 이상 실행되도록 할 수 있는 제어 흐름 내부의 정확성을 위해 때때로 필요하다.
+`key`는 컴포지션 내부에서 실행 블록을 "group" 또는 "key"하는데 사용되는 유틸리티 컴포저블이다<small>(`key` is a utility composable that is used to "group" or "key" a block of execution inside of a composition.)</small>. 이는 주어진 컴포저블 호출이 컴포지션 중에 두 번 이상 실행되도록 할 수 있는 제어 흐름 내부의 정확성을 위해 때때로 필요하다.
 
 키 값은 *전역적으로 고유할 필요가 없으며*, 컴포지션의 해당 지점에서의 `key` 호출 사이에만 고유하면 된다.
 
