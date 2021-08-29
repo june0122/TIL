@@ -68,7 +68,7 @@ fun Modifier.firstBaselineToTop(
 
 이제 컴포저블이 측정되었으므로 콘텐츠를 배치하는 데 사용되는 람다도 허용하는 `layout(width, height)` 메서드를 호출하여 크기를 계산하고 지정해야 합니다.
 
-이 경우 컴포저블의 너비는 측정된 컴포저블의 `width`가 되고, 높이는 top-to-baseline 높이에서 첫 번째 기준선을 뺀 컴포저블의 `height`입니다.
+이 경우 컴포저블의 너비는 측정된 컴포저블의 `width`가 되고, 높이는 프로그래머가 원하는 `baselineToTop` 높이에서 첫 번째 기준선을 뺀 컴포저블의 `height`입니다.<small>(번역이 매끄럽지 않은데 값들을 로깅하여 확인해보면 쉽게 이해할 수 있습니다. 로깅 결과는 아래에 첨부.)</small>
 
 ```kotlin
 fun Modifier.firstBaselineToTop(
@@ -95,7 +95,7 @@ fun Modifier.firstBaselineToTop(
 
 > 경고 : 커스텀 `Layout` 또는 `LayoutModifier`를 만들 때, Android Studio는 `layout` 함수가 호출될 때까지 경고를 표시합니다.
 
-이 경우 텍스트의 `y` 위치는 상단 패딩에서 첫 번째 기준선의 위치를 뺀 값에 해당합니다.
+이 경우 텍스트의 `y` 위치는 맨 위 패딩에서 첫 번째 기준선의 위치를 뺀 값에 해당합니다.
 
 ```kotlin
 fun Modifier.firstBaselineToTop(
@@ -115,8 +115,170 @@ fun Modifier.firstBaselineToTop(
 )
 ```
 
+<figure>
+    <img width = '300' src = 'https://user-images.githubusercontent.com/39554623/131245367-0321fb51-b281-42bf-9112-5b13279ff765.png '>
+    <figcaption>▲ Modifier.firstBaselineToTop()에 32.dp를 인수로 전달했을 때의 로깅 결과</figcaption>
+</figure>
+
+
 이 수정자가 예상대로 작동하는지 확인하려면 위의 그림에서 본 것처럼 `Text`에서 이 수정자를 사용하면 됩니다.
+
+```kotlin
+@Preview
+@Composable
+fun TextWithPaddingToBaselinePreview() {
+  LayoutsCodelabTheme {
+    Text("Hi there!", Modifier.firstBaselineToTop(32.dp))
+  }
+}
+
+@Preview
+@Composable
+fun TextWithNormalPaddingPreview() {
+  LayoutsCodelabTheme {
+    Text("Hi there!", Modifier.padding(top = 32.dp))
+  }
+}
+```
 
 <p align = 'center'>
 <img width = '300' src = 'https://user-images.githubusercontent.com/39554623/131218840-682d5960-3c14-40bb-bd29-7db4a0aac13a.png'>
+</p>
+
+## `Layout` 컴포저블 사용
+
+단일 컴포저블이 측정되고 화면에 배치되는 방식을 제어하는 대신, 컴포저블 그룹에 대해서 동일하게 제어할 필요성이 있을 수 있습니다. 이를 위해 [Layout](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main-release:compose/ui/ui/src/commonMain/kotlin/androidx/compose/ui/layout/Layout.kt) 컴포저블을 사용하여 레이아웃의 자식을 측정하고 배치하는 방법을 수동으로 제어할 수 있습니다. 일반적으로 `Layout`을 사용하는 컴포저블의 일반적인 구조는 다음과 같습니다.
+
+```kotlin
+@Composable
+fun CustomLayout(
+    modifier: Modifier = Modifier,
+    // custom layout attributes 
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+        // measure and position children given constraints logic here
+    }
+}
+```
+
+`CustomLayout`에 필요한 최소 매개변수는 `modifier`와 `content`입니다. 그런 다음 이러한 매개변수가 `Layout`으로 전달됩니다. <small>(`MeasurePolicy` 유형)</small>`Layout`의 trailing 람다에서 `layout` 수정자를 사용해서 얻은 것과 동일한 람다 매개변수를 얻습니다.
+
+`Layout`이 작동하는 모습을 보여주기 위해, `Layout`을 사용하여 API를 이해하는 매운 기본적인 `Column`을 구현해 보겠습니다. 나중에 `Layout` 컴포저블의 유연성을 보여주기 위해 좀 더 복잡한 것을 만들 것입니다.
+
+## 기본적인 Column 구현
+
+여기서 `Column`의 커스텀 구현은 **항목들을 수직으로 배치**합니다. 또한 단순함을 위해 레이아웃은 **부모에서 가능한 한 많은 공간을 차지합니다.**
+
+`MyOwnColumn`이라는 새 컴포저블을 만들고 `Layout` 컴포저블의 공통 구조를 추가합니다.
+
+```kotlin
+@Composable
+fun MyOwnColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+        // measure and position children given constraints logic here
+    }
+}
+```
+
+이전과 마찬가지로 가장 먼저 해야 할 일은 한 번 밖에 측정할 수 없는 자식들을 측정하는 것입니다. 레이아웃 수정자가 작동하는 방식과 유사하게 `measurables` 람다 매개변수에서 `measurable.measure(constraints)`을 호출하여 측정할 수 있는 모든 `content`를 얻습니다.
+
+이 사용 사례에서는 자식 뷰들을 더 이상 제한하지 않습니다. 자식을 측정할 때, 나중에 화면에 자식들을 올바르게 배치할 수 있도록 각 행의 `width`와 최대 `height`도 추적해야 합니다.
+
+```kotlin
+@Composable
+fun MyOwnColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+
+        // Don't constrain child views further, measure them with given constraints
+        // List of measured children
+        val placeables = measurables.map { measurable ->
+            // Measure each child
+            measurable.measure(constraints)
+        }
+    }
+}
+```
+
+이제 로직에 측정된 자식 리스트가 있으므로 화면에 배치하기 전에 커스텀한 `Column`의 크기를 계산해야 합니다. 크기를 부모만큼 크게 만들되 부모가 전달한 제약 조건만큼이어야 합니다. `layout(width, height)` 메서드를 호출하여 우리의 고유한 `Column`의 크기를 지정합니다. 이 메서드는 자식을 배치하는데 사용되는 람다도 제공합니다.
+
+```kotlin
+@Composable
+fun MyOwnColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+        // Measure children - code in the previous code snippet
+        ...
+
+        // Set the size of the layout as big as it can
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            // Place children
+        }
+    }
+}
+```
+
+마지막으로 `placeable.placeRelative(x, y)`를 호출하여 화면에 자식들을 배치합니다. 자식들을 수직으로 배치하기 위해, 자식들을 배치한 `y` 좌표를 추적합니다. `MyOwnColumn`의 최종 코드는 다음과 같습니다.
+
+```kotlin
+@Composable
+fun MyOwnColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+        // Don't constrain child views further, measure them with given constraints
+        // List of measured children
+        val placeables = measurables.map { measurable ->
+            // Measure each child
+            measurable.measure(constraints)
+        }
+
+        // Track the y co-ord we have placed children up to
+        var yPosition = 0
+
+        // Set the size of the layout as big as it can
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            // Place children in the parent layout
+            placeables.forEach { placeable ->
+                // Position item on the screen
+                placeable.placeRelative(x = 0, y = yPosition)
+
+                // Record the y co-ord placed up to
+                yPosition += placeable.height
+            }
+        }
+    }
+}
+```
+
+## `MyOwnColumn` in action
+
+`BodyContent` 컴포저블에서 `MyOwnColumn`을 사용하여 화면에서 확인해보자. `BodyContent` 내부의 콘텐츠를 다음으로 바꿉니다.
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/131247235-405ecbb1-a5f1-465a-bc3e-44952b2fe037.png'>
 </p>
