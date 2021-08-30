@@ -167,7 +167,7 @@ fun CustomLayout(
 
 `CustomLayout`에 필요한 최소 매개변수는 `modifier`와 `content`입니다. 그런 다음 이러한 매개변수가 `Layout`으로 전달됩니다. <small>(`MeasurePolicy` 유형)</small>`Layout`의 trailing 람다에서 `layout` 수정자를 사용해서 얻은 것과 동일한 람다 매개변수를 얻습니다.
 
-`Layout`이 작동하는 모습을 보여주기 위해, `Layout`을 사용하여 API를 이해하는 매운 기본적인 `Column`을 구현해 보겠습니다. 나중에 `Layout` 컴포저블의 유연성을 보여주기 위해 좀 더 복잡한 것을 만들 것입니다.
+`Layout`이 작동하는 모습을 보여주기 위해, `Layout`을 사용하여 API를 이해하는 매우 기본적인 `Column`을 구현해 보겠습니다. 나중에 `Layout` 컴포저블의 유연성을 보여주기 위해 좀 더 복잡한 것을 만들 것입니다.
 
 ## 기본적인 Column 구현
 
@@ -282,3 +282,67 @@ fun MyOwnColumn(
 <p align = 'center'>
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/131247235-405ecbb1-a5f1-465a-bc3e-44952b2fe037.png'>
 </p>
+
+# 복잡한 커스텀 레이아웃
+
+레이아웃의 기본 사항을 다루었으므로 API의 유연성을 보여주기 위해 더 복잡한 예제를 만들어 보겠습니다. 다음 그림 중간에서 볼 수 있는 커스텀 [Material Study Owl](https://material.io/design/material-studies/owl.htm)의 staggered grid를 만들 것입니다.
+
+<p align = 'center'>
+<img width = '300' src = 'https://user-images.githubusercontent.com/39554623/131250819-59c68993-2540-414f-b385-5e2a30255f1c.png'>
+</p>
+
+Owl의 staggered grid는 항목을 세로로 배치하고, `n`개의 행이 주어지면 한 번에 열을 채웁니다. `Columns`에 `Row`로는 레이아웃의 비틀림을 얻지 못하므로 사용이 불가능합니다. 데이터가 세로로 표시되도록 준비하면 `Row`의 `Column`을 가질 수 있습니다.
+
+하지만 커스텀 레이아웃을 사용하면 staggered grid에 있는 모든 항목의 높이를 제한할 수도 있습니다. 따라서 레이아웃을 더 잘 제어하고 커스텀 레이아웃을 만드는 방법을 배우기 위해, 우리는 스스로 자식들을 측정하고 배치할 것입니다.
+
+그리드를 다른 방향<small>(orientation)</small>에서 재사용할 수 있도록 하려면 화면에 표시하려는 행의 수를 매개변수로 사용할 수 있습니다. 해당 정보는 레이아웃이 호출될 때 와야 하므로 매개변수로 전달합니다.
+
+```kotlin
+@Composable
+fun StaggeredGrid(
+    modifier: Modifier = Modifier,
+    rows: Int = 3,
+    content: @Composable () -> Unit
+) {
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+        // measure and position children given constraints logic here
+    }
+}
+```
+
+이전과 마찬가지로 가장 먼저 할 일은 자식들을 측정하는 것입니다. 자식은 한 번만 측정할 수 있음을 기억하십시오.
+
+우리의 사용 사례에서는 자식 뷰를 더 이상 제한하지 않습니다. 자식을 측정할 때 각 행의 너비와 최대 높이도 추적해야 합니다.
+
+```kotlin
+Layout(
+    modifier = modifier,
+    content = content
+) { measurables, constraints ->
+
+    // Keep track of the width of each row
+    val rowWidths = IntArray(rows) { 0 }
+
+    // Keep track of the max height of each row
+    val rowHeights = IntArray(rows) { 0 }
+
+    // Don't constrain child views further, measure them with given constraints
+    // List of measured children
+    val placeables = measurables.mapIndexed { index, measurable ->
+
+        // Measure each child
+        val placeable = measurable.measure(constraints)
+
+        // Track the width and max height of each row
+        val row = index % rows
+        rowWidths[row] += placeable.width
+        rowHeights[row] = max(rowHeights[row], placeable.height)
+
+        placeable
+    }
+    ...
+}
+```
