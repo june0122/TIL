@@ -346,3 +346,161 @@ Layout(
     ...
 }
 ```
+
+이제 로직에서 측정된 자식들의 리스트가 나왔으니, 자식들을 배치하기 전에 그리드의 크기<small>(full `width` & `height`)</small>를 계산해야 합니다. 또한 각 행의 최대 높이를 알고 있기 때문에 Y 위치에서 각 행의 요소를 어디에 배치할 것인지 계산할 수 있습니다. `rowY` 변수에 Y의 위치를 저장합니다.
+
+```kotlin
+Layout(
+    content = content,
+    modifier = modifier
+) { measurables, constraints ->
+    ... 
+
+    // Grid's width is the widest row
+    val width = rowWidths.maxOrNull()
+        ?.coerceIn(constraints.minWidth.rangeTo(constraints.maxWidth)) ?: constraints.minWidth
+
+    // Grid's height is the sum of the tallest element of each row
+    // coerced to the height constraints 
+    val height = rowHeights.sumOf { it }
+        .coerceIn(constraints.minHeight.rangeTo(constraints.maxHeight))
+
+    // Y of each row, based on the height accumulation of previous rows
+    val rowY = IntArray(rows) { 0 }
+    for (i in 1 until rows) {
+        rowY[i] = rowY[i-1] + rowHeights[i-1]
+    }
+
+    ...
+}
+```
+
+마지막으로, `placeable.placeRelative(x, y)`를 호출하여 자식들을 화면 위에 배치합니다. 이 사용 사례에서는 `rowX` 변수의 각 행에 대한 X 좌표도 추적합니다.
+
+```kotlin
+Layout(
+    content = content,
+    modifier = modifier
+) { measurables, constraints ->
+    ... 
+
+    // Set the size of the parent layout
+    layout(width, height) {
+        // x cord we have placed up to, per row
+        val rowX = IntArray(rows) { 0 }
+
+        placeables.forEachIndexed { index, placeable ->
+            val row = index % rows
+            placeable.placeRelative(
+                x = rowX[row],
+                y = rowY[row]
+            )
+            rowX[row] += placeable.width
+        }
+    }
+```
+
+### 커스텀 StaggeredGrid 사용 예제
+
+이제 자식을 측정하고 배치하는 방법을 알고 있는 커스텀 그리드 레이아웃이 있으므로 앱에서 사용하겠습니다. 그리드에서 Owl 앱에 구현된 chip을 테스트하기 위해 위해 유사한 작업을 수행하는 컴포저블을 쉽게 만들 수 있습니다.
+
+```kotlin
+@Composable
+fun Chip(modifier: Modifier = Modifier, text: String) {
+    Card(
+        modifier = modifier,
+        border = BorderStroke(color = Color.Black, width = Dp.Hairline),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(start = 8.dp, top = 4.dp, end = 8.dp, bottom = 4.dp), 
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.size(16.dp, 16.dp)
+                    .background(color = MaterialTheme.colors.secondary)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(text = text)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ChipPreview() {
+    LayoutsCodelabTheme {
+        Chip(text = "Hi there")
+    }
+}
+```
+
+<p align = 'center'>
+<img width = '200' src = 'https://user-images.githubusercontent.com/39554623/131455078-6daa92cf-34c7-4924-b1e6-0775967e16f7.png'>
+</p>
+
+이제 `BodyContent`에 표시할 수 있는 topic 리스트를 만들고 `StaggeredGrid`에 표시해 보겠습니다.
+
+```kotlin
+val topics = listOf(
+    "Arts & Crafts", "Beauty", "Books", "Business", "Comics", "Culinary",
+    "Design", "Fashion", "Film", "History", "Maths", "Music", "People", "Philosophy",
+    "Religion", "Social sciences", "Technology", "TV", "Writing"
+)
+
+
+@Composable
+fun BodyContent(modifier: Modifier = Modifier) {
+    StaggeredGrid(modifier = modifier) {
+        for (topic in topics) {
+            Chip(modifier = Modifier.padding(8.dp), text = topic)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun LayoutsCodelabPreview() {
+    LayoutsCodelabTheme {
+        BodyContent()
+    }
+}
+```
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/131475141-473070b5-9806-44b4-be02-fa667bba0c07.png'>
+</p>
+
+그리드 행의 수를 변경할 수 있는데다 예상대로 작동합니다.
+
+```kotlin
+@Composable
+fun BodyContent(modifier: Modifier = Modifier) {
+    StaggeredGrid(modifier = modifier, rows = 5) {
+        for (topic in topics) {
+            Chip(modifier = Modifier.padding(8.dp), text = topic)
+        }
+    }
+}
+```
+
+<p align = 'center'>
+<img width = '400' src = 'https://user-images.githubusercontent.com/39554623/131480847-4569ba8c-fd4b-44a7-b0f5-6cdaec1d6bdd.png'>
+</p>
+
+행 수에 따라 topic이 화면을 벗어날 수 있듯이, scrollable `Row`로 `StaggeredGrid`를 감싸고 수정자를 `StaggeredGrid` 대신 이 `Row`에 전달하면 `BodyContent`를 스크롤할 수 있습니다.
+
+```kotlin
+@Composable
+fun BodyContent(modifier: Modifier = Modifier) {
+    Row(modifier = modifier.horizontalScroll(rememberScrollState())) {
+        StaggeredGrid {
+            for (topic in topics) {
+                Chip(modifier = Modifier.padding(8.dp), text = topic)
+            }
+        }
+    }
+}
+```
+
+[Interactive Preview button](https://developer.android.com/jetpack/compose/tooling?authuser=1#enable-experimental-features)을 사용하거나 Android Studio 실행 버튼을 눌러 장치에서 앱을 실행하면 콘텐츠를 가로로 스크롤할 수 있습니다.
