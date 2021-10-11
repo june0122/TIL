@@ -50,6 +50,86 @@
 
 위임은 합성을 상속만큼 강력하게 만드는 방법이다.
 
+위임에서는 두 객체가 하나의 요청을 처리한다. 수신 객체가 연산의 처리를 <b>위임자<small>(delegate)</small></b>에게 보낸다. 이는 서브클래스가 부모 클래스에게 요청을 전달하는 것과 유사한 방식이다.
+
+위임과 동일한 효과를 얻으려면 수신 객체는 대리자에게 자신을 매개변수로 전달해서 위임된 연산이 수신자를 참조하게 한다.
+
+> Window 클래스가 `area()` 호출을 내부 Rectangle 객체<small>(위임자, delegate)</small>에 위임
+
+```kotlin
+class Rectangle(val width: Int, val height: Int) {
+    fun area() = width * height
+}
+
+class Window(val bounds: Rectangle) {
+    // Delegation
+    fun area() = bounds.area()
+}
+```
+
+Window 클래스를 Rectangle 클래스의 서브클래스로 만드는 대신, Window 클래스는 Rectangle 클래스를 자신의 인스턴스 변수로 만들고 Rectangle 클래스에 정의된 행동이 필요할 때는 Rectangle 클래스에 위임함으로써 Rectangle의 행동을 재사용할 수 있다.
+
+다시 말해, 상속에 의해 Window 인스턴스를 Rectangle 인스턴스로 간주하는 방식이 아닌 Window 인스턴스가 Rectangle 인스턴스를 포함하도록 하고, Window 인스턴스는 자신이 받은 요청을 Rectangle 인스턴스로 전달하는 것이다.
+
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/130242401-6f1987cc-4d37-453d-8601-a9ffd5ff269d.png'>
+</p>
+
+Window 클래스는 `area()` 연산을 Rectangle 인스턴스에 전달한다.
+
+실선 화살표는 한 클래스가 다른 클래스의 인스턴스에 대한 참조자를 갖고 있음을 보여준다. 참조는 이름을 선택적으로 정의할 수 있는데, 다이어그램에선 `rectangle`로 정의한다.
+
+위임의 가장 중요한 장점은 런타임에 행동의 복합을 가능하게 하고, 복합하는 방식도 변경해준다는 것이다.
+- Window 객체가 런타임에 Rectangle 인스턴스를 Circle 인스턴스로 대체하면 원형의 윈도우가 될 것이다.
+- 물론 이를 위해서는 Rectangle 클래스와 Circle 클래스가 동일한 타입이라는 가정이 필요하다.
+
+위임이 갖는 단점은 객체 합성을 통해 소프트웨어 설계의 유연성을 보장하는 방법과 동일하게 동적인데다가 고도로 매개변수화된 소프트웨어는 정적인 소프트웨어 구조보다 이해하기가 더 어렵다는 점이다.
+- 그 이유는 클래스에 상호작용이 다 정의되어 있는 것이 아니라 런타임 객체에 따라서 그 결과가 다르기 때문이다. 또한 런타임에 비효율적일 수 있다.
+- 이런 위임이 만들어 내는 복잡함보다 단순화의 효과를 더 크게 할 수 있다면 그 설계는 사용하기 좋은 설계이다. 그러나 이러한 유용성은 상황에 따라 다르고 얼마나 많은 경험을 갖고 있는가에 좌우되므로 위임은 고도로 표준화된 패턴에서 사용하는 것이 최상이다.
+
+### 위임을 부분적으로 사용하는 디자인 패턴
+
+- 상태<small>(State)</small> 패턴
+- 전략<small>(Strategy)</small> 패턴
+- 방문자<small>(Visitor)</small> 패턴
+
+상태 패턴에서 객체는 현재 상태를 표현하는 상태 객체에 요청의 처리를 위임한다. 전략 패턴에서 객체는 요청을 수행하는 추상화한 전략 객체에게 특정 요청을 위임한다.
+- 이 두 패턴의 목적은 처리를 전달하는 객체를 변경하지 않고 객체의 행동을 변경할 수 있게 하자는 것이다.
+
+방문자 패턴에서, 객체 구조의 각 요소에 수행하는 연산은 언제나 방문자 객체에게 위임된 연산이다.
+
+### 위임에 전적으로 의존하는 디자인 패턴
+
+- 중재자<small>(Mediator)</small> 패턴
+- 책임 연쇄<small>(Chain of Responsibility)</small> 패턴
+- 가교<small>(Bridge)</small> 패턴
+
+중재자 패턴은 객체 간의 교류를 중재하는 객체를 도입하여 중재자 객체가 다른 객체로 연산을 전달하도록 구현한다. 이때, 연산에 자신에 대한 참조자를 함께 보내고 위임받은 객체가 다시 자신에게 메시지를 보내서 자신이 정의한 데이터를 얻어가게 함으로써 진정한 위임을 구현한다.
+
+책임 연쇄 패턴은 한 객체에서 다른 객체로 고리를 따라서 요청의 처리를 계속 위임한다. 이 요청에는 요청을 처음 받은 원본 객체에 대한 참조자를 포함한다.
+
+가교 패턴은 구현과 추상적 개념을 분리하는 패턴이다. 추상화와 특정 구현을 대응시키고 추상화는 단순히 자신의 연산을 구현에 전달한다.
+
+위임은 객체 합성의 극단적인 예로서, 코드 재사용을 위한 매커니즘으로 상속을 객체 합성으로 대체할 수 있다.
+
+## 코틀린의 위임
+
+코틀린은 기본적으로 보일러 플레이트가 필요 없이 위임 패턴을 지원한다.
+
+```kotlin
+interface ClosedShape {
+    fun area(): Int
+}
+
+class Rectangle(val width: Int, val height: Int) : ClosedShape {
+    override fun area() = width * height
+}
+
+class Window(private val bounds: ClosedShape) : ClosedShape by bounds
+```
+
+`Window`의 supertype 목록에 있는 `by` 절은 `bounds`가 `Window`의 객체 내부에 저장되고, 컴파일러가 `bounds`로 전달하는 `ClosedShape`의 모든 메서드를 생성함을 의미한다.
+
 ## References
 - &lt;Gof의 디자인 패턴&gt; 한국어판 : 상속 대 합성<small>(49p)</small>, 위임<small>(51p)</small>
 - wikipedia : [Delegation pattern](https://en.wikipedia.org/wiki/Delegation_pattern)
