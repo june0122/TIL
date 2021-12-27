@@ -45,12 +45,12 @@ fun main() {
 }
 ```
 
-1급 함수는 변수 뿐만 아니라 데이터 구조에도 할당이 가능
+데이터 구조에 할당하는 예시는 다음과 같다.
 
 ```kotlin
 fun add(a: Int, b: Int) = a + b
 fun subtract(a: Int, b: Int) = a - b
-val functions = mutableListOf(::add, ::subtract)
+val functions = mutableListOf(::add, ::subtract) // MutableList에 함수 할당
 
 fun main() {
     println("add : ${functions[0](10, 2)}, sub : ${functions[1](15, 5)}")
