@@ -55,7 +55,7 @@ public class CallTopLevelFunctionInJava {
 
 ### 파일에 대응하는 클래스의 이름 변경하기
 
-코틀린 최상위 함수가 포함되는 클래스의 이름을 바꾸고 싶다면 파일에 `@JvmName` 어노테이션을 추가하면 된다. @JvmName` 어노테이션은 파일의 맨 앞, 패키지 이름 선언 이전에 위치해야 한다.
+코틀린 최상위 함수가 포함되는 클래스의 이름을 바꾸고 싶다면 파일에 `@JvmName` 어노테이션을 추가하면 된다. `@JvmName` 어노테이션은 파일의 맨 앞, 패키지 이름 선언 이전에 위치해야 한다.
 
 ```kotlin
 @file:JvmName("StringFunctions") // 클래스 이름을 지정하는 어노테이션
