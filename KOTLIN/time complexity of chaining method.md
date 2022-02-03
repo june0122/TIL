@@ -39,7 +39,6 @@ println(reducedResult) // 6
 보다시피 `filter()`가 <i>O(n)</i>, `reduce()`도 <i>O(n)</i>의 시간복잡도를 가지므로 <i>O(n) + O(n) => O(n)</i>이라는 시간복잡도를 얻을 수 있다.
 
 
-
 ```kotlin
 fun groupAnagramsByProcedure(strs: Array<String>): List<List<String>> {
     // n = length of strs
@@ -53,14 +52,20 @@ fun groupAnagramsByProcedure(strs: Array<String>): List<List<String>> {
 }
 
 // O(n) * ( O(k) + O(klogk) + O(k) ) + O(n)
-
-/**
- * charArr.sorted()는 원시타입 배열에 대한 정렬이라 TimSort 아닌가?
- * 원래 원시형 타입은 dual-pivot quicksort 사용하는게 맞지만
- * sorted()는 toTypeArray()를 사용하여 CharArray가 아닌 Array<Char>에 대해 sort() 하므로 
- * 참조형에 대한 정렬!!!
- */
 ```
+
+#### 코틀린의 정렬은 어떻게 구현되어 있을까?
+
+- `Arrays.sort`(primitive type) => Dual-Pivot QuickSort
+- `Collections.sort`(reference type) => TimSort
+
+####  `charArr.sorted()`는 CharArray를 정렬한 것이라 원시 타입 배열일 때 사용되는 정렬인 Dual-Pivot QuickSort를 사용해야 되는가 아닌가?
+
+- `sort()`가 아닌 `sorted()`는 내부적으로 `toTypedArray()`로 인해 박싱된 Char 배열인 **Array&lt;Char&gt;** 타입을 반환한다.
+  - <b>Array&lt;Char&gt;</b>은 박싱된 Char 배열이며, **CharArray**는 박싱되지 않은 원시 타입의 배열이다.
+
+
+
 
 ## References
 
