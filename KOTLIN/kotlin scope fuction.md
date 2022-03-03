@@ -1,6 +1,6 @@
 # 코틀린의 Scope Function
 
-코틀린 표준 라이브러리는 객체 컨텍스트 내에서 코드 블럭을 실행하는 것이 유일한 목적인 함수들을 포함하고 있다. 이 함수들을 람다식을 이용해서 호출하면 일시적인 범위<small>(scope)</small>가 생성되는데, 이 범위 내에서는 이름이 없어도 객체에 접근할 수 있다. 이 함수들을 Scope Function<small>(범위 지정 함수)</small>이라 부르며, `let`, `run`, `with`, `apply`, `also` 5가지가 존재한다.
+코틀린 표준 라이브러리는 객체 컨텍스트 내에서 코드 블럭을 실행하는 것이 유일한 목적인 함수들을 포함하고 있다. 이 함수들을 람다식을 이용해서 호출하면 일시적인 범위<small>(scope)</small>가 생성되는데, 이 범위 내에서는 이름이 없어도 `this` 또는 `it` 키워드를 통해 객체에 접근할 수 있다. 이 함수들을 Scope Function<small>(범위 지정 함수)</small>이라 부르며, `let`, `run`, `with`, `apply`, `also` 5가지가 존재한다.
 
 ## Function selection
 
