@@ -27,7 +27,7 @@ NavHost를 위한 추가 API들을 제공하는 `NavHostController`를 인스턴
 
 NavHostFragment는 자신을 포함해서 레이아웃 내에서 내비게이션이 발생할 수 있는 영역을 제공한다.
 
-NavHostFragment는 레이아웃 리소스 내에서 앱의 크롬을 정의하는 콘텐츠 영역으로 사용된다.
+NavHostFragment는 주변에 앱의 chorme<small>(XML의 파생 언어인 [XUL](https://en.wikipedia.org/wiki/XUL)을 chrome이라 부르는 것 같다)</small>을 정의하는 레이아웃 리소스 내에서 콘텐츠 영역으로 사용하기 위한 것이다.
 
 ```xml
 <androidx.drawerlayout.widget.DrawerLayout
