@@ -1,4 +1,4 @@
-# 콜백 스타일의 코드를 순차적 프로그래밍으로 변경해주는 코루틴
+# ***suspend*** 함수의 실행 원리: 콜백에서 코루틴으로
 
 > ### Coroutines: Replace callbacks & Main safety
 
