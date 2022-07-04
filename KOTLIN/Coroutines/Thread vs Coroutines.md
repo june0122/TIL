@@ -42,6 +42,8 @@ suspend fun preparePost(): Token {
 }
 ```
 
+블로킹 스타일 코드, 콜백 스타일 코드 그리고 코루틴 코드를 비교하여 [***suspend*** 함수의 실행 원리](https://june0122.tistory.com/17)를 알아보는 글도 따로 정리하였으니 같이 보면 좋을 것 같다.
+
 [Codelabs](https://developer.android.com/codelabs/kotlin-coroutines#0)와 [Kotlin Docs](https://kotlinlang.org/docs/async-programming.html#coroutines)에서 콜백을 이용한 코드와 코루틴을 이용한 코드의 비교가 잘 정리되어 있으니 참고하자.
 
 ## References
