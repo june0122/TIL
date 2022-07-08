@@ -1,4 +1,4 @@
-# Android Navigation에서 `chrome`의 의미
+# Android Navigation에서 chrome의 의미
 
 ## 요약
 
@@ -42,16 +42,6 @@
 
 `NavigationUI` 클래스의 설명에 적용해보면, 크롬을 NavigationDrawer 또는 BottomNavigationBar와 같은 global navigation pattern이 적용된 디자인 요소라 지칭하고 있습니다. 즉, BottomNavigationBar가 앱의 Fragment<small>(화면의 콘텐츠)</small>를 전역적으로 탐색<small>(작업 명령)</small>하는 시각적 디자인 요소라고 이해하면 될 것 같습니다.
 
-### 번외: 용어의 기원
-
-<p align = 'center'>
-<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/177754590-a22e894b-e964-4f24-8071-b5cc5f418c32.png'>
-</p>
-
-크롬이라는 용어를 누가 생각해 냈는지는 모르겠지만 1950년대의 미국 자동차에 크롬을 사용하는 것에서 유추한 것으로 보인다고 말하고 있습니다. 위의 사진을 보면 차체가 범퍼나 테일 핀<small>(Tail fin)</small> 등 반짝이는 크롬으로 둘러싸여 있습니다.
-
-자동차의 크롬 부분과 비슷하게, 대부분의 최신 GUI에서 크롬이 사용자 데이터 전용인 중간 영역을 둘러싸고 화면의 가장자리 주위에 있는 것을 생각하면 이해가 가는 비유인 것 같습니다.
-
 ### 다양한 시스템 레벨에서의 크롬
 
 다음은 기본 시스템<small>(underlying system)</small>에 따라 달라지는 크롬 정의의 몇 가지 예시입니다.
@@ -61,6 +51,16 @@
 - 웹 브라우저에서 크롬은 URL 영역, 브라우저 툴바, 브라우저 버튼, 탭, 스크롤바, 상태 영역<small>(status field)</small>를 포함합니다.
 - 모바일 앱에서 크롬은 종종 화면 상단의 상태 표시줄을 포함하고 하단에 명령 아이콘이 있는 탭 표시줄을 포함합니다. 때로는 상태 표시줄 아래에도 내비게이션 바가 있습니다.
 - 웹 사이트에서 크롬은 내비게이션 바, 바닥글, 로고, 브랜딩, 검색 상자 등이 포함됩니다.
+
+### 번외: 용어의 기원
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/177754590-a22e894b-e964-4f24-8071-b5cc5f418c32.png'>
+</p>
+
+크롬이라는 용어를 누가 생각해 냈는지는 모르겠지만 1950년대의 미국 자동차에 크롬을 사용하는 것에서 유추한 것으로 보인다고 말하고 있습니다. 위의 사진을 보면 차체가 범퍼나 테일 핀<small>(Tail fin)</small> 등 반짝이는 크롬으로 둘러싸여 있습니다.
+
+자동차의 크롬 부분과 비슷하게, 대부분의 최신 GUI에서 크롬이 사용자 데이터 전용인 중간 영역을 둘러싸고 화면의 가장자리 주위에 있는 것을 생각하면 이해가 가는 비유인 것 같습니다.
 
 ## References
 
