@@ -231,7 +231,7 @@ public interface OnItemSelectedListener {
 
 #### NavigationUI
 
-[NavigationUI](https://developer.android.com/reference/kotlin/androidx/navigation/ui/NavigationUI?hl=en)는 Navigation drawer 또는 Bottom nav bar처럼 `NavController`가 있는 global navigation 패턴과 같은 일반적으로 애플리케이션의 chorme 요소를 연결하는 클래스입니다.
+[NavigationUI](https://developer.android.com/reference/kotlin/androidx/navigation/ui/NavigationUI?hl=en)는 Navigation drawer 또는 Bottom nav bar처럼 `NavController`가 있는 global navigation 패턴과 같은 일반적으로 애플리케이션의 [chrome](https://june0122.tistory.com/19) 요소를 연결하는 클래스입니다.
 
 <small>원문: Class which hooks up elements typically in the 'chrome' of your application such as global navigation patterns like a navigation drawer or bottom nav bar with your NavController.</small>
 
