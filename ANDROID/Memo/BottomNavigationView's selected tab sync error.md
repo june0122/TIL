@@ -2,6 +2,8 @@
 
 ## 문제
 
+개인 프로젝트로 개발 중인 앱에서 별다른 버그가 없는가 밥을 먹으며 이리저리 클릭하던 중 특정 상황에 하단 탭의 선택 효과가 동작하지 않는 문제를 발견하여 이를 해결하면서 공부한 내용을 정리했습니다. 문제의 화면과 프로젝트의 내비게이션 그래프의 구성은 아래와 같습니다.
+
 <p align = 'center'>
 <img height = '600' src = 'https://user-images.githubusercontent.com/39554623/179753310-bf96c24a-912e-4ef2-8aa7-7e26bb7368cc.gif'>
 <img height = '600' src = 'https://user-images.githubusercontent.com/39554623/179754094-89b1313b-d004-47f9-9626-896f57af50c9.png'>
