@@ -25,6 +25,8 @@
 - [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 - ViewModel
 - LiveData
+- Coroutines
+- Flow
 - DataBinding
 
 ## Dependency Injection
@@ -53,7 +55,7 @@ object NetworkModule {
 
 ### NetworkState
 
-네트워크의 상태를 추적하기 위해 sealed class를 이용하여 `None`, `Connected`, `Reconnected`, `NotConnected` 4가지의 *NetworkState*를 정의합니다.
+네트워크의 상태를 추적하기 위해 sealed class를 이용하여 `None`, `Connected`, `Reconnected`, `NotConnected` 4가지의 *NetworkState*를 정의합니다. `Reconnected` 상태가 있는 이유는 아래에서 서술하겠습니다.
 
 ```kotlin
 sealed class NetworkState {
@@ -67,91 +69,6 @@ sealed class NetworkState {
 ### NetworkChecker
 
 그리고 네트워크 연결 관련 핵심 로직을 담은 클래스 *NetworkChecker*를 정의합니다.
-
-```kotlin
-class NetworkChecker @Inject constructor(
-    applicationContext: Context
-) {
-    private val _networkState = MutableStateFlow<NetworkState>(NetworkState.None)
-    val networkState: StateFlow<NetworkState> = _networkState
-
-    private var previousNetworkState: NetworkState = NetworkState.None
-
-    // connectivityManager: 앱에 시스템의 연결 상태를 알림
-    private val connectivityManager: ConnectivityManager =
-        applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-    private val validTransportTypes = listOf(
-        NetworkCapabilities.TRANSPORT_WIFI,
-        NetworkCapabilities.TRANSPORT_CELLULAR
-    )
-
-    // https://developer.android.com/training/basics/network-ops/reading-network-state
-    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            super.onAvailable(network)
-            if (previousNetworkState == NetworkState.NotConnected) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(RECONNECTION_UI_VISIBLE_TIME) // 3000L
-                    _networkState.value = NetworkState.Connected
-                }
-                _networkState.value = NetworkState.Reconnected.also {
-                    previousNetworkState = it
-                }
-            } else {
-                _networkState.value = NetworkState.Connected.also {
-                    previousNetworkState = it
-                }
-            }
-        }
-
-        // WIFI에서 모바일 데이터로 변경 시 모바일 데이터로 전환하는 잠깐의 시간 동안
-        // 네트워크에 연결된 상태가 아니므로 onLost가 호출되고 잠깐 뒤에 네트워크 연결 여부를 확인
-        override fun onLost(network: Network) {
-            super.onLost(network)
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(RECONNECTION_DELAY) // 1000L
-                if (isNetworkAvailable().not()) {
-                    _networkState.value = NetworkState.NotConnected
-                    previousNetworkState = NetworkState.NotConnected
-                }
-            }
-        }
-    }
-
-    init {
-        initiateNetworkState()
-        registerNetworkCallback(connectivityManager)
-    }
-
-    private fun initiateNetworkState() {
-        _networkState.value = if (isNetworkAvailable()) {
-            NetworkState.Connected.also { previousNetworkState = it }
-        } else {
-            NetworkState.NotConnected.also { previousNetworkState = it }
-        }
-    }
-
-    // addTransportType(int transportType) : Adds the given transport requirement to this builder.
-    private fun registerNetworkCallback(manager: ConnectivityManager) {
-        val networkRequestBuilder = NetworkRequest.Builder().apply {
-            validTransportTypes.forEach { addTransportType(it) }
-        }
-        manager.registerNetworkCallback(networkRequestBuilder.build(), networkCallback)
-    }
-
-    private fun isNetworkAvailable(): Boolean {
-        val capabilities =
-            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-
-        if (capabilities != null) {
-            return validTransportTypes.any { capabilities.hasTransport(it) }
-        }
-
-        return false
-    }
-}
-```
 
 #### 인터넷 연결 확인
 
@@ -185,12 +102,109 @@ class NetworkChecker @Inject constructor(
 
         return false
     }
+
+    ...
 }
 ```
 
-여기까지 작성한 코드만으로는 네트워크의 순간적인 상태만을 쿼리하기 때문에 디버깅 이외에는 유용하지 않습니다. 새로운 네트워크에 연결이 되거나 네트워크 연결이 끊길 때 알름을 받기 위해서는 [NetworkCallback](https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback)을 등록해야 합니다. 
+여기까지 작성한 코드만으로는 네트워크의 순간적인 상태만을 쿼리하기 때문에 디버깅 이외에는 유용하지 않습니다. 새로운 네트워크에 연결이 되거나 네트워크 연결이 끊길 때 알림을 받기 위해서는 [NetworkCallback](https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback)을 등록해야 합니다. 
+
+#### 네트워크 이벤트 수신 대기
+
+네트워크 이벤트를 알아보려면 네트워크 변경에 대한 알림에 사용되는 `NetworkCallback` 클래스를 `ConnectivityManager.registerDefaultNetworkCallback(NetworkCallback)` 및 `ConnectivityManager.registerNetworkCallback(NetworkCallback)`과 함께 사용합니다. 이 두 가지 메서드의 차이점은 스택오버플로우의 [이 글](https://stackoverflow.com/q/53863034/12364882)을 참고하시면 좋을 것 같습니다.
+
+먼저 `NetworkCallback` 클래스의 콜백 메서드 2가지를 살펴보겠습니다.
+- [**onAvailable**](https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)) 콜백 메서드는 프레임워크가 연결되고 사용할 준비가 된 새로운 네트워크를 선언하면 호출됩니다.
+- [**onLost**](https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)) 콜백 메서드는 네트워크 연결이 끊기거나 더 이상 이 요청 또는 콜백을 충족하지 않을 때 호출됩니다.
+
+우선 네트워크 변경 콜백을 바인딩하고 네트워크 상태를 저장하는 코드를 살펴봅시다.
+
+```kotlin
+class NetworkChecker @Inject constructor(
+    applicationContext: Context
+) {
+
+    ...
+
+    private val _networkState = MutableStateFlow<NetworkState>(NetworkState.None)
+    val networkState: StateFlow<NetworkState> = _networkState
+
+    private var previousNetworkState: NetworkState = NetworkState.None
+
+    init {
+        initiateNetworkState()
+        registerNetworkCallback(connectivityManager)
+    }
+
+    private fun initiateNetworkState() {
+        _networkState.value = if (isNetworkAvailable()) {
+            NetworkState.Connected.also { previousNetworkState = it }
+        } else {
+            NetworkState.NotConnected.also { previousNetworkState = it }
+        }
+    }
+
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            super.onAvailable(network)
+            if (previousNetworkState == NetworkState.NotConnected) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(RECONNECTION_UI_VISIBLE_TIME) // 3000L
+                    _networkState.value = NetworkState.Connected
+                }
+                _networkState.value = NetworkState.Reconnected.also {
+                    previousNetworkState = it
+                }
+            } else {
+                _networkState.value = NetworkState.Connected.also {
+                    previousNetworkState = it
+                }
+            }
+        }
+        override fun onLost(network: Network) {
+            super.onLost(network)
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(RECONNECTION_DELAY) // 1000L
+                if (isNetworkAvailable().not()) {
+                    _networkState.value = NetworkState.NotConnected
+                    previousNetworkState = NetworkState.NotConnected
+                }
+            }
+        }
+    }
+
+    private fun registerNetworkCallback(manager: ConnectivityManager) {
+        val networkRequestBuilder = NetworkRequest.Builder().apply {
+            validTransportTypes.forEach { addTransportType(it) }
+        }
+        manager.registerNetworkCallback(networkRequestBuilder.build(), networkCallback)
+    }
+}
+```
+
+*init 블럭* 에서 초기화하는 동안 현재 네트워크의 상태가 계산되고 네트워크 변경 콜백이 바인딩되므로 `networkState`는 항상 Hilt에서 제공하는 단일 인스턴스에서 가장 최근의 네트워크 상태를 유지합니다.
+
+`networkState`는
 
 
+```kotlin
+override fun onLost(network: Network) {
+    super.onLost(network)
+    Log.e("TEST", "isNetworkAvailable: ${isNetworkAvailable()}")
+    CoroutineScope(Dispatchers.Main).launch {
+        delay(RECONNECTION_DELAY) // 1000L
+        Log.e("TEST", "isNetworkAvailable: ${isNetworkAvailable()}")
+        if (isNetworkAvailable().not()) {
+            _networkState.value = NetworkState.NotConnected
+            previousNetworkState = NetworkState.NotConnected
+        }
+    }
+}
+```
+
+<p align = 'center'>
+<img width = '700' src = 'https://user-images.githubusercontent.com/39554623/180996778-50e9e579-a638-4551-bbbd-80f476379ebd.png'>
+</p>
 
 
 ```console
@@ -207,7 +221,6 @@ LTE에 연결되어 있는데도 NetworkState가 NotConnected가 되어버린다
 ```
 
 
-초기화하는 동안 현재 네트워크의 상태가 계산되고 네트워크 변경 콜백이 바인딩되므로 `networkState`는 항상 Hilt에서 제공하는 단일 인스턴스에서 가장 최근의 네트워크 상태를 유지합니다.
 
 ## ViewModel
 
