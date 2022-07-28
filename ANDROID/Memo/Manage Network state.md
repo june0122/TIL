@@ -386,3 +386,4 @@ object BindingAdapters {
 ## References
 
 - Android developers: [네트워크 상태 읽기](https://developer.android.com/training/basics/network-ops/reading-network-state)
+- [Network Connectivity on Modern Android Development with Jetpack Compose](https://attilaakinci.medium.com/network-connectivity-on-compose-a35f6efa1a5c)
