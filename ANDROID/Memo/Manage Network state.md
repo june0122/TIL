@@ -16,8 +16,12 @@
 
 ## 프로젝트 구조
 
-<p align = 'center'>
+<!-- <p align = 'center'>
 <img width = '500' src = 'https://user-images.githubusercontent.com/39554623/180915606-356ff985-1a43-4fe7-9d61-a76bb4a04b1c.png'>
+</p> -->
+
+<p align = 'center'>
+<img width = '500' src = 'https://user-images.githubusercontent.com/39554623/185083567-e6dca003-7edb-470d-bb2f-6b21a2f233b0.png'>
 </p>
 
 네트워크 연결 상태를 확인하고 UI로 보여주기 위해선 보라색으로 선택된 6개의 클래스가 필요하며, 아래의 기술들에 대한 이해가 필요합니다.
@@ -184,7 +188,17 @@ class NetworkChecker @Inject constructor(
 
 *init 블럭* 에서 초기화하는 동안 현재 네트워크의 상태가 계산되고 네트워크 변경 콜백이 바인딩되므로 `networkState`는 항상 Hilt에서 제공하는 단일 인스턴스에서 가장 최근의 네트워크 상태를 유지합니다.
 
-`networkState`는
+그런데 `networkCallback`의 `onAvailable()`이나 `onLost()` 메서드를 보면 코루틴을 
+
+```kotlin
+override fun onLost(network: Network) {
+    super.onLost(network)
+    if (isNetworkAvailable().not()) {
+        _networkState.value = NetworkState.NotConnected
+        previousNetworkState = NetworkState.NotConnected
+    }
+}
+```
 
 
 ```kotlin
